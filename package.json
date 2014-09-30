@@ -1,0 +1,33 @@
+{
+	"name": "clean-bower-installer",
+	"version": "0.0.1",
+	"description": "Tool to install pre-selected bower dependencies",
+	"keywords": [
+		"bower",
+		"clean",
+		"installer"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ofrogon/cleanBowerInstaller"
+	},
+	"bugs": {
+		"url": "https://github.com/ofrogon/cleanBowerInstaller/issues"
+	},
+	"license": "MIT",
+	"author": "Alexandre Beaudoin <ofrogon@gmail.com>",
+	"main": "clean-bower-installer.js",
+	"bin": {
+		"clean-bower-installer": "./clean-bower-installer.js"
+	},
+	"dependencies": {
+		"colors": "~0.6.2",
+		"mkdirp": "~0.5.0"
+	},
+	"engines" : {
+		"node" : ">=0.10.0"
+	},
+	"scripts": {
+		"preinstall": "npm link bower;"
+	}
+}
