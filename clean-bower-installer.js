@@ -6,11 +6,16 @@ var mkdirp = require('mkdirp');
 var bower = require('bower');
 var colors = require('colors');
 
+//Regex
+var startWithSlash = new RegExp('^\/.*');
+
 //TODO find is runAsCli is important
 var runAsCli = cliDetection();
 var commandList = ['install', 'update'];
 var bowerPath = './bower.json';
 var bowerMessage;
+
+var bowerFolder = "./bower_components";
 
 var option = {
 	"default": "",
@@ -19,6 +24,8 @@ var option = {
 	"minFolder": "",
 	"copyFolder": ""
 };
+var folder = {};
+var source = {};
 
 // Call autoRun function at start to detect if call by cli or by script
 autoRun();
@@ -109,14 +116,14 @@ function execute(command) {
 			if (runAsCli) {
 				bower.commands.
 					install(undefined, undefined, { cwd: bowerPath }).
-					on('end', function(installed) {
+					on('end', function (installed) {
 						console.log(installed);
 						runCBI();
 					});
 			} else {
 				bower.commands.
 					install(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function(installed) {
+					on('end', function (installed) {
 						bowerMessage = installed;
 						runCBI();
 					});
@@ -126,13 +133,13 @@ function execute(command) {
 			if (runAsCli) {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath }).
-					on('end', function(installed) {
+					on('end', function (installed) {
 						console.log(installed)
 					});
 			} else {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function(installed) {
+					on('end', function (installed) {
 						bowerMessage = installed;
 						runCBI();
 					});
@@ -151,11 +158,7 @@ function execute(command) {
  * @returns {boolean}
  */
 function testIfPathExist(path) {
-	if (!fs.existsSync(path)) {
-		throw new Error('Can not find the file bower.json at the specified path.');
-	} else {
-		return true;
-	}
+	return fs.existsSync(path);
 }
 
 /* Execution */
@@ -178,54 +181,111 @@ function runCBI() {
 		// TODO all logic here
 		if (cInstall.option !== undefined) {
 			option = cInstall.option;
-			if (option.default !== undefined) {
-				if (testIfPathExist(option.default)) {
-					// TODO set default path
-				}
-			}
-
-			if (option.min !== undefined) {
-				if (option.min) {
-					// TODO val true so take min version in priority
-				}
-			}
-
-			if (option.removeAfter !== undefined) {
-				if (option.removeAfter) {
-					// TODO val true so clear bower folder
-				}
-			}
-
-			if (option.minFolder !== undefined) {
-				if (option.min !== undefined) {
-					console.error('You need to specify the option min to true to use this option too.'.red);
-				} else if (testIfPathExist(option.minFolder)) {
-					// TODO set min folder destination
-				} else {
-					// TODO create folder
-				}
-			}
-
-			if (option.copyFolder !== undefined) {
-				if (testIfPathExist(option.copyFolder)) {
-					// TODO set the copy folder
-				} else {
-					// TODO create folder
-				}
-			}
 		}
 
 		if (cInstall.folder !== undefined) {
+			folder = cInstall.folder;
 			// TODO folder option
 		}
 
 		if (cInstall.source !== undefined) {
+			source = cInstall.source;
 			// TODO source option
 		}
+
+		createFolders();
 
 	} else {
 		console.log('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'.yellow);
 	}
+}
+
+/**
+ * Create synchronously the folder needed for the files if they don't exist
+ */
+function createFolders() {
+	var folderToBuild = [], libFolder = '', libName = '', file, fileNameAndExt, fileFolder, extension, temp, currLib,
+		length, i;
+
+	// Build the array of needed folders
+	// For each libs
+	for (var lib in source) {
+		if (source.hasOwnProperty(lib)) {
+			temp = lib.split('#');
+			libName = temp[0];
+			libFolder = temp[1] || '';
+			currLib = source[lib];
+
+			// For each files to get in the lib
+			for (file in currLib) {
+				if (currLib.hasOwnProperty(file)) {
+					temp = file.split('#');
+					fileNameAndExt = temp[0];
+					fileFolder = temp[1] || '';
+
+					extension = path.extname(fileNameAndExt).substr(1);
+
+					// Special treatment for file with * as extension
+					if (extension == '*') {
+						// List all present extension
+						var files = fs.readdirSync(path.join(bowerFolder, libName, path.dirname(currLib[file])));
+						extension = [];
+
+						length = files.length;
+						for (i = 0; i < length; i++) {
+							extension.push(path.extname(files[i]).substr(1));
+						}
+
+						extension = removeDuplicate(extension);
+					} else {
+						extension = [extension];
+					}
+
+					// Add the needed folders to the Array folderToBuild
+					length = extension.length;
+					for (i = 0; i < length; i++) {
+						if (folder.hasOwnProperty(extension[i])) {
+							// Test if the link is global or relative
+							if (startWithSlash.test(fileFolder)) {
+								// The specified file folder is global
+								folderToBuild.push(fileFolder.substr(1));
+							} else if (startWithSlash.test(libFolder)) {
+								// The specified lib folder is global
+								folderToBuild.push(path.join(libFolder.substr(1), fileFolder));
+							} else {
+								// None of the file or lib specified folder is global
+								folderToBuild.push(path.join(option.default, folder[extension[i]], libFolder, fileFolder));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Clear the list
+	folderToBuild = removeDuplicate(folderToBuild);
+
+	// Build the folders
+	length = folderToBuild.length;
+	for (i = 0; i < length; i++) {
+		// Make the folder(s) only if don't exist
+		if (!testIfPathExist(folderToBuild[i])) {
+			mkdirp.sync(folderToBuild[i]);
+		}
+	}
+}
+
+/**
+ * Remove duplicate input in a array and short it
+ *
+ * @param a {Array}
+ * @returns {Array}
+ */
+function removeDuplicate(a) {
+	return a.sort().filter(function (item, pos) {
+		return !pos || item != a[pos - 1];
+	})
 }
 
 /* API commands*/
@@ -257,16 +317,20 @@ function run(command) {
 function runFrom(relativePath, command) {
 	runAsCli = false;
 
-	var filePath = path.join(__dirname, relativePath);
+	var bowerFilePath = path.join(__dirname, relativePath);
 
 	// Error handling
 	if (relativePath === undefined) {
 		throw new Error('Wrong call to clean-bower-install runFrom() function: No path provided.');
 	}
-	testIfPathExist(filePath);
+
+	if (!testIfPathExist(bowerFilePath)) {
+		throw new Error('Can not find the file bower.json at the specified path.');
+	}
+
 
 	// Execution
-	bowerPath = filePath;
+	bowerPath = bowerFilePath;
 
 	if (verify(command) !== false) {
 		if (command != 'bowerPath') {
@@ -278,7 +342,6 @@ function runFrom(relativePath, command) {
 		runCBI();
 	}
 }
-
 
 exports.run = run;
 exports.runFrom = runFrom;
