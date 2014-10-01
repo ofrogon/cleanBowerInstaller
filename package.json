@@ -28,6 +28,6 @@
 		"node" : ">=0.10.0"
 	},
 	"scripts": {
-		"preinstall": "npm link bower;"
+		"preinstall": "npm link bower"
 	}
 }

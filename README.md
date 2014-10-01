@@ -26,3 +26,9 @@ clean-bower-installer
 | install | Run the command "bower install" before execute clean-bower-installer. |
 | update  | Run the command "bower update" before execute clean-bower-installer. |
 | < path to bower.json file > | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. |
+
+## Options
+WIP
+
+## API
+WIP

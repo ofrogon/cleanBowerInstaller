@@ -8,9 +8,17 @@ var colors = require('colors');
 
 //TODO find is runAsCli is important
 var runAsCli = cliDetection();
-var commandList = ['install','update'];
+var commandList = ['install', 'update'];
 var bowerPath = './bower.json';
 var bowerMessage;
+
+var option = {
+	"default": "",
+	"min": false,
+	"removeAfter": false,
+	"minFolder": "",
+	"copyFolder": ""
+};
 
 // Call autoRun function at start to detect if call by cli or by script
 autoRun();
@@ -70,65 +78,70 @@ function getCommandLineArgument() {
 	}
 }
 
-	/**
-	 * Verify that the command exist in the list
-	 *
-	 * @param command {string}
-	 * @returns {string|boolean}
-	 */
-	function verify(command) {
-		if (command === undefined) {
-			return false;
-		} else if (commandList.indexOf(command) != -1) {
-			return command;
+/**
+ * Verify that the command exist in the list
+ *
+ * @param command {string}
+ * @returns {string|boolean}
+ */
+function verify(command) {
+	if (command === undefined) {
+		return false;
+	} else if (commandList.indexOf(command) != -1) {
+		return command;
+	} else {
+		if (testIfPathExist(command)) {
+			return 'bowerPath';
 		} else {
-			if (testIfPathExist(command)) {
-				return 'bowerPath';
-			} else {
-				return false;
-			}
+			return false;
 		}
 	}
+}
 
-	/**
-	 * Execute a command
-	 *
-	 * @param command {string}
-	 */
-	function execute(command) {
-		switch (command) {
-			case 'install':
-				if (runAsCli) {
-					bower.commands.
-						install(undefined, undefined, { cwd: bowerPath }).
-						on('end', function (installed) { console.log(installed); runCBI(); });
-				} else {
-					bower.commands.
-						install(undefined, undefined, { cwd: bowerPath, json: true }).
-						on('end', function (installed) {
-							bowerMessage = installed;
-							runCBI();
-						});
-				}
-				break;
-			case 'update':
-				if (runAsCli) {
-					bower.commands.
-						update(undefined, undefined, { cwd: bowerPath }).
-						on('end', function (installed) { console.log(installed) });
-				} else {
-					bower.commands.
-						update(undefined, undefined, { cwd: bowerPath, json: true }).
-						on('end', function (installed) {
-							bowerMessage = installed;
-							runCBI();
-						});
-				}
-				break;
-			default :
-				throw new Error('Error: Unrecognised command.');
-		}
+/**
+ * Execute a command
+ *
+ * @param command {string}
+ */
+function execute(command) {
+	switch (command) {
+		case 'install':
+			if (runAsCli) {
+				bower.commands.
+					install(undefined, undefined, { cwd: bowerPath }).
+					on('end', function(installed) {
+						console.log(installed);
+						runCBI();
+					});
+			} else {
+				bower.commands.
+					install(undefined, undefined, { cwd: bowerPath, json: true }).
+					on('end', function(installed) {
+						bowerMessage = installed;
+						runCBI();
+					});
+			}
+			break;
+		case 'update':
+			if (runAsCli) {
+				bower.commands.
+					update(undefined, undefined, { cwd: bowerPath }).
+					on('end', function(installed) {
+						console.log(installed)
+					});
+			} else {
+				bower.commands.
+					update(undefined, undefined, { cwd: bowerPath, json: true }).
+					on('end', function(installed) {
+						bowerMessage = installed;
+						runCBI();
+					});
+			}
+			break;
+		default :
+			throw new Error('Error: Unrecognised command.');
 	}
+}
 
 
 /**
@@ -154,7 +167,7 @@ function runCBI() {
 	if (testIfPathExist(bowerPath)) {
 		try {
 			var bowerJSON = require(bowerPath);
-		} catch(e) {
+		} catch (e) {
 			console.log('clean-bower-install execution can not be done because of that error: '.yellow + e.yellow);
 		}
 	}
@@ -163,6 +176,53 @@ function runCBI() {
 
 	if (cInstall !== undefined) {
 		// TODO all logic here
+		if (cInstall.option !== undefined) {
+			option = cInstall.option;
+			if (option.default !== undefined) {
+				if (testIfPathExist(option.default)) {
+					// TODO set default path
+				}
+			}
+
+			if (option.min !== undefined) {
+				if (option.min) {
+					// TODO val true so take min version in priority
+				}
+			}
+
+			if (option.removeAfter !== undefined) {
+				if (option.removeAfter) {
+					// TODO val true so clear bower folder
+				}
+			}
+
+			if (option.minFolder !== undefined) {
+				if (option.min !== undefined) {
+					console.error('You need to specify the option min to true to use this option too.'.red);
+				} else if (testIfPathExist(option.minFolder)) {
+					// TODO set min folder destination
+				} else {
+					// TODO create folder
+				}
+			}
+
+			if (option.copyFolder !== undefined) {
+				if (testIfPathExist(option.copyFolder)) {
+					// TODO set the copy folder
+				} else {
+					// TODO create folder
+				}
+			}
+		}
+
+		if (cInstall.folder !== undefined) {
+			// TODO folder option
+		}
+
+		if (cInstall.source !== undefined) {
+			// TODO source option
+		}
+
 	} else {
 		console.log('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'.yellow);
 	}
