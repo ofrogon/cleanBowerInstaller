@@ -4,9 +4,12 @@ var path = require('path');
 var fs = require('fs-extra');
 var bower = require('bower');
 var colors = require('colors/safe');
+var glob = require("glob");
 
 //Regex
 var startWithSlash = new RegExp('^\/.*');
+var containAsterisk = new RegExp('\\*', 'g');
+var containDoubleAsterisk = new RegExp('[\\*]{2}', 'g');
 
 //TODO find is runAsCli is important
 var runAsCli = cliDetection();
@@ -114,7 +117,7 @@ function execute(command) {
 			if (runAsCli) {
 				bower.commands.
 					install(undefined, undefined, { cwd: bowerPath }).
-					on('end', function (installed) {
+					on('end', function(installed) {
 						if (Object.keys(installed).length !== 0) {
 							console.log(installed);
 						}
@@ -123,7 +126,7 @@ function execute(command) {
 			} else {
 				bower.commands.
 					install(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function (installed) {
+					on('end', function(installed) {
 						bowerMessage = installed;
 						runCBI();
 					});
@@ -133,7 +136,7 @@ function execute(command) {
 			if (runAsCli) {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath }).
-					on('end', function (installed) {
+					on('end', function(installed) {
 						if (Object.keys(installed).length !== 0) {
 							console.log(installed);
 						}
@@ -142,7 +145,7 @@ function execute(command) {
 			} else {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function (installed) {
+					on('end', function(installed) {
 						bowerMessage = installed;
 						runCBI();
 					});
@@ -194,8 +197,8 @@ function runCBI() {
 			folder = cInstall.folder;
 			var typeInTreatment;
 			for (var fileType in folder) {
-				if(folder.hasOwnProperty(fileType)) {
-					typeInTreatment = fileType.replace(/\s/g,'').split(',');
+				if (folder.hasOwnProperty(fileType)) {
+					typeInTreatment = fileType.replace(/\s/g, '').split(',');
 
 					// Split into multiple value comma divided chunk
 					var length = typeInTreatment.length;
@@ -224,8 +227,29 @@ function runCBI() {
  * Move the files from the bower repository to their destination
  */
 function moveFiles() {
+	var file, length, i,
+		filesToMove = generateFileList();
+
+	if (filesToMove === false) {
+		return;
+	}
+
+	filesToMove = removeDuplicate(filesToMove);
+
+	length = filesToMove.length;
+	for (i = 0; i < length; i++) {
+		file = filesToMove[i];
+		fs.copy(file.from, path.join(file.to, file.rename), function(err) {
+			if (err) {
+				return console.error(err);
+			}
+		});
+	}
+}
+
+function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
-		extension, temp, currLib, length, i;
+		extension, temp, currLib, length, i, asteriskName;
 
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
@@ -239,56 +263,55 @@ function moveFiles() {
 			for (file in currLib) {
 				if (currLib.hasOwnProperty(file)) {
 					temp = file.split('#');
-					fileNameAndExt = temp[0];
+					fileNameAndExt = temp[0] || '*';
 					fileName = path.basename(fileNameAndExt, path.extname(fileNameAndExt));
 					fileFolder = temp[1] || '';
 					extension = path.extname(fileNameAndExt).substr(1);
 
-					// TODO glob will certainly go here
-					// Special treatment for file with * as extension
-					if (extension == '*') {
-						// List all present extension
-						var files = fs.readdirSync(path.join(bowerFolder, libName, path.dirname(currLib[file])));
-						extension = [];
-
-						length = files.length;
-						for (i = 0; i < length; i++) {
-							extension.push(path.extname(files[i]).substr(1));
-						}
-
-						extension = removeDuplicate(extension);
-					} else {
-						extension = [extension];
+					// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
+					if (containDoubleAsterisk.test(currLib[file])) {
+						console.error(colors.red('The "Globstar" ** matching wan\'t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it.'));
+						console.error(colors.red('Please correct the source: '+ libName));
+						return false;
 					}
 
-					// Add the needed folders to the Array filesToMove
-					length = extension.length;
-					for (i = 0; i < length; i++) {
-						if (folder.hasOwnProperty(extension[i])) {
+					// List files who fit the
+					var files = glob.sync(path.join(bowerFolder, libName, currLib[file]));
 
-							// TODO check if still useful after glob integration
-							// Remove extension
-							currLib[file] = currLib[file].replace(/\.[\w|\*]+$/, '');
-							// Test if the link is global or relative
-							if (startWithSlash.test(fileFolder)) {
-								// The specified file folder is global
-								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
-										'to': fileFolder.substr(1),
-										'rename': fileName + extension[i]}
-								);
-							} else if (startWithSlash.test(libFolder)) {
-								// The specified lib folder is global
-								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
-										'to': path.join(libFolder.substr(1), fileFolder),
-										'rename': fileName + extension[i]}
-								);
-							} else {
-								// None of the file or lib specified folder is global
-								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
-										'to': path.join(option.default, folder[extension[i]], libFolder, fileFolder),
-										'rename': fileName + '.' + extension[i]}
-								);
-							}
+					// Add the needed folders to the Array filesToMove
+					length = files.length;
+					asteriskName = false;
+					for (i = 0; i < length; i++) {
+						if (containAsterisk.test(fileName)) {
+							asteriskName = true;
+						}
+
+						if (asteriskName) {
+							fileName = path.basename(files[i], path.extname(files[i]));
+						}
+
+						// Test if the link is global or relative
+						if (startWithSlash.test(fileFolder)) {
+							// The specified file folder is global
+							filesToMove.push({
+								'from': files[i],
+								'to': fileFolder.substr(1),
+								'rename': fileName + path.extname(files[i])
+							});
+						} else if (startWithSlash.test(libFolder)) {
+							// The specified lib folder is global
+							filesToMove.push({
+								'from': files[i],
+								'to': path.join(libFolder.substr(1), fileFolder),
+								'rename': fileName + path.extname(files[i])
+							});
+						} else {
+							// None of the file or lib specified folder is global
+							filesToMove.push({
+								'from': files[i],
+								'to': path.join(option.default, folder[path.extname(files[i]).substr(1)], libFolder, fileFolder),
+								'rename': fileName + path.extname(files[i])
+							});
 						}
 					}
 				}
@@ -296,15 +319,7 @@ function moveFiles() {
 		}
 	}
 
-	filesToMove = removeDuplicate(filesToMove);
-
-	length = filesToMove.length;
-	for (i = 0; i < length; i++) {
-		temp = filesToMove[i];
-		fs.copy(temp.from, temp.to + temp.rename, function(err) {
-			if (err) return console.error(err);
-		});
-	}
+	return filesToMove;
 }
 
 /**
@@ -314,7 +329,7 @@ function moveFiles() {
  * @returns {Array}
  */
 function removeDuplicate(a) {
-	return a.sort().filter(function (item, pos) {
+	return a.sort().filter(function(item, pos) {
 		return !pos || item != a[pos - 1];
 	})
 }
