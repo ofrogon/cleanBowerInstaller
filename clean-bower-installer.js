@@ -73,7 +73,6 @@ function getCommandLineArgument() {
 			throw new Error('Error: The command line don\'t accept the two command \'install\' and \'update\' at the same time.');
 		} else {
 			var commandLength = argumentList.length;
-
 			for (var y = 0; y < commandLength; y++) {
 				if (argumentList[y] != 'bowerPath') {
 					execute(argumentList[y]);
@@ -117,7 +116,9 @@ function execute(command) {
 				bower.commands.
 					install(undefined, undefined, { cwd: bowerPath }).
 					on('end', function (installed) {
-						console.log(installed);
+						if (Object.keys(installed).length !== 0) {
+							console.log(installed);
+						}
 						runCBI();
 					});
 			} else {
@@ -134,7 +135,9 @@ function execute(command) {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath }).
 					on('end', function (installed) {
-						console.log(installed);
+						if (Object.keys(installed).length !== 0) {
+							console.log(installed);
+						}
 						runCBI();
 					});
 			} else {
@@ -314,7 +317,7 @@ function moveFiles() {
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
 			// TODO work here
-			console.log(lib);
+			//console.log(lib);
 		}
 	}
 }
