@@ -12,7 +12,7 @@ var startWithSlash = new RegExp('^\/.*');
 //TODO find is runAsCli is important
 var runAsCli = cliDetection();
 var commandList = ['install', 'update'];
-var bowerPath = './bower.json';
+var bowerPath = './';
 var bowerMessage;
 
 var bowerFolder = "./bower_components";
@@ -134,7 +134,8 @@ function execute(command) {
 				bower.commands.
 					update(undefined, undefined, { cwd: bowerPath }).
 					on('end', function (installed) {
-						console.log(installed)
+						console.log(installed);
+						runCBI();
 					});
 			} else {
 				bower.commands.
@@ -169,7 +170,7 @@ function testIfPathExist(path) {
 function runCBI() {
 	if (testIfPathExist(bowerPath)) {
 		try {
-			var bowerJSON = require(bowerPath);
+			var bowerJSON = require(bowerPath + 'bower.json');
 		} catch (e) {
 			console.log('clean-bower-install execution can not be done because of that error: '.yellow + e.yellow);
 		}
@@ -178,14 +179,31 @@ function runCBI() {
 	var cInstall = bowerJSON.cInstall;
 
 	if (cInstall !== undefined) {
-		// TODO all logic here
 		if (cInstall.option !== undefined) {
-			option = cInstall.option;
+			// To add only new option specified by the user
+			for (var setup in cInstall.option) {
+				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
+					option[setup] = cInstall.option[setup];
+				}
+			}
 		}
 
 		if (cInstall.folder !== undefined) {
 			folder = cInstall.folder;
-			// TODO folder option
+			var typeInTreatment;
+			for (var fileType in folder) {
+				if(folder.hasOwnProperty(fileType)) {
+					typeInTreatment = fileType.replace(/\s/g,'').split(',');
+
+					// Split into multiple value comma divided chunk
+					var length = typeInTreatment.length;
+					if (length > 1) {
+						for (var i = 0; i < length; i++) {
+							folder[typeInTreatment[i]] = folder[fileType];
+						}
+					}
+				}
+			}
 		}
 
 		if (cInstall.source !== undefined) {
@@ -194,6 +212,8 @@ function runCBI() {
 		}
 
 		createFolders();
+
+		moveFiles();
 
 	} else {
 		console.log('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'.yellow);
@@ -208,7 +228,18 @@ function createFolders() {
 		length, i;
 
 	// Build the array of needed folders
-	// For each libs
+	// For each default-type folder
+	for (var fileType in folder) {
+		if (folder.hasOwnProperty(fileType)) {
+			if (startWithSlash.test(path.normalize(folder[fileType]))) {
+				folderToBuild.push(folder[fileType]);
+			} else {
+				folderToBuild.push(path.join(option.default, folder[fileType]));
+			}
+		}
+	}
+
+	// For each libs (source)
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
 			temp = lib.split('#');
@@ -266,12 +297,25 @@ function createFolders() {
 	// Clear the list
 	folderToBuild = removeDuplicate(folderToBuild);
 
+	console.log(folderToBuild);
+
 	// Build the folders
-	length = folderToBuild.length;
+	/*length = folderToBuild.length;
 	for (i = 0; i < length; i++) {
 		// Make the folder(s) only if don't exist
 		if (!testIfPathExist(folderToBuild[i])) {
 			mkdirp.sync(folderToBuild[i]);
+		}
+	}*/
+}
+
+/**
+ * Move the files from the bower repository to their destination
+ */
+function moveFiles() {
+	for (var lib in source) {
+		if (source.hasOwnProperty(lib)) {
+			console.log(lib);
 		}
 	}
 }
@@ -327,7 +371,6 @@ function runFrom(relativePath, command) {
 	if (!testIfPathExist(bowerFilePath)) {
 		throw new Error('Can not find the file bower.json at the specified path.');
 	}
-
 
 	// Execution
 	bowerPath = bowerFilePath;
