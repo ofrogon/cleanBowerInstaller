@@ -1,8 +1,7 @@
 "use strict";
 
 var path = require('path');
-var fs = require('fs');
-var mkdirp = require('mkdirp');
+var fs = require('fs-extra');
 var bower = require('bower');
 var colors = require('colors/safe');
 
@@ -214,8 +213,6 @@ function runCBI() {
 			// TODO source option
 		}
 
-		createFolders();
-
 		moveFiles();
 
 	} else {
@@ -224,27 +221,15 @@ function runCBI() {
 }
 
 /**
- * Create synchronously the folder needed for the files if they don't exist
+ * Move the files from the bower repository to their destination
  */
-function createFolders() {
-	var folderToBuild = [], libFolder = '', libName = '', file, fileNameAndExt, fileFolder, extension, temp, currLib,
-		length, i;
+function moveFiles() {
+	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
+		extension, temp, currLib, length, i;
 
-	// Build the array of needed folders
-	// For each default-type folder
-	for (var fileType in folder) {
-		if (folder.hasOwnProperty(fileType)) {
-			if (startWithSlash.test(path.normalize(folder[fileType]))) {
-				folderToBuild.push(folder[fileType]);
-			} else {
-				folderToBuild.push(path.join(option.default, folder[fileType]));
-			}
-		}
-	}
-
-	// For each libs (source)
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
+			// TODO work here
 			temp = lib.split('#');
 			libName = temp[0];
 			libFolder = temp[1] || '';
@@ -255,10 +240,11 @@ function createFolders() {
 				if (currLib.hasOwnProperty(file)) {
 					temp = file.split('#');
 					fileNameAndExt = temp[0];
+					fileName = path.basename(fileNameAndExt, path.extname(fileNameAndExt));
 					fileFolder = temp[1] || '';
-
 					extension = path.extname(fileNameAndExt).substr(1);
 
+					// TODO glob will certainly go here
 					// Special treatment for file with * as extension
 					if (extension == '*') {
 						// List all present extension
@@ -275,20 +261,33 @@ function createFolders() {
 						extension = [extension];
 					}
 
-					// Add the needed folders to the Array folderToBuild
+					// Add the needed folders to the Array filesToMove
 					length = extension.length;
 					for (i = 0; i < length; i++) {
 						if (folder.hasOwnProperty(extension[i])) {
+
+							// TODO check if still useful after glob integration
+							// Remove extension
+							currLib[file] = currLib[file].replace(/\.[\w|\*]+$/, '');
 							// Test if the link is global or relative
 							if (startWithSlash.test(fileFolder)) {
 								// The specified file folder is global
-								folderToBuild.push(fileFolder.substr(1));
+								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
+										'to': fileFolder.substr(1),
+										'rename': fileName + extension[i]}
+								);
 							} else if (startWithSlash.test(libFolder)) {
 								// The specified lib folder is global
-								folderToBuild.push(path.join(libFolder.substr(1), fileFolder));
+								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
+										'to': path.join(libFolder.substr(1), fileFolder),
+										'rename': fileName + extension[i]}
+								);
 							} else {
 								// None of the file or lib specified folder is global
-								folderToBuild.push(path.join(option.default, folder[extension[i]], libFolder, fileFolder));
+								filesToMove.push({'from': path.join(bowerFolder, libName, currLib[file] + '.' + extension[i]),
+										'to': path.join(option.default, folder[extension[i]], libFolder, fileFolder),
+										'rename': fileName + '.' + extension[i]}
+								);
 							}
 						}
 					}
@@ -297,28 +296,14 @@ function createFolders() {
 		}
 	}
 
-	// Clear the list
-	folderToBuild = removeDuplicate(folderToBuild);
+	filesToMove = removeDuplicate(filesToMove);
 
-	// Build the folders
-	length = folderToBuild.length;
+	length = filesToMove.length;
 	for (i = 0; i < length; i++) {
-		// Make the folder(s) only if don't exist
-		if (!testIfPathExist(folderToBuild[i])) {
-			mkdirp.sync(folderToBuild[i]);
-		}
-	}
-}
-
-/**
- * Move the files from the bower repository to their destination
- */
-function moveFiles() {
-	for (var lib in source) {
-		if (source.hasOwnProperty(lib)) {
-			// TODO work here
-			//console.log(lib);
-		}
+		temp = filesToMove[i];
+		fs.copy(temp.from, temp.to + temp.rename, function(err) {
+			if (err) return console.error(err);
+		});
 	}
 }
 
