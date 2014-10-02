@@ -297,16 +297,14 @@ function createFolders() {
 	// Clear the list
 	folderToBuild = removeDuplicate(folderToBuild);
 
-	console.log(folderToBuild);
-
 	// Build the folders
-	/*length = folderToBuild.length;
+	length = folderToBuild.length;
 	for (i = 0; i < length; i++) {
 		// Make the folder(s) only if don't exist
 		if (!testIfPathExist(folderToBuild[i])) {
 			mkdirp.sync(folderToBuild[i]);
 		}
-	}*/
+	}
 }
 
 /**
@@ -315,6 +313,7 @@ function createFolders() {
 function moveFiles() {
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
+			// TODO work here
 			console.log(lib);
 		}
 	}
