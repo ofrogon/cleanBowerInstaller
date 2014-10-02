@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var bower = require('bower');
-var colors = require('colors');
+var colors = require('colors/safe');
 
 //Regex
 var startWithSlash = new RegExp('^\/.*');
@@ -172,7 +172,7 @@ function runCBI() {
 		try {
 			var bowerJSON = require(bowerPath + 'bower.json');
 		} catch (e) {
-			console.log('clean-bower-install execution can not be done because of that error: '.yellow + e.yellow);
+			console.log(colors.yellow('clean-bower-install execution can not be done because of that error: ' + e));
 		}
 	}
 
@@ -216,7 +216,7 @@ function runCBI() {
 		moveFiles();
 
 	} else {
-		console.log('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'.yellow);
+		console.log(colors.yellow('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'));
 	}
 }
 
