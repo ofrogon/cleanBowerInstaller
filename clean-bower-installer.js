@@ -147,6 +147,7 @@ function execute(command) {
 					update(undefined, undefined, { cwd: bowerPath, json: true }).
 					on('end', function(installed) {
 						bowerMessage = installed;
+						bowerFolder = path.join(bowerPath, bowerFolder);
 						runCBI();
 					});
 			}
@@ -180,6 +181,8 @@ function runCBI() {
 			console.log(colors.yellow('clean-bower-install execution can not be done because of that error: ' + e));
 		}
 	}
+
+	// TODO read .bowerrc
 
 	var cInstall = bowerJSON.cInstall;
 
@@ -253,7 +256,6 @@ function generateFileList() {
 
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
-			// TODO work here
 			temp = lib.split('#');
 			libName = temp[0];
 			libFolder = temp[1] || '';
@@ -295,21 +297,21 @@ function generateFileList() {
 							// The specified file folder is global
 							filesToMove.push({
 								'from': files[i],
-								'to': fileFolder.substr(1),
+								'to': path.join(bowerPath, fileFolder.substr(1)),
 								'rename': fileName + path.extname(files[i])
 							});
 						} else if (startWithSlash.test(libFolder)) {
 							// The specified lib folder is global
 							filesToMove.push({
 								'from': files[i],
-								'to': path.join(libFolder.substr(1), fileFolder),
+								'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
 								'rename': fileName + path.extname(files[i])
 							});
 						} else {
 							// None of the file or lib specified folder is global
 							filesToMove.push({
 								'from': files[i],
-								'to': path.join(option.default, folder[path.extname(files[i]).substr(1)], libFolder, fileFolder),
+								'to': path.join(bowerPath, option.default, folder[path.extname(files[i]).substr(1)], libFolder, fileFolder),
 								'rename': fileName + path.extname(files[i])
 							});
 						}
