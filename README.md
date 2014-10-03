@@ -1,5 +1,5 @@
 # clean-bower-installer
-This tool permit to install bower dependencies without including the entire repos. This tool add a way to specify and take only what you really need form all the files bower get.
+This tool permit to install bower dependencies without including the entire repo. This tool add a way to specify and take only what you really need form all the files bower get.
 
 It also support smart file update so only the needed files be update/rewrite when you run this tool.
 
@@ -41,43 +41,43 @@ clean-bower-installer [OPTIONS] [ARGS]
 ==WIP==
 
 ## Options
-Thoses element can be set in the cInstall>option section of the *bower.json* file.
+Theses element can be set in the cInstall>option section of the *bower.json* file.
 
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
-| default           | Path, give there the folder from where you want all your files to be copied relatice to. (default vlaue: `.`) |
-| removeAfter  ==(WIP)==     | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
+| default           | Path, give there the folder from where you want all your files to be copied relative to. (default value: `.`) |
+| removeAfter  ==(WIP)== | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
 
-## Exemples
+## Examples
 
 ### Simple use
 ```
 {
 	"name": "simple-test",
-    "dependencies": {
-    	"angular": "~1.2.0"
-    },
-    "cInstall": {
-    	"folder": {
-        	"js": "js/vendor/"
-        },
-        "source": {
-        	"angular": {
-                "angular.js": "angular.js"
-            }
-        }
-    }
+	"dependencies": {
+		"angular": "~1.2.0"
+	},
+	"cInstall": {
+		"folder": {
+			"js": "js/vendor/"
+		},
+		"source": {
+			"angular": {
+				"angular.js": "angular.js"
+			}
+		}
+	}
 }
 ```
 #### Result
 <ul>
 	<li>js/</li>
-    <ul>
-    	<li>vendor/</li>
-        <ul>
-    		<li>++angular.js++</li>
-    	</ul>
-    </ul>
+	<ul>
+		<li>vendor/</li>
+		<ul>
+			<li>++angular.js++</li>
+		</ul>
+	</ul>
 </ul>
 
 -----
@@ -85,51 +85,51 @@ Thoses element can be set in the cInstall>option section of the *bower.json* fil
 ```
 {
 	"name": "option-test",
-    "dependencies": {
-    	"bootstrap": "~3.2.0"
-    },
-    "cInstall": {
-    	"folder": {
-        	"js": "js/vendor/",
-            "css": "css/",
-            "otf, eot, svg, ttf, woff": "fonts/"
-        },
-        "option": {
-        	"default": "public"
-        },
-        "source": {
-        	"bootstrap": {
-                "glyphicons-halflings-regular.*": "dist/fonts/*",
-                "bootstrap.js": "dist/js/bootstrap.js",
-                "bootstrap.css": "dist/css/bootstrap.css"
-            }
-        }
-    }
+	"dependencies": {
+		"bootstrap": "~3.2.0"
+	},
+	"cInstall": {
+		"folder": {
+			"js": "js/vendor/",
+			"css": "css/",
+			"otf, eot, svg, ttf, woff": "fonts/"
+		},
+		"option": {
+			"default": "public"
+		},
+		"source": {
+			"bootstrap": {
+				"glyphicons-halflings-regular.*": "dist/fonts/*",
+				"bootstrap.js": "dist/js/bootstrap.js",
+				"bootstrap.css": "dist/css/bootstrap.css"
+			}
+		}
+	}
 }
 ```
 #### Result
 <ul>
 	<li>public/</li>
-    <ul>
-    	<li>js/</li>
-        <ul>
-    		<li>vendor/</li>
-            <ul>
-    			<li>++bootstrap.js++</li>
-    		</ul>
-    	</ul>
-        <li>css/</li>
-        <ul>
-    		<li>++bootstrap.css++</li>
-    	</ul>
-        <li>fonts/</li>
-        <ul>
-    		<li>++glyphicons-halflings-regular.eot++</li>
-            <li>++glyphicons-halflings-regular.svg++</li>
-            <li>++glyphicons-halflings-regular.ttf++</li>
-            <li>++glyphicons-halflings-regular.woff++</li>
-    	</ul>
-    </ul>
+	<ul>
+		<li>js/</li>
+		<ul>
+			<li>vendor/</li>
+			<ul>
+				<li>++bootstrap.js++</li>
+			</ul>
+		</ul>
+		<li>css/</li>
+		<ul>
+			<li>++bootstrap.css++</li>
+		</ul>
+		<li>fonts/</li>
+		<ul>
+			<li>++glyphicons-halflings-regular.eot++</li>
+			<li>++glyphicons-halflings-regular.svg++</li>
+			<li>++glyphicons-halflings-regular.ttf++</li>
+			<li>++glyphicons-halflings-regular.woff++</li>
+		</ul>
+	</ul>
 </ul>
 
 -----
@@ -137,61 +137,61 @@ Thoses element can be set in the cInstall>option section of the *bower.json* fil
 ```
 {
 	"name": "simple-test",
-    "dependencies": {
-    	"bootstrap": "~3.2.0"
-    },
-    "cInstall": {
-    	"folder": {
-        	"js": "js/vendor/",
-            "css": "css/",
-            "otf, eot, svg, ttf, woff": "fonts/"
-        },
-        "option": {
-        	"default": "public"
-        },
-        "source": {
-        	"bootstrap": {
-                "glyphicons-halflings-regular.*": "dist/fonts/*",
-                "bootstrap.js": "dist/js/bootstrap.js",
-                "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
-                "bootstrap.css": "dist/css/bootstrap.css",
-                "bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
-            }
-        }
-    }
+	"dependencies": {
+		"bootstrap": "~3.2.0"
+	},
+	"cInstall": {
+		"folder": {
+			"js": "js/vendor/",
+			"css": "css/",
+			"otf, eot, svg, ttf, woff": "fonts/"
+		},
+		"option": {
+			"default": "public"
+		},
+		"source": {
+			"bootstrap": {
+				"glyphicons-halflings-regular.*": "dist/fonts/*",
+				"bootstrap.js": "dist/js/bootstrap.js",
+				"bootstrap.min.js#min": "dist/js/bootstrap.min.js",
+				"bootstrap.css": "dist/css/bootstrap.css",
+				"bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
+			}
+		}
+	}
 }
 ```
-#### Result (folder hirarchie only)
+#### Result
 <ul>
 	<li>public/</li>
-    <ul>
-    	<li>js/</li>
-        <ul>
-    		<li>vendor/</li>
-            <ul>
-    			<li>++bootstrap.js++</li>
-                <li>min/</li>
-                <ul>
-                    <li>++bootstrap.min.js++</li>
-                </ul>
-    		</ul>
-    	</ul>
-        <li>css/</li>
-        <ul>
-    		<li>++bootstrap.css++</li>
-    	</ul>
-        <li>fonts/</li>
-        <ul>
-    		<li>++glyphicons-halflings-regular.eot++</li>
-            <li>++glyphicons-halflings-regular.svg++</li>
-            <li>++glyphicons-halflings-regular.ttf++</li>
-            <li>++glyphicons-halflings-regular.woff++</li>
-    	</ul>
-    </ul>
-    <li>thisPathIsGlobal/</li>
-    <ul>
-    	<li>++bootstrap.min.css++</li>
-    </ul>
+	<ul>
+		<li>js/</li>
+		<ul>
+			<li>vendor/</li>
+			<ul>
+				<li>++bootstrap.js++</li>
+				<li>min/</li>
+				<ul>
+					<li>++bootstrap.min.js++</li>
+				</ul>
+			</ul>
+		</ul>
+		<li>css/</li>
+		<ul>
+			<li>++bootstrap.css++</li>
+		</ul>
+		<li>fonts/</li>
+		<ul>
+			<li>++glyphicons-halflings-regular.eot++</li>
+			<li>++glyphicons-halflings-regular.svg++</li>
+			<li>++glyphicons-halflings-regular.ttf++</li>
+			<li>++glyphicons-halflings-regular.woff++</li>
+		</ul>
+	</ul>
+	<li>thisPathIsGlobal/</li>
+	<ul>
+		<li>++bootstrap.min.css++</li>
+	</ul>
 </ul>
 
 -----
@@ -274,35 +274,35 @@ Thoses element can be set in the cInstall>option section of the *bower.json* fil
 	}
 }
 ```
-#### Result (folder hirarchie only)
+#### Result (folder hierarchy only)
 <ul>
 	<li>public/</li>
-    <ul>
-    	<li>css/</li>
-        <ul>
-    		<li>bootstrap/</li>
-            <ul>
-            	<li>++files++</li>
-            </ul>
-      		<li>bootStrapSelect/</li>
-            <ul>
-            	<li>++files++</li>
-            </ul>
-       		<li>fontawesome/</li>
-            <ul>
-            	<li>++files++</li>
-            </ul>
-    	</ul>
-        <li>fonts/</li>
-        <ul>
-            <li>++files++</li>
-        </ul>
-        <li>js/</li>
-        <ul>
-    		<li>vendor/</li>
-            <ul>
-            	<li>++files++</li>
-            </ul>
-    	</ul>
-    </ul>
+	<ul>
+		<li>css/</li>
+		<ul>
+			<li>bootstrap/</li>
+			<ul>
+				<li>++files++</li>
+			</ul>
+	  		<li>bootStrapSelect/</li>
+			<ul>
+				<li>++files++</li>
+			</ul>
+	   		<li>fontawesome/</li>
+			<ul>
+				<li>++files++</li>
+			</ul>
+		</ul>
+		<li>fonts/</li>
+		<ul>
+			<li>++files++</li>
+		</ul>
+		<li>js/</li>
+		<ul>
+			<li>vendor/</li>
+			<ul>
+				<li>++files++</li>
+			</ul>
+		</ul>
+	</ul>
 </ul>
