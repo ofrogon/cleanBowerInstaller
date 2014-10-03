@@ -12,18 +12,20 @@ var cli = require("cli");
 var pkg = require("../package.json");
 
 //Regex
-var startWithSlash = new RegExp('^\/.*');
-var containAsterisk = new RegExp('\\*', 'g');
-var containDoubleAsterisk = new RegExp('[\\*]{2}', 'g');
+var regex = {
+	startWithSlash: new RegExp('^\/.*'),
+	containAsterisk: new RegExp('\\*', 'g'),
+	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g')
+};
 
 var bowerPath;
 var cwd = process.cwd();
 var directory;
 
 var option = {
-	"default": "",
-	"removeAfter": false
-},
+		"default": "",
+		"removeAfter": false
+	},
 	folder = {},
 	source = {};
 
@@ -33,13 +35,15 @@ var option = {
 cli.enable('version');
 cli.setApp(pkg.name, pkg.version);
 
+// CLI options
 cli.parse({
 	/*version:   ['v', 'Display module version'],*/
-	install: ['i', 'Run bower installer command'],
+	install: ['i', 'Run bower install command'],
 	update: ['u', 'Run bower update command'],
 	bower: [false, 'Input the bower.json file path.', 'path', '' ]
 });
 
+// CLI input treatment
 cli.main(function(args, options) {
 	// Display help
 	// By default in cli!
@@ -84,13 +88,11 @@ function runCBI() {
 
 	// Read .bowerrc config
 	var config = require('bower-config').read();
-
 	directory = config.directory;
 	cwd = config.cwd;
 
 	// Read bower.json cInstall data
 	var cInstall = bowerJSON.cInstall;
-
 	if (cInstall !== undefined) {
 		if (cInstall.option !== undefined) {
 			// To add only new option specified by the user
@@ -123,7 +125,7 @@ function runCBI() {
 			source = cInstall.source;
 		}
 
-		moveFiles();
+		copyFiles();
 
 	} else {
 		console.log(colors.yellow('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'));
@@ -143,16 +145,15 @@ function testIfPathExist(path) {
 /**
  * Move the files from the bower repository to their destination
  */
-function moveFiles() {
-	var file, length, i,
-		filesToMove = generateFileList();
+function copyFiles() {
+	var file, length, i, filesToMove = generateFileList();
 
+	// If file list generation was stop by error
 	if (filesToMove === false) {
 		return;
 	}
 
-	filesToMove = removeDuplicate(filesToMove);
-
+	// Copy and rename (if needed) files in the filesToMove array
 	length = filesToMove.length;
 	for (i = 0; i < length; i++) {
 		file = filesToMove[i];
@@ -173,6 +174,7 @@ function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
 		extension, temp, currLib, length, i, asteriskName;
 
+	// For each lib in the source section
 	for (var lib in source) {
 		if (source.hasOwnProperty(lib)) {
 			temp = lib.split('#');
@@ -190,9 +192,9 @@ function generateFileList() {
 					extension = path.extname(fileNameAndExt).substr(1);
 
 					// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
-					if (containDoubleAsterisk.test(currLib[file])) {
+					if (regex.containDoubleAsterisk.test(currLib[file])) {
 						console.error(colors.red('The "Globstar" ** matching wan\'t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it.'));
-						console.error(colors.red('Please correct the source: '+ libName));
+						console.error(colors.red('Please correct the source: ' + libName));
 						return false;
 					}
 
@@ -203,23 +205,24 @@ function generateFileList() {
 					length = files.length;
 					asteriskName = false;
 					for (i = 0; i < length; i++) {
-						if (containAsterisk.test(fileName)) {
+						if (regex.containAsterisk.test(fileName)) {
 							asteriskName = true;
 						}
 
+						// Use the name of the file to replace the * (asterisk) name
 						if (asteriskName) {
 							fileName = path.basename(files[i], path.extname(files[i]));
 						}
 
 						// Test if the link is global or relative
-						if (startWithSlash.test(fileFolder)) {
+						if (regex.startWithSlash.test(fileFolder)) {
 							// The specified file folder is global
 							filesToMove.push({
 								'from': files[i],
 								'to': path.join(bowerPath, fileFolder.substr(1)),
 								'rename': fileName + path.extname(files[i])
 							});
-						} else if (startWithSlash.test(libFolder)) {
+						} else if (regex.startWithSlash.test(libFolder)) {
 							// The specified lib folder is global
 							filesToMove.push({
 								'from': files[i],
@@ -239,20 +242,7 @@ function generateFileList() {
 			}
 		}
 	}
-
 	return filesToMove;
-}
-
-/**
- * Remove duplicate input in a array and short it
- *
- * @param a {Array}
- * @returns {Array}
- */
-function removeDuplicate(a) {
-	return a.sort().filter(function(item, pos) {
-		return !pos || item != a[pos - 1];
-	})
 }
 
 /* API commands *******************************************************************************************************/
