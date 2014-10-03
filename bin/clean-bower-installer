@@ -1,174 +1,74 @@
-"use strict";
+#!/usr/bin/env node
+'use strict';
+
+process.bin = process.title = 'clean-bower-installer';
 
 var path = require('path');
 var fs = require('fs-extra');
 var bower = require('bower');
 var colors = require('colors/safe');
 var glob = require("glob");
+var cli = require("cli");
+var pkg = require("../package.json");
 
 //Regex
 var startWithSlash = new RegExp('^\/.*');
 var containAsterisk = new RegExp('\\*', 'g');
 var containDoubleAsterisk = new RegExp('[\\*]{2}', 'g');
 
-//TODO find is runAsCli is important
-var runAsCli = cliDetection();
-var commandList = ['install', 'update'];
-var bowerPath = './';
-var bowerMessage;
-
+var bowerPath;
+var basePath = process.cwd();
 var bowerFolder = "./bower_components";
 
 var option = {
 	"default": "",
-	"min": false,
-	"removeAfter": false,
-	"minFolder": "",
-	"copyFolder": ""
-};
-var folder = {};
-var source = {};
+	"removeAfter": false
+},
+	folder = {},
+	source = {};
 
-// Call autoRun function at start to detect if call by cli or by script
-autoRun();
+/* CLI section ********************************************************************************************************/
 
-/**
- * This function is call at start to detect if it will be in mode CLI or API
- */
-function autoRun() {
-	if (runAsCli) {
-		getCommandLineArgument();
-	}
-}
+cli.enable('version');
+cli.setApp(pkg.name, pkg.version);
+cli.parse({
+	/*version:   ['v', 'Display module version'],*/
+	install: ['i', 'Run bower installer command'],
+	update: ['u', 'Run bower update command'],
+	bower: [false, 'Input the bower.json file path.', 'path', '' ]
+});
 
-/**
- * Detect if the script was call by cli or script
- *
- * @returns {boolean}
- */
-function cliDetection() {
-	// True if call by cli
-	return !module.parent;
-}
+cli.main(function(args, options) {
+	// Version display
+	// Plugin of cli!
 
-/**
- * Parse the arguments from the console call, execute them and call the clean-bower-install execution
- */
-function getCommandLineArgument() {
-	var length = process.argv.length;
-	if (length > 2) {
-		var argumentList = [];
+	// Display help
+	// By default in cli!
 
-		for (var i = 2; i < length; i++) {
-			var toExecute = verify(process.argv[i]);
-			if (toExecute !== false) {
-				if (toExecute == 'bowerPath') {
-					bowerPath = path.join(__dirname, process.argv[i]);
-				}
+	if (options.install) {
+		bower.commands.
+			install(undefined, undefined, { cwd: bowerPath }).
+			on('end', function(installed) {
+				console.log(installed);
 
-				argumentList.push(toExecute);
-			}
-		}
+				runCBI();
+			});
+	} else if (options.update) {
+		bower.commands.
+			update(undefined, undefined, { cwd: bowerPath }).
+			on('end', function(installed) {
+				console.log(installed);
 
-		// Verify if the command 'install' and 'update' were both argument of the command
-		if (argumentList.indexOf('install') !== -1 && (argumentList.indexOf('update') !== -1)) {
-			throw new Error('Error: The command line don\'t accept the two command \'install\' and \'update\' at the same time.');
-		} else {
-			var commandLength = argumentList.length;
-			for (var y = 0; y < commandLength; y++) {
-				if (argumentList[y] != 'bowerPath') {
-					execute(argumentList[y]);
-				}
-			}
-		}
+				runCBI();
+			});
 	} else {
 		runCBI();
 	}
-}
 
-/**
- * Verify that the command exist in the list
- *
- * @param command {string}
- * @returns {string|boolean}
- */
-function verify(command) {
-	if (command === undefined) {
-		return false;
-	} else if (commandList.indexOf(command) != -1) {
-		return command;
-	} else {
-		if (testIfPathExist(command)) {
-			return 'bowerPath';
-		} else {
-			return false;
-		}
-	}
-}
+	bowerPath = path.join(basePath, options.bower);
+});
 
-/**
- * Execute a command
- *
- * @param command {string}
- */
-function execute(command) {
-	switch (command) {
-		case 'install':
-			if (runAsCli) {
-				bower.commands.
-					install(undefined, undefined, { cwd: bowerPath }).
-					on('end', function(installed) {
-						if (Object.keys(installed).length !== 0) {
-							console.log(installed);
-						}
-						runCBI();
-					});
-			} else {
-				bower.commands.
-					install(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function(installed) {
-						bowerMessage = installed;
-						runCBI();
-					});
-			}
-			break;
-		case 'update':
-			if (runAsCli) {
-				bower.commands.
-					update(undefined, undefined, { cwd: bowerPath }).
-					on('end', function(installed) {
-						if (Object.keys(installed).length !== 0) {
-							console.log(installed);
-						}
-						runCBI();
-					});
-			} else {
-				bower.commands.
-					update(undefined, undefined, { cwd: bowerPath, json: true }).
-					on('end', function(installed) {
-						bowerMessage = installed;
-						bowerFolder = path.join(bowerPath, bowerFolder);
-						runCBI();
-					});
-			}
-			break;
-		default :
-			throw new Error('Error: Unrecognised command.');
-	}
-}
-
-
-/**
- * Verify that the specified path exist
- *
- * @param path {string}
- * @returns {boolean}
- */
-function testIfPathExist(path) {
-	return fs.existsSync(path);
-}
-
-/* Execution */
+/* Execution **********************************************************************************************************/
 
 /**
  * Clean-Bower-Install main logic function
@@ -176,7 +76,7 @@ function testIfPathExist(path) {
 function runCBI() {
 	if (testIfPathExist(bowerPath)) {
 		try {
-			var bowerJSON = require(bowerPath + 'bower.json');
+			var bowerJSON = require(path.join(bowerPath, 'bower.json'));
 		} catch (e) {
 			console.log(colors.yellow('clean-bower-install execution can not be done because of that error: ' + e));
 		}
@@ -224,6 +124,16 @@ function runCBI() {
 	} else {
 		console.log(colors.yellow('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'));
 	}
+}
+
+/**
+ * Verify that the specified path exist
+ *
+ * @param path {string}
+ * @returns {boolean}
+ */
+function testIfPathExist(path) {
+	return fs.existsSync(path);
 }
 
 /**
@@ -336,14 +246,14 @@ function removeDuplicate(a) {
 	})
 }
 
-/* API commands*/
+/* API commands *******************************************************************************************************/
 /**
  * API command to run clean-bower-install with a bower.json in the same folder
  *
  * @param [command] {string}
  */
 function run(command) {
-	runAsCli = false;
+	// TODO find new command call way
 
 	if (verify(command) !== false) {
 		if (command != 'bowerPath') {
@@ -363,21 +273,18 @@ function run(command) {
  * @param [command] {string}
  */
 function runFrom(relativePath, command) {
-	runAsCli = false;
+	// TODO find new command call way
 
-	var bowerFilePath = path.join(__dirname, relativePath);
+	bowerPath = path.join(basePath, options.bower);
 
 	// Error handling
 	if (relativePath === undefined) {
 		throw new Error('Wrong call to clean-bower-install runFrom() function: No path provided.');
 	}
 
-	if (!testIfPathExist(bowerFilePath)) {
+	if (!testIfPathExist(bowerPath)) {
 		throw new Error('Can not find the file bower.json at the specified path.');
 	}
-
-	// Execution
-	bowerPath = bowerFilePath;
 
 	if (verify(command) !== false) {
 		if (command != 'bowerPath') {
