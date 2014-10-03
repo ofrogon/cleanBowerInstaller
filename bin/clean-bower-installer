@@ -17,8 +17,8 @@ var containAsterisk = new RegExp('\\*', 'g');
 var containDoubleAsterisk = new RegExp('[\\*]{2}', 'g');
 
 var bowerPath;
-var basePath = process.cwd();
-var bowerFolder = "./bower_components";
+var cwd = process.cwd();
+var directory;
 
 var option = {
 	"default": "",
@@ -29,8 +29,10 @@ var option = {
 
 /* CLI section ********************************************************************************************************/
 
+// Version display
 cli.enable('version');
 cli.setApp(pkg.name, pkg.version);
+
 cli.parse({
 	/*version:   ['v', 'Display module version'],*/
 	install: ['i', 'Run bower installer command'],
@@ -39,11 +41,10 @@ cli.parse({
 });
 
 cli.main(function(args, options) {
-	// Version display
-	// Plugin of cli!
-
 	// Display help
 	// By default in cli!
+
+	bowerPath = path.join(cwd, options.bower);
 
 	if (options.install) {
 		bower.commands.
@@ -64,8 +65,6 @@ cli.main(function(args, options) {
 	} else {
 		runCBI();
 	}
-
-	bowerPath = path.join(basePath, options.bower);
 });
 
 /* Execution **********************************************************************************************************/
@@ -74,16 +73,22 @@ cli.main(function(args, options) {
  * Clean-Bower-Install main logic function
  */
 function runCBI() {
-	if (testIfPathExist(bowerPath)) {
-		try {
-			var bowerJSON = require(path.join(bowerPath, 'bower.json'));
-		} catch (e) {
-			console.log(colors.yellow('clean-bower-install execution can not be done because of that error: ' + e));
-		}
+	var bowerJSON;
+
+	if (testIfPathExist(path.join(bowerPath, 'bower.json'))) {
+		bowerJSON = require(path.join(bowerPath, 'bower.json'));
+	} else {
+		console.error('No bower.json file found in the folder: ' + bowerPath);
+		process.exit(1);
 	}
 
-	// TODO read .bowerrc
+	// Read .bowerrc config
+	var config = require('bower-config').read();
 
+	directory = config.directory;
+	cwd = config.cwd;
+
+	// Read bower.json cInstall data
 	var cInstall = bowerJSON.cInstall;
 
 	if (cInstall !== undefined) {
@@ -116,7 +121,6 @@ function runCBI() {
 
 		if (cInstall.source !== undefined) {
 			source = cInstall.source;
-			// TODO source option
 		}
 
 		moveFiles();
@@ -160,6 +164,11 @@ function moveFiles() {
 	}
 }
 
+/**
+ * Generate the list of the file to copy and their destination
+ *
+ * @returns {Array|boolean}
+ */
 function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
 		extension, temp, currLib, length, i, asteriskName;
@@ -188,7 +197,7 @@ function generateFileList() {
 					}
 
 					// List files who fit the
-					var files = glob.sync(path.join(bowerFolder, libName, currLib[file]));
+					var files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
 
 					// Add the needed folders to the Array filesToMove
 					length = files.length;
@@ -275,7 +284,7 @@ function run(command) {
 function runFrom(relativePath, command) {
 	// TODO find new command call way
 
-	bowerPath = path.join(basePath, options.bower);
+	bowerPath = path.join(cwd, options.bower);
 
 	// Error handling
 	if (relativePath === undefined) {
