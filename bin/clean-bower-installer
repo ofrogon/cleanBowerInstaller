@@ -18,9 +18,9 @@ var regex = {
 	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g')
 };
 
-var bowerPath;
-var cwd = process.cwd();
-var directory;
+var bowerPath,
+	cwd = process.cwd(),
+	directory;
 
 var option = {
 		"default": "",

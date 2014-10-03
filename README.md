@@ -9,12 +9,12 @@ It also support smart file update so only the needed files be update/rewrite whe
 ## How to install
 You can install clean-bower-installer in two way
 
-++Using it in the command line++
+__Using it in the command line__
 ```
 npm install -g clean-bower-installer
 ```
 
-++Using the API++ ==WIP==
+__Using the API__ **WIP**
 ```
 npm install clean-bower-installer
 ```
@@ -38,7 +38,7 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -h, --help        | Display the help and usage details.                                   |
 
 ## API
-==WIP==
+**WIP**
 
 ## Options
 Theses element can be set in the cInstall>option section of the *bower.json* file.
@@ -46,7 +46,7 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
 | default           | Path, give there the folder from where you want all your files to be copied relative to. (default value: `.`) |
-| removeAfter  ==(WIP)== | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
+| removeAfter  **(WIP)** | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
 
 ## Examples
 
@@ -75,7 +75,7 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 	<ul>
 		<li>vendor/</li>
 		<ul>
-			<li>++angular.js++</li>
+			<li><u>angular.js</u></li>
 		</ul>
 	</ul>
 </ul>
@@ -115,19 +115,19 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 		<ul>
 			<li>vendor/</li>
 			<ul>
-				<li>++bootstrap.js++</li>
+				<li><u>bootstrap.js</u></li>
 			</ul>
 		</ul>
 		<li>css/</li>
 		<ul>
-			<li>++bootstrap.css++</li>
+			<li><u>bootstrap.css</u></li>
 		</ul>
 		<li>fonts/</li>
 		<ul>
-			<li>++glyphicons-halflings-regular.eot++</li>
-			<li>++glyphicons-halflings-regular.svg++</li>
-			<li>++glyphicons-halflings-regular.ttf++</li>
-			<li>++glyphicons-halflings-regular.woff++</li>
+			<li><u>glyphicons-halflings-regular.eot</u></li>
+			<li><u>glyphicons-halflings-regular.svg</u></li>
+			<li><u>glyphicons-halflings-regular.ttf</u></li>
+			<li><u>glyphicons-halflings-regular.woff</u></li>
 		</ul>
 	</ul>
 </ul>
@@ -169,28 +169,28 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 		<ul>
 			<li>vendor/</li>
 			<ul>
-				<li>++bootstrap.js++</li>
+				<li><u>bootstrap.js</u></li>
 				<li>min/</li>
 				<ul>
-					<li>++bootstrap.min.js++</li>
+					<li><u>bootstrap.min.js</u></li>
 				</ul>
 			</ul>
 		</ul>
 		<li>css/</li>
 		<ul>
-			<li>++bootstrap.css++</li>
+			<li><u>bootstrap.css</u></li>
 		</ul>
 		<li>fonts/</li>
 		<ul>
-			<li>++glyphicons-halflings-regular.eot++</li>
-			<li>++glyphicons-halflings-regular.svg++</li>
-			<li>++glyphicons-halflings-regular.ttf++</li>
-			<li>++glyphicons-halflings-regular.woff++</li>
+			<li><u>glyphicons-halflings-regular.eot</u></li>
+			<li><u>glyphicons-halflings-regular.svg</u></li>
+			<li><u>glyphicons-halflings-regular.ttf</u></li>
+			<li><u>glyphicons-halflings-regular.woff</u></li>
 		</ul>
 	</ul>
 	<li>thisPathIsGlobal/</li>
 	<ul>
-		<li>++bootstrap.min.css++</li>
+		<li><u>bootstrap.min.css</u></li>
 	</ul>
 </ul>
 
@@ -282,26 +282,26 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 		<ul>
 			<li>bootstrap/</li>
 			<ul>
-				<li>++files++</li>
+				<li><u>files</u></li>
 			</ul>
 	  		<li>bootStrapSelect/</li>
 			<ul>
-				<li>++files++</li>
+				<li><u>files</u></li>
 			</ul>
 	   		<li>fontawesome/</li>
 			<ul>
-				<li>++files++</li>
+				<li><u>files</u></li>
 			</ul>
 		</ul>
 		<li>fonts/</li>
 		<ul>
-			<li>++files++</li>
+			<li><u>files</u></li>
 		</ul>
 		<li>js/</li>
 		<ul>
 			<li>vendor/</li>
 			<ul>
-				<li>++files++</li>
+				<li><u>files</u></li>
 			</ul>
 		</ul>
 	</ul>
