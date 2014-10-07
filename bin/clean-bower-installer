@@ -246,55 +246,45 @@ function generateFileList() {
 }
 
 /* API commands *******************************************************************************************************/
-/**
- * API command to run clean-bower-install with a bower.json in the same folder
- *
- * @param [command] {string}
- */
-function run(command) {
-	// TODO find new command call way
 
-	if (verify(command) !== false) {
-		if (command != 'bowerPath') {
-			execute(command);
+var commands = {
+	update: function(bowerFilePath) {
+		var dir = {};
+		if (bowerFilePath !== undefined) {
+			dir = { cwd: bowerPath };
+			bowerPath = path.join(cwd, bowerFilePath);
 		}
-	}
 
-	if (command === undefined) {
+		bower.commands.
+			install(undefined, undefined, dir).
+			on('end', function(installed) {
+				console.log(installed);
+
+				runCBI();
+			});
+	},
+	install: function(bowerFilePath) {
+		var dir = {};
+		if (bowerFilePath !== undefined) {
+			dir = { cwd: bowerPath };
+			bowerPath = path.join(cwd, bowerFilePath);
+		}
+
+		bower.commands.
+			update(undefined, undefined, dir).
+			on('end', function(installed) {
+				console.log(installed);
+
+				runCBI();
+			});
+	},
+	run: function(bowerFilePath) {
+		if (bowerFilePath !== undefined) {
+			bowerPath = path.join(cwd, bowerFilePath);
+		}
+
 		runCBI();
 	}
-}
+};
 
-/**
- * API command to run clean-bower-install with a bower.json in a specified folder
- *
- * @param relativePath {string}
- * @param [command] {string}
- */
-function runFrom(relativePath, command) {
-	// TODO find new command call way
-
-	bowerPath = path.join(cwd, options.bower);
-
-	// Error handling
-	if (relativePath === undefined) {
-		throw new Error('Wrong call to clean-bower-install runFrom() function: No path provided.');
-	}
-
-	if (!testIfPathExist(bowerPath)) {
-		throw new Error('Can not find the file bower.json at the specified path.');
-	}
-
-	if (verify(command) !== false) {
-		if (command != 'bowerPath') {
-			execute(command);
-		}
-	}
-
-	if (command === undefined) {
-		runCBI();
-	}
-}
-
-exports.run = run;
-exports.runFrom = runFrom;
+exports.commands = commands;

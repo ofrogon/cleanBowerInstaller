@@ -38,7 +38,11 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -h, --help        | Display the help and usage details.                                   |
 
 ## API
-**WIP**
+| Element            | Value to provide                                                      |
+|--------------------|-----------------------------------------------------------------------|
+| commands.install() | Execute the command "bower install".                                  |
+| commands.update()  | Execute the command "bower update".                                   |
+| commands.run()     | Execute the clean-bower-installer action.                             |
 
 ## Options
 Theses element can be set in the cInstall>option section of the *bower.json* file.
