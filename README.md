@@ -372,3 +372,13 @@ Theses element can be set in the cInstall>option section of the *bower.json* fil
 		</ul>
 	</ul>
 </ul>
+
+## Version notes
+### 0.0.1 - Alpha 1
+* First module release
+
+### 0.0.2 - Alpha 2
+* Add API.
+* Remove error message when rewriting file.
+* Mac compatibility restoration.
+* Various bug fixes.
