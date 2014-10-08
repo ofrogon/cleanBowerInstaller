@@ -1,6 +1,6 @@
 {
 	"name": "clean-bower-installer",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Tool to install pre-selected bower dependencies",
 	"keywords": [
 		"bower",
@@ -16,7 +16,7 @@
 	},
 	"license": "MIT",
 	"author": "Alexandre Beaudoin <ofrogon@gmail.com>",
-	"main": "clean-bower-installer",
+	"main": "bin/clean-bower-installer",
 	"bin": {
 		"clean-bower-installer": "bin/clean-bower-installer"
 	},
