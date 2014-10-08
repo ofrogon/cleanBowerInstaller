@@ -40,12 +40,8 @@ clean-bower-installer [OPTIONS] [ARGS]
 ## API
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
-| commands.install({Object, optional}) | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.
-                       You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.
-                       This command also output consumable JSON. |
-| commands.update({Object, optional})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.
-                       You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
-                       This command also output consumable JSON. |
+| commands.install({Object, optional}) | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format. <br/> You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/> This command also output consumable JSON. |
+| commands.update({Object, optional})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
 | commands.run()     | Execute the clean-bower-installer action.                             |
 
 Then, for example, you can use it like this:
