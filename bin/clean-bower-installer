@@ -3,13 +3,13 @@
 
 process.bin = process.title = 'clean-bower-installer';
 
-var path = require('path');
-var fs = require('fs-extra');
-var bower = require('bower');
-var colors = require('colors/safe');
-var glob = require("glob");
-var cli = require("cli");
-var pkg = require("../package.json");
+var path = require('path'),
+	fs = require('fs-extra'),
+	bower = require('bower'),
+	colors = require('colors/safe'),
+	glob = require("glob"),
+	cli = require("cli"),
+	pkg = require("../package.json");
 
 //Regex
 var regex = {
@@ -158,7 +158,7 @@ function copyFiles() {
 	for (i = 0; i < length; i++) {
 		file = filesToMove[i];
 		fs.copy(file.from, path.join(file.to, file.rename), function(err) {
-			if (err) {
+			if (err && err[0].code != 'ENOENT') {
 				return console.error(err);
 			}
 		});
@@ -247,44 +247,56 @@ function generateFileList() {
 
 /* API commands *******************************************************************************************************/
 
+/**
+ * This object contain all the API commands for this module
+ *
+ * @type {{install: install, update: update, run: run}}
+ */
 var commands = {
-	update: function(bowerFilePath) {
-		var dir = {};
-		if (bowerFilePath !== undefined) {
-			dir = { cwd: bowerPath };
-			bowerPath = path.join(cwd, bowerFilePath);
+	/**
+	 * Use the bower programmatic API to call the install command
+	 * 
+	 * @param [bowerCustomConfig] {object}
+	 * @returns {*}
+	 */
+	install: function(bowerCustomConfig) {
+		bowerCustomConfig = bowerCustomConfig || {};
+
+		if (bowerCustomConfig.hasOwnProperty('cwd')) {
+			bowerPath = path.join(cwd, bowerCustomConfig.cwd);
 		}
 
-		bower.commands.
-			install(undefined, undefined, dir).
-			on('end', function(installed) {
-				console.log(installed);
-
-				runCBI();
-			});
+		return bower.commands
+			.install(undefined, { json: true }, bowerCustomConfig);
 	},
-	install: function(bowerFilePath) {
-		var dir = {};
-		if (bowerFilePath !== undefined) {
-			dir = { cwd: bowerPath };
-			bowerPath = path.join(cwd, bowerFilePath);
+	/**
+	 * Use the bower programmatic API to call the update command
+	 *
+	 * @param [bowerCustomConfig] {object}
+	 * @returns {*}
+	 */
+	update: function(bowerCustomConfig) {
+		bowerCustomConfig = bowerCustomConfig || {};
+
+		if (bowerCustomConfig.hasOwnProperty('cwd')) {
+			bowerPath = path.join(cwd, bowerCustomConfig.cwd);
 		}
 
-		bower.commands.
-			update(undefined, undefined, dir).
-			on('end', function(installed) {
-				console.log(installed);
-
-				runCBI();
-			});
+		return bower.commands
+			.update(undefined, { json: true }, bowerCustomConfig);
 	},
+	/**
+	 * Execute clean-bower-installer main goal
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
 	run: function(bowerFilePath) {
-		if (bowerFilePath !== undefined) {
-			bowerPath = path.join(cwd, bowerFilePath);
-		}
+		bowerPath = path.join(cwd, bowerFilePath || '');
 
 		runCBI();
 	}
 };
 
-exports.commands = commands;
+exports.install = commands.install;
+exports.update = commands.update;
+exports.run = commands.run;

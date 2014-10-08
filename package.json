@@ -16,7 +16,7 @@
 	},
 	"license": "MIT",
 	"author": "Alexandre Beaudoin <ofrogon@gmail.com>",
-	"main": "clean-bower-installer",
+	"main": "bin/clean-bower-installer",
 	"bin": {
 		"clean-bower-installer": "bin/clean-bower-installer"
 	},

@@ -40,9 +40,75 @@ clean-bower-installer [OPTIONS] [ARGS]
 ## API
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
-| commands.install() | Execute the command "bower install".                                  |
-| commands.update()  | Execute the command "bower update".                                   |
+| commands.install({Object, optional}) | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.
+                       You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.
+                       This command also output consumable JSON. |
+| commands.update({Object, optional})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.
+                       You can pass as argument a object containing bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+                       This command also output consumable JSON. |
 | commands.run()     | Execute the clean-bower-installer action.                             |
+
+Then, for example, you can use it like this:
+```
+var cbi = require('clean-bower-installer').commands;
+
+// THis function will be useful in the next examples
+function isEmptyObject(obj) {
+	var name;
+	for (name in obj) {
+		return false;
+	}
+	return true;
+}
+
+/* Ex1: Run bower libs install */
+cbi.install().on('end', function(installed) {
+	if (!isEmptyObject(installed)) {
+		console.log('Bower component installed with success.');
+	} else {
+		console.log('No new bower component installed.');
+	}
+});
+
+/* Ex2: Run bower libs update */
+cbi.update().on('end', function(updated) {
+	if (!isEmptyObject(updated)) {
+		console.log('Bower component were updated with success.');
+	} else {
+		console.log('No new bower component updated.');
+	}
+});
+
+/* Ex3: Run bower libs update with the bower,json file in a other folder */
+cbi.update({ cwd: 'path/to/bowerFile' }).on('end', function(updated) {
+	console.log(updated);
+});
+
+/* Ex4: Run bower libs update then clean-bower-installer */
+cbi.update().on('end', function(updated) {
+	if (!isEmptyObject(updated)) {
+		cbi.run();
+	} else {
+		console.log('No new bower component updated.');
+	}
+});
+
+/* Ex5: Run bower libs install then clean-bower-installer with error handling */
+cbi.install()
+	.on('end', function(updated) {
+		if (!isEmptyObject(updated)) {
+			cbi.run();
+		} else {
+			console.log('No new bower component updated.');
+		}
+	})
+	.on('error', function(error) {
+		console.error('An error occur when installing the bower components: ', error);
+	});
+
+/* Ex6: Run bower libs update */
+cbi.run();
+```
 
 ## Options
 Theses element can be set in the cInstall>option section of the *bower.json* file.
