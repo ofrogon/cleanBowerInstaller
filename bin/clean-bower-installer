@@ -91,6 +91,12 @@ function runCBI() {
 	directory = config.directory;
 	cwd = config.cwd;
 
+	// Test if the bower folder exist
+	if (!fs.existsSync(directory)) {
+		console.error(colors.red('Their is no loaded bower libs on your computer. Add the install option and retry the module execution.'));
+		process.exit(1);
+	}
+
 	// Read bower.json cInstall data
 	var cInstall = bowerJSON.cInstall;
 	if (cInstall !== undefined) {
