@@ -27,6 +27,10 @@ var bowerPath,
 
 var option = {
 		"default": "",
+		"min": {
+			"get": false,
+			"rename": false
+		},
 		"removeAfter": false
 	},
 	folder = {},
@@ -107,8 +111,6 @@ function runCBI() {
 	directory = config.directory;
 	cwd = config.cwd;
 
-	// TODO read config if min option
-
 	// Test if the bower folder exist
 	if (!fs.existsSync(directory)) {
 		console.error(colors.red('Their is no loaded bower libs on your computer. Add the install option and retry the module execution.'));
@@ -123,6 +125,19 @@ function runCBI() {
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
 					option[setup] = cInstall.option[setup];
+				}
+			}
+		}
+
+		// TODO read config if min option
+		// Only if no min option already specified (via CLI -m or -M or via API runMin() or runMinR())
+		if (getMin == false && renameMin == false) {
+			if (option.min.hasOwnProperty('get') && option.min.get == true) {
+				getMin = true;
+
+				// Because rename is ignored if min.get is false
+				if (option.min.hasOwnProperty('rename') && option.min.rename == true) {
+					renameMin = true;
 				}
 			}
 		}

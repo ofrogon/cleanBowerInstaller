@@ -34,6 +34,8 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -i, --install     | Run the command "bower install" before execute clean-bower-installer. |
 | -u, --update      | Run the command "bower update" before execute clean-bower-installer.  |
 | --bower= < path > | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
+| -m, --min         | Try to copy .min file version first, if it don't exist copy the standard version. |
+| -M, --renameMin   | Try to copy .min file version first, if it don't exist copy the standard version **and** rename the file as specified in the bower.json file (can be use to remove the .min extension). |
 | -v, --version     | Display the version of the tool install on your computer.             |
 | -h, --help        | Display the help and usage details.                                   |
 
@@ -112,7 +114,7 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
 | default           | Path, give there the folder from where you want all your files to be copied relative to. (default value: `.`) |
-| removeAfter  **(WIP)** | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
+| min | Object. <br/>**Option 1**: `get`, boolean, if true get the minify file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>*By default these two values were false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M` |
 
 ## Examples
 
