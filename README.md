@@ -3,6 +3,9 @@ This tool allows you to install bower dependencies without including the entire 
 
 It also support smart file update so only the needed files be updated/rewritten when you run this tool.
 
+[![Build Status](https://img.shields.io/travis/ofrogon/cleanBowerInstaller/master.svg?style=flat)](https://travis-ci.org/ofrogon/cleanBowerInstaller)
+[![Dependency Status](https://david-dm.org/ofrogon/cleanBowerInstaller.svg?style=flat)](https://david-dm.org/ofrogon/cleanBowerInstaller)
+
 ## Requirements
 - Have node.js install
 
@@ -35,7 +38,7 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -u, --update      | Run the command "bower update" before execute clean-bower-installer.  |
 | --bower= < path > | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
 | -m, --min         | Try to copy .min file version first, if it don't exist copy the standard version. |
-| -M, --renameMin   | Try to copy .min file version first, if it don't exist copy the standard version **and** rename the file as specified in the bower.json file (can be use to remove the .min extension). |
+| -M, --renameMin   | Try to copy .min file version first, if it don't exist copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
 | -v, --version     | Display the version of the tool install on your computer.             |
 | -h, --help        | Display the help and usage details.                                   |
 
@@ -382,7 +385,7 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 ## Version notes
 ### 0.0.1 - Alpha 1
-* First module release
+* First module release.
 
 ### 0.0.2 - Alpha 2
 * Add API.
@@ -391,4 +394,12 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 * Various bug fixes.
 
 ### 0.0.3 - Alpha 3
-* Add "use min file" override option
+* Add option to get minimised version of bower dependencies.
+* Repair the CLI commands call. Before the CLI section was call as soon as we require the clean-bower-installer module, now it not (as intended).
+
+## In coming
+* File ignore support. (Target version: 0.0.4)
+* Option to remove the bower folder after use. (Target version: 0.0.5)
+* Option to automatically install/update bower dependencies before run the tool. (Target version: 0.1.0)
+* Add test in the lib (Target version: 0.1.0)
+* Write the Wiki (Target version: 0.1.0)

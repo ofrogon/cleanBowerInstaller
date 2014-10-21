@@ -8,7 +8,6 @@ var path = require('path'),
 	bower = require('bower'),
 	colors = require('colors/safe'),
 	glob = require("glob"),
-	cli = require("cli"),
 	pkg = require("../package.json");
 
 //Regex
@@ -37,60 +36,58 @@ var option = {
 	source = {};
 
 /* CLI section ********************************************************************************************************/
+if (require.main === module) {
+	var cli = require("cli");
 
-// Version display
-cli.enable('version');
-cli.setApp(pkg.name, pkg.version);
+	// Version display
+	cli.enable('version');
+	cli.setApp(pkg.name, pkg.version);
 
-// CLI options
-cli.parse({
-	/*version:   ['v', 'Display module version'],*/
-	install: ['i', 'Run bower install command'],
-	update: ['u', 'Run bower update command'],
-	bower: [false, 'Input the bower.json file path.', 'path', '' ],
-	min: ['m', 'Try to get .min file version first.'],
-	renameMin: ['M', 'Try to get .min file version first and keep the name specified in the bower.json file.']
-});
+	// CLI options
+	cli.parse({
+		install: ['i', 'Run bower install command'],
+		update: ['u', 'Run bower update command'],
+		bower: [false, 'Input the bower.json file path.', 'path', '' ],
+		min: ['m', 'Try to get .min file version first.'],
+		renameMin: ['M', 'Try to get .min file version first and keep the name specified in the bower.json file.']
+	});
 
-// CLI input treatment
-cli.main(function(args, options) {
-	// Display help
-	// By default in cli!
+	// CLI input treatment
+	cli.main(function(args, options) {
+		bowerPath = path.join(cwd, options.bower);
 
-	bowerPath = path.join(cwd, options.bower);
+		if (options.renameMin) {
+			getMin = true;
+			renameMin = true;
+		} else if (options.min) {
+			getMin = true;
+			renameMin = false;
+		} else {
+			getMin = false;
+			renameMin = false;
+		}
 
-	if (options.renameMin) {
-		getMin = true;
-		renameMin = true;
-	} else if (options.min) {
-		getMin = true;
-		renameMin = false;
-	} else {
-		getMin = false;
-		renameMin = false;
-	}
+		if (options.install) {
+			bower.commands.
+				install(undefined, undefined, { cwd: bowerPath }).
+				on('end', function(installed) {
+					console.log(installed);
 
-	if (options.install) {
-		bower.commands.
-			install(undefined, undefined, { cwd: bowerPath }).
-			on('end', function(installed) {
-				console.log(installed);
+					runCBI();
+				});
+		} else if (options.update) {
+			bower.commands.
+				update(undefined, undefined, { cwd: bowerPath }).
+				on('end', function(updated) {
+					console.log(updated);
 
-				runCBI();
-			});
-	} else if (options.update) {
-		bower.commands.
-			update(undefined, undefined, { cwd: bowerPath }).
-			on('end', function(updated) {
-				console.log(updated);
-
-				runCBI();
-			});
-	} else {
-		runCBI();
-	}
-});
-
+					runCBI();
+				});
+		} else {
+			runCBI();
+		}
+	});
+}
 /* Execution **********************************************************************************************************/
 
 /**
@@ -129,7 +126,6 @@ function runCBI() {
 			}
 		}
 
-		// TODO read config if min option
 		// Only if no min option already specified (via CLI -m or -M or via API runMin() or runMinR())
 		if (getMin == false && renameMin == false) {
 			if (option.min.hasOwnProperty('get') && option.min.get == true) {
@@ -243,7 +239,7 @@ function generateFileList() {
 					// Add the needed folders to the Array filesToMove
 					length = files.length;
 					asteriskName = false;
-					//TODO optimise file[i] by put it in a local var
+
 					for (i = 0; i < length; i++) {
 						f = files[i];
 
@@ -259,10 +255,10 @@ function generateFileList() {
 						// Try to find the min file here
 						if (getMin) {
 							if (!regex.containMin.test(f)) {
-								var tempName = f.replace(path.extname(f),'') + '.min' + path.extname(f);
+								var tempName = f.replace(path.extname(f), '') + '.min' + path.extname(f);
 								if (fs.existsSync(tempName)) {
 									f = tempName;
-									if (!renameMin){
+									if (!renameMin) {
 										fileName += '.min';
 									}
 								}
@@ -310,7 +306,7 @@ function generateFileList() {
 var commands = {
 	/**
 	 * Use the bower programmatic API to call the install command
-	 * 
+	 *
 	 * @param [bowerCustomConfig] {object}
 	 * @returns {*}
 	 */
@@ -365,8 +361,7 @@ var commands = {
 		bowerPath = path.join(cwd, bowerFilePath || '');
 
 		runCBI();
-	}
-	,
+	},
 	/**
 	 * Execute clean-bower-installer main goal with min and rename option
 	 *
