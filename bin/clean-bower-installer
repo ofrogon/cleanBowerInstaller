@@ -15,12 +15,15 @@ var path = require('path'),
 var regex = {
 	startWithSlash: new RegExp('^\/.*'),
 	containAsterisk: new RegExp('\\*', 'g'),
-	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g')
+	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g'),
+	containMin: new RegExp('\.min', 'g')
 };
 
 var bowerPath,
 	cwd = process.cwd(),
-	directory;
+	directory,
+	getMin = false,
+	renameMin = false;
 
 var option = {
 		"default": "",
@@ -40,7 +43,9 @@ cli.parse({
 	/*version:   ['v', 'Display module version'],*/
 	install: ['i', 'Run bower install command'],
 	update: ['u', 'Run bower update command'],
-	bower: [false, 'Input the bower.json file path.', 'path', '' ]
+	bower: [false, 'Input the bower.json file path.', 'path', '' ],
+	min: ['m', 'Try to get .min file version first.'],
+	renameMin: ['M', 'Try to get .min file version first and keep the name specified in the bower.json file.']
 });
 
 // CLI input treatment
@@ -49,6 +54,17 @@ cli.main(function(args, options) {
 	// By default in cli!
 
 	bowerPath = path.join(cwd, options.bower);
+
+	if (options.renameMin) {
+		getMin = true;
+		renameMin = true;
+	} else if (options.min) {
+		getMin = true;
+		renameMin = false;
+	} else {
+		getMin = false;
+		renameMin = false;
+	}
 
 	if (options.install) {
 		bower.commands.
@@ -61,8 +77,8 @@ cli.main(function(args, options) {
 	} else if (options.update) {
 		bower.commands.
 			update(undefined, undefined, { cwd: bowerPath }).
-			on('end', function(installed) {
-				console.log(installed);
+			on('end', function(updated) {
+				console.log(updated);
 
 				runCBI();
 			});
@@ -90,6 +106,8 @@ function runCBI() {
 	var config = require('bower-config').read();
 	directory = config.directory;
 	cwd = config.cwd;
+
+	// TODO read config if min option
 
 	// Test if the bower folder exist
 	if (!fs.existsSync(directory)) {
@@ -178,7 +196,7 @@ function copyFiles() {
  */
 function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
-		extension, temp, currLib, length, i, asteriskName;
+		extension, temp, currLib, length, i, asteriskName, f;
 
 	// For each lib in the source section
 	for (var lib in source) {
@@ -210,37 +228,53 @@ function generateFileList() {
 					// Add the needed folders to the Array filesToMove
 					length = files.length;
 					asteriskName = false;
+					//TODO optimise file[i] by put it in a local var
 					for (i = 0; i < length; i++) {
+						f = files[i];
+
 						if (regex.containAsterisk.test(fileName)) {
 							asteriskName = true;
 						}
 
 						// Use the name of the file to replace the * (asterisk) name
 						if (asteriskName) {
-							fileName = path.basename(files[i], path.extname(files[i]));
+							fileName = path.basename(f, path.extname(f));
+						}
+
+						// Try to find the min file here
+						if (getMin) {
+							if (!regex.containMin.test(f)) {
+								var tempName = f.replace(path.extname(f),'') + '.min' + path.extname(f);
+								if (fs.existsSync(tempName)) {
+									f = tempName;
+									if (!renameMin){
+										fileName += '.min';
+									}
+								}
+							}
 						}
 
 						// Test if the link is global or relative
 						if (regex.startWithSlash.test(fileFolder)) {
 							// The specified file folder is global
 							filesToMove.push({
-								'from': files[i],
+								'from': f,
 								'to': path.join(bowerPath, fileFolder.substr(1)),
-								'rename': fileName + path.extname(files[i])
+								'rename': fileName + path.extname(f)
 							});
 						} else if (regex.startWithSlash.test(libFolder)) {
 							// The specified lib folder is global
 							filesToMove.push({
-								'from': files[i],
+								'from': f,
 								'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
-								'rename': fileName + path.extname(files[i])
+								'rename': fileName + path.extname(f)
 							});
 						} else {
 							// None of the file or lib specified folder is global
 							filesToMove.push({
-								'from': files[i],
-								'to': path.join(bowerPath, option.default, folder[path.extname(files[i]).substr(1)], libFolder, fileFolder),
-								'rename': fileName + path.extname(files[i])
+								'from': f,
+								'to': path.join(bowerPath, option.default, folder[path.extname(f).substr(1)], libFolder, fileFolder),
+								'rename': fileName + path.extname(f)
 							});
 						}
 					}
@@ -297,6 +331,36 @@ var commands = {
 	 * @param [bowerFilePath] {string}
 	 */
 	run: function(bowerFilePath) {
+		getMin = false;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || '');
+
+		runCBI();
+	},
+	/**
+	 * Execute clean-bower-installer main goal with min option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMin: function(bowerFilePath) {
+		getMin = true;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || '');
+
+		runCBI();
+	}
+	,
+	/**
+	 * Execute clean-bower-installer main goal with min and rename option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMinR: function(bowerFilePath) {
+		getMin = true;
+		renameMin = true;
+
 		bowerPath = path.join(cwd, bowerFilePath || '');
 
 		runCBI();
@@ -306,3 +370,5 @@ var commands = {
 exports.install = commands.install;
 exports.update = commands.update;
 exports.run = commands.run;
+exports.runMin = commands.runMin;
+exports.runMinR = commands.runMinR;

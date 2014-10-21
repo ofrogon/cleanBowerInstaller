@@ -41,7 +41,7 @@ clean-bower-installer [OPTIONS] [ARGS]
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
 | commands.install({Object [optional]}) | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/> This command also output consumable JSON. |
-| commands.update({Object, [optional]})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
+| commands.update({Object [optional]})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
 | commands.run()     | Execute the clean-bower-installer action.                             |
 
 Then, for example, you can use it like this:
@@ -261,14 +261,14 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 </ul>
 
 -----
-### Real exemple (from: [uCtrl website](https://github.com/uCtrl/Website))
+### Real example (from: [uCtrl website](https://github.com/uCtrl/Website))
 #### Code
 ```
 {
 	"name": "uCtrl-Website",
 	"version": "0.0.1",
 	"contributors": [
-		"the name here <mail address here OPTIONNAL>"
+		"the name here <mail address here OPTIONAL>"
 	],
 	"description": "Website and portal for the uCtrl web division",
 	"keywords": [
@@ -313,7 +313,8 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			"bootstrap": {
 				"glyphicons-halflings-regular.*": "dist/fonts/*",
 				"bootstrap.js": "dist/js/bootstrap.js",
-				"*.less#bootstrap": "less/*.less"
+				"*.less#bootstrap": "less/*.less",
+				"*.less#bootstrap/mixins": "less/mixins/*.less"
 			},
 			"bootstrap-select": {
 				"bootstrap-select.less#bootstrapSelect": "less/bootstrap-select.less",
@@ -350,11 +351,15 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			<ul>
 				<li><u>files</u></li>
 			</ul>
-	  		<li>bootStrapSelect/</li>
+			<li>bootStrapSelect/</li>
 			<ul>
+				<li>mixins</li>
+				<ul>
+					<li><u>files</u></li>
+				</ul>
 				<li><u>files</u></li>
 			</ul>
-	   		<li>fontawesome/</li>
+			<li>fontawesome/</li>
 			<ul>
 				<li><u>files</u></li>
 			</ul>
@@ -382,3 +387,6 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 * Remove error message when rewriting file.
 * Mac compatibility restoration.
 * Various bug fixes.
+
+### 0.0.3 - Alpha 3
+* Add "use min file" override option
