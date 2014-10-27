@@ -164,7 +164,9 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			"otf, eot, svg, ttf, woff": "fonts/"
 		},
 		"option": {
-			"default": "public"
+			"default": {
+                "folder": "public"
+            }
 		},
 		"source": {
 			"bootstrap": {
@@ -216,7 +218,9 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			"otf, eot, svg, ttf, woff": "fonts/"
 		},
 		"option": {
-			"default": "public"
+			"default": {
+                "folder": "public"
+            }
 		},
 		"source": {
 			"bootstrap": {
@@ -300,7 +304,9 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			"otf, eot, svg, ttf, woff": "fonts/"
 		},
 		"option": {
-			"default": "public"
+			"default": {
+                "folder": "public"
+            }
 		},
 		"source": {
 			"angular": {
