@@ -1,16 +1,14 @@
 # clean-bower-installer
-This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need form all the files bower get.
-
-It also support smart file update so only the needed files be updated/rewritten when you run this tool.
+This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need from all the files bower download.
 
 [![Build Status](https://img.shields.io/travis/ofrogon/cleanBowerInstaller/master.svg?style=flat)](https://travis-ci.org/ofrogon/cleanBowerInstaller)
 [![Dependency Status](https://david-dm.org/ofrogon/cleanBowerInstaller.svg?style=flat)](https://david-dm.org/ofrogon/cleanBowerInstaller)
 
 ## Requirements
-- Have node.js install
+- Have node.js installed
 
 ## How to install
-You can install clean-bower-installer in two ways
+You can install clean-bower-installer in two ways:
 
 __Using the command line__
 ```
@@ -37,8 +35,8 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -i, --install     | Run the command "bower install" before execute clean-bower-installer. |
 | -u, --update      | Run the command "bower update" before execute clean-bower-installer.  |
 | --bower= < path > | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
-| -m, --min         | Try to copy .min file version first, if it don't exist copy the standard version. |
-| -M, --renameMin   | Try to copy .min file version first, if it don't exist copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
+| -m, --min         | Copy .min file version first, if it don't exist it copy the standard version. |
+| -M, --renameMin   | Copy .min file version first, if it don't exist it copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
 | -v, --version     | Display the version of the tool install on your computer.             |
 | -h, --help        | Display the help and usage details.                                   |
 
@@ -116,7 +114,7 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
-| default           | Path, give there the folder from where you want all your files to be copied relative to. (default value: `.`) |
+| default           | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": 'public', "minFolder": 'packages/prod/public'}` |
 | min | Object. <br/>**Option 1**: `get`, boolean, if true get the minify file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>*By default these two values were false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M` |
 
 ## Examples
@@ -399,7 +397,8 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 ## In coming
 * File ignore support. (Target version: 0.0.4)
-* Option to remove the bower folder after use. (Target version: 0.0.5)
+* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.5)
+* Option to remove the bower folder after use. (Target version: 0.0.6)
 * Option to automatically install/update bower dependencies before run the tool. (Target version: 0.1.0)
 * Add test in the lib (Target version: 0.1.0)
 * Write the Wiki (Target version: 0.1.0)

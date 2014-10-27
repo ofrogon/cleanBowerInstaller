@@ -25,7 +25,10 @@ var bowerPath,
 	renameMin = false;
 
 var option = {
-		"default": "",
+		"default": {
+			"folder": "",
+			"minFolder": ""
+		},
 		"min": {
 			"get": false,
 			"rename": false
@@ -121,7 +124,20 @@ function runCBI() {
 			// To add only new option specified by the user
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					option[setup] = cInstall.option[setup];
+					if (typeof cInstall.option[setup] === 'object') {
+
+						for (var subSetup in cInstall.option[setup]) {
+							if (cInstall.option[setup].hasOwnProperty(subSetup) && option[setup].hasOwnProperty(subSetup)) {
+								option[setup][subSetup] = cInstall.option[setup][subSetup];
+							}
+						}
+
+					} else if (typeof option[setup] !== 'object') {
+						option[setup] = cInstall.option[setup];
+					} else {
+						console.error(colors.red('Wrong format enter for "'+setup+'" in the bower.json file.'));
+						process.exit(1);
+					}
 				}
 			}
 		}
@@ -207,7 +223,7 @@ function copyFiles() {
  */
 function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
-		extension, temp, currLib, length, i, asteriskName, f;
+		extension, temp, currLib, length, i, asteriskName, f, df;
 
 	// For each lib in the source section
 	for (var lib in source) {
@@ -281,10 +297,19 @@ function generateFileList() {
 								'rename': fileName + path.extname(f)
 							});
 						} else {
+							// Test if redirect the file to the minDefault folder or the default folder
+							if (getMin && option.default.minFolder != "") {
+								df = (option.default.minFolder);
+							} else if (option.default.folder != "") {
+								df = (option.default.folder);
+							} else {
+								df = "";
+							}
+
 							// None of the file or lib specified folder is global
 							filesToMove.push({
 								'from': f,
-								'to': path.join(bowerPath, option.default, folder[path.extname(f).substr(1)], libFolder, fileFolder),
+								'to': path.join(bowerPath, df, folder[path.extname(f).substr(1)], libFolder, fileFolder),
 								'rename': fileName + path.extname(f)
 							});
 						}
@@ -377,8 +402,10 @@ var commands = {
 	}
 };
 
-exports.install = commands.install;
-exports.update = commands.update;
-exports.run = commands.run;
-exports.runMin = commands.runMin;
-exports.runMinR = commands.runMinR;
+module.exports = {
+	install: commands.install,
+	update: commands.update,
+	run: commands.run,
+	runMin: commands.runMin,
+	runMinR: commands.runMinR
+};
