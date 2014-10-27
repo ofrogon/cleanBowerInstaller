@@ -1,13 +1,14 @@
 # clean-bower-installer
-This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need form all the files bower get.
+This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need from all the files bower download.
 
-It also support smart file update so only the needed files be updated/rewritten when you run this tool.
+[![Build Status](https://img.shields.io/travis/ofrogon/cleanBowerInstaller/master.svg?style=flat)](https://travis-ci.org/ofrogon/cleanBowerInstaller)
+[![Dependency Status](https://david-dm.org/ofrogon/cleanBowerInstaller.svg?style=flat)](https://david-dm.org/ofrogon/cleanBowerInstaller)
 
 ## Requirements
-- Have node.js install
+- Have node.js installed
 
 ## How to install
-You can install clean-bower-installer in two ways
+You can install clean-bower-installer in two ways:
 
 __Using the command line__
 ```
@@ -34,6 +35,8 @@ clean-bower-installer [OPTIONS] [ARGS]
 | -i, --install     | Run the command "bower install" before execute clean-bower-installer. |
 | -u, --update      | Run the command "bower update" before execute clean-bower-installer.  |
 | --bower= < path > | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
+| -m, --min         | Copy .min file version first, if it don't exist it copy the standard version. |
+| -M, --renameMin   | Copy .min file version first, if it don't exist it copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
 | -v, --version     | Display the version of the tool install on your computer.             |
 | -h, --help        | Display the help and usage details.                                   |
 
@@ -41,7 +44,7 @@ clean-bower-installer [OPTIONS] [ARGS]
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
 | commands.install({Object [optional]}) | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/> This command also output consumable JSON. |
-| commands.update({Object, [optional]})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
+| commands.update({Object [optional]})  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
 | commands.run()     | Execute the clean-bower-installer action.                             |
 
 Then, for example, you can use it like this:
@@ -111,8 +114,8 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
-| default           | Path, give there the folder from where you want all your files to be copied relative to. (default value: `.`) |
-| removeAfter  **(WIP)** | Boolean, if set to true, it remove the bower lib folder after execution. (default value: false ) |
+| default           | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": 'public', "minFolder": 'packages/prod/public'}` |
+| min | Object. <br/>**Option 1**: `get`, boolean, if true get the minify file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>*By default these two values were false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M` |
 
 ## Examples
 
@@ -261,14 +264,14 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 </ul>
 
 -----
-### Real exemple (from: [uCtrl website](https://github.com/uCtrl/Website))
+### Real example (from: [uCtrl website](https://github.com/uCtrl/Website))
 #### Code
 ```
 {
 	"name": "uCtrl-Website",
 	"version": "0.0.1",
 	"contributors": [
-		"the name here <mail address here OPTIONNAL>"
+		"the name here <mail address here OPTIONAL>"
 	],
 	"description": "Website and portal for the uCtrl web division",
 	"keywords": [
@@ -313,7 +316,8 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			"bootstrap": {
 				"glyphicons-halflings-regular.*": "dist/fonts/*",
 				"bootstrap.js": "dist/js/bootstrap.js",
-				"*.less#bootstrap": "less/*.less"
+				"*.less#bootstrap": "less/*.less",
+				"*.less#bootstrap/mixins": "less/mixins/*.less"
 			},
 			"bootstrap-select": {
 				"bootstrap-select.less#bootstrapSelect": "less/bootstrap-select.less",
@@ -350,11 +354,15 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 			<ul>
 				<li><u>files</u></li>
 			</ul>
-	  		<li>bootStrapSelect/</li>
+			<li>bootStrapSelect/</li>
 			<ul>
+				<li>mixins</li>
+				<ul>
+					<li><u>files</u></li>
+				</ul>
 				<li><u>files</u></li>
 			</ul>
-	   		<li>fontawesome/</li>
+			<li>fontawesome/</li>
 			<ul>
 				<li><u>files</u></li>
 			</ul>
@@ -375,10 +383,22 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 ## Version notes
 ### 0.0.1 - Alpha 1
-* First module release
+* First module release.
 
 ### 0.0.2 - Alpha 2
 * Add API.
 * Remove error message when rewriting file.
 * Mac compatibility restoration.
 * Various bug fixes.
+
+### 0.0.3 - Alpha 3
+* Add option to get minimised version of bower dependencies.
+* Repair the CLI commands call. Before the CLI section was call as soon as we require the clean-bower-installer module, now it not (as intended).
+
+## In coming
+* File ignore support. (Target version: 0.0.4)
+* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.5)
+* Option to remove the bower folder after use. (Target version: 0.0.6)
+* Option to automatically install/update bower dependencies before run the tool. (Target version: 0.1.0)
+* Add test in the lib (Target version: 0.1.0)
+* Write the Wiki (Target version: 0.1.0)

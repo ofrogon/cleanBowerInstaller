@@ -8,69 +8,89 @@ var path = require('path'),
 	bower = require('bower'),
 	colors = require('colors/safe'),
 	glob = require("glob"),
-	cli = require("cli"),
 	pkg = require("../package.json");
 
 //Regex
 var regex = {
 	startWithSlash: new RegExp('^\/.*'),
 	containAsterisk: new RegExp('\\*', 'g'),
-	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g')
+	containDoubleAsterisk: new RegExp('[\\*]{2}', 'g'),
+	containMin: new RegExp('\.min', 'g')
 };
 
 var bowerPath,
 	cwd = process.cwd(),
-	directory;
+	directory,
+	getMin = false,
+	renameMin = false;
 
 var option = {
-		"default": "",
+		"default": {
+			"folder": "",
+			"minFolder": ""
+		},
+		"min": {
+			"get": false,
+			"rename": false
+		},
 		"removeAfter": false
 	},
 	folder = {},
 	source = {};
 
 /* CLI section ********************************************************************************************************/
+if (require.main === module) {
+	var cli = require("cli");
 
-// Version display
-cli.enable('version');
-cli.setApp(pkg.name, pkg.version);
+	// Version display
+	cli.enable('version');
+	cli.setApp(pkg.name, pkg.version);
 
-// CLI options
-cli.parse({
-	/*version:   ['v', 'Display module version'],*/
-	install: ['i', 'Run bower install command'],
-	update: ['u', 'Run bower update command'],
-	bower: [false, 'Input the bower.json file path.', 'path', '' ]
-});
+	// CLI options
+	cli.parse({
+		install: ['i', 'Run bower install command'],
+		update: ['u', 'Run bower update command'],
+		bower: [false, 'Input the bower.json file path.', 'path', '' ],
+		min: ['m', 'Try to get .min file version first.'],
+		renameMin: ['M', 'Try to get .min file version first and keep the name specified in the bower.json file.']
+	});
 
-// CLI input treatment
-cli.main(function(args, options) {
-	// Display help
-	// By default in cli!
+	// CLI input treatment
+	cli.main(function(args, options) {
+		bowerPath = path.join(cwd, options.bower);
 
-	bowerPath = path.join(cwd, options.bower);
+		if (options.renameMin) {
+			getMin = true;
+			renameMin = true;
+		} else if (options.min) {
+			getMin = true;
+			renameMin = false;
+		} else {
+			getMin = false;
+			renameMin = false;
+		}
 
-	if (options.install) {
-		bower.commands.
-			install(undefined, undefined, { cwd: bowerPath }).
-			on('end', function(installed) {
-				console.log(installed);
+		if (options.install) {
+			bower.commands.
+				install(undefined, undefined, { cwd: bowerPath }).
+				on('end', function(installed) {
+					console.log(installed);
 
-				runCBI();
-			});
-	} else if (options.update) {
-		bower.commands.
-			update(undefined, undefined, { cwd: bowerPath }).
-			on('end', function(installed) {
-				console.log(installed);
+					runCBI();
+				});
+		} else if (options.update) {
+			bower.commands.
+				update(undefined, undefined, { cwd: bowerPath }).
+				on('end', function(updated) {
+					console.log(updated);
 
-				runCBI();
-			});
-	} else {
-		runCBI();
-	}
-});
-
+					runCBI();
+				});
+		} else {
+			runCBI();
+		}
+	});
+}
 /* Execution **********************************************************************************************************/
 
 /**
@@ -104,7 +124,32 @@ function runCBI() {
 			// To add only new option specified by the user
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					option[setup] = cInstall.option[setup];
+					if (typeof cInstall.option[setup] === 'object') {
+
+						for (var subSetup in cInstall.option[setup]) {
+							if (cInstall.option[setup].hasOwnProperty(subSetup) && option[setup].hasOwnProperty(subSetup)) {
+								option[setup][subSetup] = cInstall.option[setup][subSetup];
+							}
+						}
+
+					} else if (typeof option[setup] !== 'object') {
+						option[setup] = cInstall.option[setup];
+					} else {
+						console.error(colors.red('Wrong format enter for "'+setup+'" in the bower.json file.'));
+						process.exit(1);
+					}
+				}
+			}
+		}
+
+		// Only if no min option already specified (via CLI -m or -M or via API runMin() or runMinR())
+		if (getMin == false && renameMin == false) {
+			if (option.min.hasOwnProperty('get') && option.min.get == true) {
+				getMin = true;
+
+				// Because rename is ignored if min.get is false
+				if (option.min.hasOwnProperty('rename') && option.min.rename == true) {
+					renameMin = true;
 				}
 			}
 		}
@@ -178,7 +223,7 @@ function copyFiles() {
  */
 function generateFileList() {
 	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
-		extension, temp, currLib, length, i, asteriskName;
+		extension, temp, currLib, length, i, asteriskName, f, df;
 
 	// For each lib in the source section
 	for (var lib in source) {
@@ -210,37 +255,62 @@ function generateFileList() {
 					// Add the needed folders to the Array filesToMove
 					length = files.length;
 					asteriskName = false;
+
 					for (i = 0; i < length; i++) {
+						f = files[i];
+
 						if (regex.containAsterisk.test(fileName)) {
 							asteriskName = true;
 						}
 
 						// Use the name of the file to replace the * (asterisk) name
 						if (asteriskName) {
-							fileName = path.basename(files[i], path.extname(files[i]));
+							fileName = path.basename(f, path.extname(f));
+						}
+
+						// Try to find the min file here
+						if (getMin) {
+							if (!regex.containMin.test(f)) {
+								var tempName = f.replace(path.extname(f), '') + '.min' + path.extname(f);
+								if (fs.existsSync(tempName)) {
+									f = tempName;
+									if (!renameMin) {
+										fileName += '.min';
+									}
+								}
+							}
 						}
 
 						// Test if the link is global or relative
 						if (regex.startWithSlash.test(fileFolder)) {
 							// The specified file folder is global
 							filesToMove.push({
-								'from': files[i],
+								'from': f,
 								'to': path.join(bowerPath, fileFolder.substr(1)),
-								'rename': fileName + path.extname(files[i])
+								'rename': fileName + path.extname(f)
 							});
 						} else if (regex.startWithSlash.test(libFolder)) {
 							// The specified lib folder is global
 							filesToMove.push({
-								'from': files[i],
+								'from': f,
 								'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
-								'rename': fileName + path.extname(files[i])
+								'rename': fileName + path.extname(f)
 							});
 						} else {
+							// Test if redirect the file to the minDefault folder or the default folder
+							if (getMin && option.default.minFolder != "") {
+								df = (option.default.minFolder);
+							} else if (option.default.folder != "") {
+								df = (option.default.folder);
+							} else {
+								df = "";
+							}
+
 							// None of the file or lib specified folder is global
 							filesToMove.push({
-								'from': files[i],
-								'to': path.join(bowerPath, option.default, folder[path.extname(files[i]).substr(1)], libFolder, fileFolder),
-								'rename': fileName + path.extname(files[i])
+								'from': f,
+								'to': path.join(bowerPath, df, folder[path.extname(f).substr(1)], libFolder, fileFolder),
+								'rename': fileName + path.extname(f)
 							});
 						}
 					}
@@ -261,7 +331,7 @@ function generateFileList() {
 var commands = {
 	/**
 	 * Use the bower programmatic API to call the install command
-	 * 
+	 *
 	 * @param [bowerCustomConfig] {object}
 	 * @returns {*}
 	 */
@@ -297,12 +367,45 @@ var commands = {
 	 * @param [bowerFilePath] {string}
 	 */
 	run: function(bowerFilePath) {
+		getMin = false;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || '');
+
+		runCBI();
+	},
+	/**
+	 * Execute clean-bower-installer main goal with min option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMin: function(bowerFilePath) {
+		getMin = true;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || '');
+
+		runCBI();
+	},
+	/**
+	 * Execute clean-bower-installer main goal with min and rename option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMinR: function(bowerFilePath) {
+		getMin = true;
+		renameMin = true;
+
 		bowerPath = path.join(cwd, bowerFilePath || '');
 
 		runCBI();
 	}
 };
 
-exports.install = commands.install;
-exports.update = commands.update;
-exports.run = commands.run;
+module.exports = {
+	install: commands.install,
+	update: commands.update,
+	run: commands.run,
+	runMin: commands.runMin,
+	runMinR: commands.runMinR
+};
