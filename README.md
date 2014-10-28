@@ -111,7 +111,7 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
-| default`         | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": 'public', "minFolder": 'packages/prod/public'}` |
+| `default`         | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": 'public', "minFolder": 'packages/prod/public'}` |
 | `min`             | Object. <br/>**Option 1**: `get`, boolean, if true get the minify file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>*By default these two values were false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M` |
 
 ## Ignore files
@@ -120,7 +120,7 @@ To ignore some files that a pattern include, you can specify the files you want 
 
 **Important**: When you list the files to be ignore, you have to specify her path at the same time, like you do normally to include that file. A fast way to specify the path to the file can be the use of pattern like `**/file.ext`.
 
-For an example, see [Specifying files to ignore](#SFTI) in the Examples section.
+For example, see [Specifying files to ignore](#SFTI) in the Examples section.
 
 ## Examples
 
