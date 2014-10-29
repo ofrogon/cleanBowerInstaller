@@ -135,7 +135,7 @@ function runCBI() {
 					} else if (typeof option[setup] !== 'object') {
 						option[setup] = cInstall.option[setup];
 					} else {
-						console.error(colors.red('Wrong format enter for "'+setup+'" in the bower.json file.'));
+						console.error(colors.red('Wrong format enter for "' + setup + '" in the bower.json file.'));
 						process.exit(1);
 					}
 				}
@@ -222,8 +222,8 @@ function copyFiles() {
  * @returns {Array|boolean}
  */
 function generateFileList() {
-	var filesToMove = [], libFolder = '', libName = '', file, fileNameAndExt, fileName, fileFolder,
-		extension, temp, currLib, length, i, asteriskName, f, df;
+	var filesTo = {move: [], ignore: []}, action, libFolder = '', libName = '', file, files, fileNameAndExt, fileName,
+		fileFolder, extension, temp, currLib, length, i, asteriskName, f, df;
 
 	// For each lib in the source section
 	for (var lib in source) {
@@ -236,6 +236,13 @@ function generateFileList() {
 			// For each files to get in the lib
 			for (file in currLib) {
 				if (currLib.hasOwnProperty(file)) {
+					// If the file listed were to ignore or to copy
+					if (file == '!') {
+						action = 'ignore';
+					} else {
+						action = 'move';
+					}
+
 					temp = file.split('#');
 					fileNameAndExt = temp[0] || '*';
 					fileName = path.basename(fileNameAndExt, path.extname(fileNameAndExt));
@@ -249,8 +256,18 @@ function generateFileList() {
 						return false;
 					}
 
-					// List files who fit the
-					var files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
+					// List files who fit the pattern
+					if (currLib[file] instanceof Array) {
+						length = currLib[file].length;
+
+						files = [];
+
+						for (i = 0; i < length; i++) {
+							files = files.concat(glob.sync(path.join(bowerPath, directory, libName, currLib[file][i])));
+						}
+					} else {
+						files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
+					}
 
 					// Add the needed folders to the Array filesToMove
 					length = files.length;
@@ -284,14 +301,14 @@ function generateFileList() {
 						// Test if the link is global or relative
 						if (regex.startWithSlash.test(fileFolder)) {
 							// The specified file folder is global
-							filesToMove.push({
+							filesTo[action].push({
 								'from': f,
 								'to': path.join(bowerPath, fileFolder.substr(1)),
 								'rename': fileName + path.extname(f)
 							});
 						} else if (regex.startWithSlash.test(libFolder)) {
 							// The specified lib folder is global
-							filesToMove.push({
+							filesTo[action].push({
 								'from': f,
 								'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
 								'rename': fileName + path.extname(f)
@@ -306,8 +323,8 @@ function generateFileList() {
 								df = "";
 							}
 
-							// None of the file or lib specified folder is global
-							filesToMove.push({
+							// None of the file or lib specified, then the folder is global
+							filesTo[action].push({
 								'from': f,
 								'to': path.join(bowerPath, df, folder[path.extname(f).substr(1)], libFolder, fileFolder),
 								'rename': fileName + path.extname(f)
@@ -318,7 +335,21 @@ function generateFileList() {
 			}
 		}
 	}
-	return filesToMove;
+
+	length = filesTo.ignore.length;
+	var length2 = filesTo.move.length;
+
+	for (i = 0; i < length; i++) {
+		for (var j = 0; j < length2; j++) {
+			if (filesTo.ignore[i].from == filesTo.move[j].from) {
+				filesTo.move.splice(j, 1);
+
+				length2 --;
+			}
+		}
+	}
+
+	return filesTo.move;
 }
 
 /* API commands *******************************************************************************************************/
