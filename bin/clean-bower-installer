@@ -23,6 +23,7 @@ var bowerPath,
 	directory,
 	getMin = false,
 	renameMin = false,
+	ignoreExt = '',
 	command = '',
 	customConfigG;
 
@@ -33,7 +34,8 @@ var option = {
 		},
 		"min": {
 			"get": false,
-			"rename": false
+			"rename": false,
+			"ignoreExt": []
 		},
 		"removeAfter": false
 	},
@@ -136,12 +138,35 @@ function runCBI() {
 					});
 			}
 		} else if (command == 'automatic') {
-			//TODO, make a compare between current lib in the file and the libs listed in the bower.json
-
 			if (!fs.existsSync(directory)) {
 				command = 'install';
 			} else {
-				command = 'update';
+				var neededLibs = [];
+				var alreadyInstallLibs = fs.readdirSync(directory);
+				var lib;
+
+				if (bowerJSON.hasOwnProperty('dependencies')) {
+					for (lib in bowerJSON.dependencies) {
+						if (bowerJSON.dependencies.hasOwnProperty(lib)) {
+							neededLibs.push(lib);
+						}
+					}
+				}
+
+				if (bowerJSON.hasOwnProperty('devDependencies')) {
+					for (lib in bowerJSON.devDependencies) {
+						if (bowerJSON.devDependencies.hasOwnProperty(lib)) {
+							neededLibs.push(lib);
+						}
+					}
+				}
+
+				// If the bower folder exist but the content is not the same
+				if (arraysIdentical(neededLibs, alreadyInstallLibs)) {
+					command = 'update';
+				} else {
+					command = 'install';
+				}
 			}
 
 			runCBI();
@@ -190,6 +215,13 @@ function runCBI() {
 			}
 		}
 
+		// List the file to ignore if the option min is ask
+		if (getMin == true) {
+			if (option.min.hasOwnProperty('ignoreExt') && option.min.ignoreExt instanceof Array) {
+				ignoreExt = option.min.ignoreExt;
+			}
+		}
+
 		if (cInstall.folder !== undefined) {
 			folder = cInstall.folder;
 			var typeInTreatment;
@@ -217,6 +249,22 @@ function runCBI() {
 	} else {
 		console.log(colors.yellow('clean-bower-install execution can not be done because no \'cInstall\' section were found in the bower.json file.'));
 	}
+}
+
+/**
+ * Compare array
+ *
+ * @param neededLibs {Array}
+ * @param alreadyInstallLibs {Array}
+ * @returns {boolean}
+ */
+function arraysIdentical(neededLibs, alreadyInstallLibs) {
+	var i = neededLibs.length;
+	if (i != alreadyInstallLibs.length) return false;
+	while (i--) {
+		if (neededLibs[i] !== alreadyInstallLibs[i]) return false;
+	}
+	return true;
 }
 
 /**
@@ -272,6 +320,11 @@ function generateFileList() {
 					temp = path.extname(fileNameAndExt);
 					fileName = path.basename(fileNameAndExt, temp);
 					extension = temp.substr(1);
+
+					// Ignore the specified extension(s)
+					if (ignoreExt.indexOf(extension) !== -1) {
+						break;
+					}
 
 					// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
 					if (regex.containDoubleAsterisk.test(currLib[file])) {
