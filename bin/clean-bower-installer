@@ -322,91 +322,89 @@ function generateFileList() {
 					extension = temp.substr(1);
 
 					// Ignore the specified extension(s)
-					if (ignoreExt.indexOf(extension) !== -1) {
-						break;
-					}
+					if (ignoreExt.indexOf(extension) === -1) {
+						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
+						if (regex.containDoubleAsterisk.test(currLib[file])) {
+							console.error(colors.red('The "Globstar" ** matching wan\'t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it.'));
+							console.error(colors.red('Please correct the source: ' + libName));
+							return false;
+						}
 
-					// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
-					if (regex.containDoubleAsterisk.test(currLib[file])) {
-						console.error(colors.red('The "Globstar" ** matching wan\'t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it.'));
-						console.error(colors.red('Please correct the source: ' + libName));
-						return false;
-					}
+						// List files that fit the pattern
+						if (currLib[file] instanceof Array) {
+							length = currLib[file].length;
 
-					// List files that fit the pattern
-					if (currLib[file] instanceof Array) {
-						length = currLib[file].length;
+							files = [];
 
-						files = [];
+							for (i = 0; i < length; i++) {
+								files = files.concat(glob.sync(path.join(bowerPath, directory, libName, currLib[file][i])));
+							}
+						} else {
+							files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
+						}
+
+						// Add the needed folders to the Array filesToMove
+						length = files.length;
+						asteriskName = false;
 
 						for (i = 0; i < length; i++) {
-							files = files.concat(glob.sync(path.join(bowerPath, directory, libName, currLib[file][i])));
-						}
-					} else {
-						files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
-					}
+							f = files[i];
 
-					// Add the needed folders to the Array filesToMove
-					length = files.length;
-					asteriskName = false;
+							if (regex.containAsterisk.test(fileName)) {
+								asteriskName = true;
+							}
 
-					for (i = 0; i < length; i++) {
-						f = files[i];
+							// Use the name of the file to replace the * (asterisk) name
+							if (asteriskName) {
+								fileName = path.basename(f, path.extname(f));
+							}
 
-						if (regex.containAsterisk.test(fileName)) {
-							asteriskName = true;
-						}
-
-						// Use the name of the file to replace the * (asterisk) name
-						if (asteriskName) {
-							fileName = path.basename(f, path.extname(f));
-						}
-
-						// Try to find the min file here
-						if (getMin) {
-							if (!regex.containMin.test(f)) {
-								temp = path.extname(f);
-								var tempName = f.replace(temp, '.min' + temp);
-								if (fs.existsSync(tempName)) {
-									f = tempName;
-									if (!renameMin) {
-										fileName += '.min';
+							// Try to find the min file here
+							if (getMin) {
+								if (!regex.containMin.test(f)) {
+									temp = path.extname(f);
+									var tempName = f.replace(temp, '.min' + temp);
+									if (fs.existsSync(tempName)) {
+										f = tempName;
+										if (!renameMin) {
+											fileName += '.min';
+										}
 									}
 								}
 							}
-						}
 
-						// Test if the link is global or relative
-						if (regex.startWithSlash.test(fileFolder)) {
-							// The specified file folder is global
-							filesTo[action].push({
-								'from': f,
-								'to': path.join(bowerPath, fileFolder.substr(1)),
-								'rename': fileName + path.extname(f)
-							});
-						} else if (regex.startWithSlash.test(libFolder)) {
-							// The specified lib folder is global
-							filesTo[action].push({
-								'from': f,
-								'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
-								'rename': fileName + path.extname(f)
-							});
-						} else {
-							// Test if redirect the file to the minDefault folder or the default folder
-							if (getMin && option.default.minFolder != "") {
-								df = (option.default.minFolder);
-							} else if (option.default.folder != "") {
-								df = (option.default.folder);
+							// Test if the link is global or relative
+							if (regex.startWithSlash.test(fileFolder)) {
+								// The specified file folder is global
+								filesTo[action].push({
+									'from': f,
+									'to': path.join(bowerPath, fileFolder.substr(1)),
+									'rename': fileName + path.extname(f)
+								});
+							} else if (regex.startWithSlash.test(libFolder)) {
+								// The specified lib folder is global
+								filesTo[action].push({
+									'from': f,
+									'to': path.join(bowerPath, libFolder.substr(1), fileFolder),
+									'rename': fileName + path.extname(f)
+								});
 							} else {
-								df = "";
-							}
+								// Test if redirect the file to the minDefault folder or the default folder
+								if (getMin && option.default.minFolder != "") {
+									df = (option.default.minFolder);
+								} else if (option.default.folder != "") {
+									df = (option.default.folder);
+								} else {
+									df = "";
+								}
 
-							// None of the file or lib specified, then the folder is global
-							filesTo[action].push({
-								'from': f,
-								'to': path.join(bowerPath, df, folder[path.extname(f).substr(1)], libFolder, fileFolder),
-								'rename': fileName + path.extname(f)
-							});
+								// None of the file or lib specified, then the folder is global
+								filesTo[action].push({
+									'from': f,
+									'to': path.join(bowerPath, df, folder[path.extname(f).substr(1)], libFolder, fileFolder),
+									'rename': fileName + path.extname(f)
+								});
+							}
 						}
 					}
 				}
@@ -444,10 +442,15 @@ var commands = {
 	 * @param [bowerCustomConfig] {object}
 	 */
 	automatic: function(bowerCustomConfig) {
-		customConfigG = bowerCustomConfig || {};
+		customConfigG = bowerCustomConfig || '';
+
+		getMin = false;
+		renameMin = false;
 
 		if (customConfigG.hasOwnProperty('cwd')) {
 			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
 		}
 
 		command = 'automatic';
@@ -460,10 +463,15 @@ var commands = {
 	 * @param [bowerCustomConfig] {object}
 	 */
 	install: function(bowerCustomConfig) {
-		customConfigG = bowerCustomConfig || {};
+		customConfigG = bowerCustomConfig || '';
+
+		getMin = false;
+		renameMin = false;
 
 		if (customConfigG.hasOwnProperty('cwd')) {
 			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
 		}
 
 		command = 'install';
@@ -476,10 +484,15 @@ var commands = {
 	 * @param [bowerCustomConfig] {object}
 	 */
 	update: function(bowerCustomConfig) {
-		customConfigG = bowerCustomConfig || {};
+		customConfigG = bowerCustomConfig || '';
+
+		getMin = false;
+		renameMin = false;
 
 		if (customConfigG.hasOwnProperty('cwd')) {
 			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
 		}
 
 		command = 'update';
@@ -496,6 +509,8 @@ var commands = {
 		renameMin = false;
 
 		bowerPath = path.join(cwd, bowerFilePath || '');
+
+		command = 'install';
 
 		runCBI();
 	},

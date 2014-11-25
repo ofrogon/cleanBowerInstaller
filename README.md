@@ -384,8 +384,12 @@ public
 * Now the API commands `automatically`, `install` and `update` no more return a output but execute the `run` command automatically.
 * Now you can specify extension(s) to ignore when you call the `min` option.
 
+### 0.0.6 - Alpha 6
+* Hot fix for an error cause by the use of the option `ignoreExt` of `min`.
+* Various regression fixes on the API.
+
 ## Incoming
-* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.6)
-* Option to remove the bower folder after use. (Target version: 0.0.7)
+* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.7)
+* Option to remove the bower folder after use. (Target version: 0.0.8)
 * Add test in the lib (Target version: 0.1.0)
 * Write the Wiki (Target version: 0.1.0)
