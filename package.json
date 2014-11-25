@@ -1,6 +1,6 @@
 {
 	"name": "clean-bower-installer",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Tool to install pre-selected bower dependencies",
 	"keywords": [
 		"bower",
@@ -26,7 +26,7 @@
 		"cli": "~0.6.4",
 		"colors": "~1.0.2",
 		"fs-extra": "^0.12.0",
-		"glob": "~4.0.6"
+		"glob": "~4.2.0"
 	},
 	"engines": {
 		"node": ">=0.10.0"

@@ -40,8 +40,9 @@ clean-bower-installer [OPTIONS] [ARGS]
 ## API
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
-| `commands.install({[Object]})` | Shortcut for bower.commands.install(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/> This command also output consumable JSON. |
-| `commands.update({[Object]})`  | Shortcut for bower.commands.update(), see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. Also, install was setup to return JSON format.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.<br/>This command also output consumable JSON. |
+| `commands.automatic({[Object]})` | Shortcut for `bower.commands.install()` or `bower.commands.update()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.install({[Object]})` | Shortcut for `bower.commands.install()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.update({[Object]})`  | Shortcut for `bower.commands.update()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail. |
 | `commands.run()`     | Execute the clean-bower-installer action.                             |
 
 Then, for example, you can use it like this:
@@ -50,59 +51,23 @@ var cbi = require('clean-bower-installer').commands;
 
 // This function will be useful in the next examples
 function isEmptyObject(obj) {
-	var name;
-	for (name in obj) {
-		return false;
-	}
-	return true;
+    var name;
+    for (name in obj) {
+        return false;
+    }
+    return true;
 }
 
-/* Ex1: Run bower libs install */
-cbi.install().on('end', function(installed) {
-	if (!isEmptyObject(installed)) {
-		console.log('Bower component installed with success.');
-	} else {
-		console.log('No new bower component installed.');
-	}
-});
+/* Ex. 1: Run clean-bower-installer automatic command */
+cbi.automatic();
 
-/* Ex2: Run bower libs update */
-cbi.update().on('end', function(updated) {
-	if (!isEmptyObject(updated)) {
-		console.log('Bower component were updated with success.');
-	} else {
-		console.log('No new bower component updated.');
-	}
-});
+/* Ex. 2: Run clean-bower-installer update command */
+cbi.update();
 
-/* Ex3: Run bower libs update with the bower,json file in a other folder */
-cbi.update({ cwd: 'path/to/bowerFile' }).on('end', function(updated) {
-	console.log(updated);
-});
+/* Ex. 3: Run clean-bower-installer install command */
+cbi.install();
 
-/* Ex4: Run bower libs update then clean-bower-installer */
-cbi.update().on('end', function(updated) {
-	if (!isEmptyObject(updated)) {
-		cbi.run();
-	} else {
-		console.log('No new bower component updated.');
-	}
-});
-
-/* Ex5: Run bower libs install then clean-bower-installer with error handling */
-cbi.install()
-	.on('end', function(updated) {
-		if (!isEmptyObject(updated)) {
-			cbi.run();
-		} else {
-			console.log('No new bower component updated.');
-		}
-	})
-	.on('error', function(error) {
-		console.error('An error occur when installing the bower components: ', error);
-	});
-
-/* Ex6: Run bower libs update */
+/* Ex. 4: Run bower libs update */
 cbi.run();
 ```
 
@@ -111,8 +76,8 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 | Element           | Value to provide                                                      |
 |-------------------|-----------------------------------------------------------------------|
-| `default`         | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": 'public', "minFolder": 'packages/prod/public'}` |
-| `min`             | Object. <br/> **Option 1**: `get`, boolean, if true get the minimise file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>*By default these two values are false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M` |
+| `default`         | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": "public", "minFolder": "packages/prod/public"}` |
+| `min`             | Object. <br/> **Option 1**: `get`, boolean, if true get the minimise file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>**Option 3**: `ignoreExt`, array of string, each extensions list in this array will be ignored when the `min` option is use.<br/>*By default these two values are false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M`<br/>Ex 3: `"min": {"ignoreExt": ["less"]}` can be use to ignore all less files when you use the `min` option.|
 
 ## Ignore files
 
@@ -127,151 +92,122 @@ For example, see [Specifying files to ignore](#SFTI) in the Examples section.
 ### Simple use
 ```
 {
-	"name": "simple-test",
-	"dependencies": {
-		"angular": "~1.2.0"
-	},
-	"cInstall": {
-		"folder": {
-			"js": "js/vendor/"
-		},
-		"source": {
-			"angular": {
-				"angular.js": "angular.js"
-			}
-		}
-	}
+    "name": "simple-test",
+    "dependencies": {
+        "angular": "~1.2.0"
+    },
+    "cInstall": {
+        "folder": {
+            "js": "js/vendor/"
+        },
+        "source": {
+            "angular": {
+                "angular.js": "angular.js"
+            }
+        }
+    }
 }
 ```
 #### Result
-<ul>
-	<li>js/</li>
-	<ul>
-		<li>vendor/</li>
-		<ul>
-			<li><u>angular.js</u></li>
-		</ul>
-	</ul>
-</ul>
+```
+js
+└── vendor
+   └── angular.js
+```
 
 -----
 ### With some option
 ```
 {
-	"name": "option-test",
-	"dependencies": {
-		"bootstrap": "~3.2.0"
-	},
-	"cInstall": {
-		"folder": {
-			"js": "js/vendor/",
-			"css": "css/",
-			"otf, eot, svg, ttf, woff": "fonts/"
-		},
-		"option": {
-			"default": {
+    "name": "option-test",
+    "dependencies": {
+        "bootstrap": "~3.2.0"
+    },
+    "cInstall": {
+        "folder": {
+            "js": "js/vendor/",
+            "css": "css/",
+            "otf, eot, svg, ttf, woff": "fonts/"
+        },
+        "option": {
+            "default": {
                 "folder": "public"
             }
-		},
-		"source": {
-			"bootstrap": {
-				"glyphicons-halflings-regular.*": "dist/fonts/*",
-				"bootstrap.js": "dist/js/bootstrap.js",
-				"bootstrap.css": "dist/css/bootstrap.css"
-			}
-		}
-	}
+        },
+        "source": {
+            "bootstrap": {
+                "glyphicons-halflings-regular.*": "dist/fonts/*",
+                "bootstrap.js": "dist/js/bootstrap.js",
+                "bootstrap.css": "dist/css/bootstrap.css"
+            }
+        }
+    }
 }
 ```
 #### Result
-<ul>
-	<li>public/</li>
-	<ul>
-		<li>js/</li>
-		<ul>
-			<li>vendor/</li>
-			<ul>
-				<li><u>bootstrap.js</u></li>
-			</ul>
-		</ul>
-		<li>css/</li>
-		<ul>
-			<li><u>bootstrap.css</u></li>
-		</ul>
-		<li>fonts/</li>
-		<ul>
-			<li><u>glyphicons-halflings-regular.eot</u></li>
-			<li><u>glyphicons-halflings-regular.svg</u></li>
-			<li><u>glyphicons-halflings-regular.ttf</u></li>
-			<li><u>glyphicons-halflings-regular.woff</u></li>
-		</ul>
-	</ul>
-</ul>
+```
+public
+├── js
+|   └── vendor
+|       └── bootstrap.js
+├── css
+|   └── bootstrap.css
+└── fonts
+    ├── glyphicons-halflings-regular.eot
+    ├── glyphicons-halflings-regular.svg
+    ├── glyphicons-halflings-regular.ttf
+    └── glyphicons-halflings-regular.woff
+```
 
 -----
 ### Specifying some global and relative path
 ```
 {
-	"name": "simple-test",
-	"dependencies": {
-		"bootstrap": "~3.2.0"
-	},
-	"cInstall": {
-		"folder": {
-			"js": "js/vendor/",
-			"css": "css/",
-			"otf, eot, svg, ttf, woff": "fonts/"
-		},
-		"option": {
-			"default": {
+    "name": "simple-test",
+    "dependencies": {
+        "bootstrap": "~3.2.0"
+    },
+    "cInstall": {
+        "folder": {
+            "js": "js/vendor/",
+            "css": "css/",
+            "otf, eot, svg, ttf, woff": "fonts/"
+        },
+        "option": {
+            "default": {
                 "folder": "public"
             }
-		},
-		"source": {
-			"bootstrap": {
-				"glyphicons-halflings-regular.*": "dist/fonts/*",
-				"bootstrap.js": "dist/js/bootstrap.js",
-				"bootstrap.min.js#min": "dist/js/bootstrap.min.js",
-				"bootstrap.css": "dist/css/bootstrap.css",
-				"bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
-			}
-		}
-	}
+        },
+        "source": {
+            "bootstrap": {
+                "glyphicons-halflings-regular.*": "dist/fonts/*",
+                "bootstrap.js": "dist/js/bootstrap.js",
+                "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
+                "bootstrap.css": "dist/css/bootstrap.css",
+                "bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
+            }
+        }
+    }
 }
 ```
 #### Result
-<ul>
-	<li>public/</li>
-	<ul>
-		<li>js/</li>
-		<ul>
-			<li>vendor/</li>
-			<ul>
-				<li><u>bootstrap.js</u></li>
-				<li>min/</li>
-				<ul>
-					<li><u>bootstrap.min.js</u></li>
-				</ul>
-			</ul>
-		</ul>
-		<li>css/</li>
-		<ul>
-			<li><u>bootstrap.css</u></li>
-		</ul>
-		<li>fonts/</li>
-		<ul>
-			<li><u>glyphicons-halflings-regular.eot</u></li>
-			<li><u>glyphicons-halflings-regular.svg</u></li>
-			<li><u>glyphicons-halflings-regular.ttf</u></li>
-			<li><u>glyphicons-halflings-regular.woff</u></li>
-		</ul>
-	</ul>
-	<li>thisPathIsGlobal/</li>
-	<ul>
-		<li><u>bootstrap.min.css</u></li>
-	</ul>
-</ul>
-
+```
+public
+├── js
+|   └── vendor
+|       ├── bootstrap.js
+|       └── min
+|           └── bootstrap.min.js
+├── css
+|   └── bootstrap.css
+├── fonts
+|   ├── glyphicons-halflings-regular.eot
+|   ├── glyphicons-halflings-regular.svg
+|   ├── glyphicons-halflings-regular.ttf
+|   └── glyphicons-halflings-regular.woff
+└── thisPathIsGlobal
+    └── bootstrap.min.css
+```
 -----
 ### <a name="SFTI"></a>Specifying files to ignore
 ```
@@ -305,156 +241,124 @@ For example, see [Specifying files to ignore](#SFTI) in the Examples section.
 }
 ```
 #### Result
-<ul>
-    <li>public/</li>
-    <ul>
-        <li>js/</li>
-        <ul>
-            <li>vendor/</li>
-            <ul>
-                <li><u>bootstrap.js</u></li>
-                <li>min/</li>
-                <ul>
-                    <li><u>bootstrap.min.js</u></li>
-                </ul>
-            </ul>
-        </ul>
-        <li>css/</li>
-        <ul>
-            <li><u>bootstrap.css</u></li>
-        </ul>
-        <li>fonts/</li>
-        <ul>
-            <li><u>glyphicons-halflings-regular.eot</u></li>
-            <li><u>glyphicons-halflings-regular.ttf</u></li>
-            <li><u>glyphicons-halflings-regular.woff</u></li>
-        </ul>
-    </ul>
-    <li>thisPathIsGlobal/</li>
-    <ul>
-        <li><u>bootstrap.min.css</u></li>
-    </ul>
-</ul>
+```
+public
+├── js
+|   └── vendor
+|       ├── bootstrap.js
+|       └── min
+|           └── bootstrap.min.js
+├── css
+|   └── bootstrap.css
+├── fonts
+|   ├── glyphicons-halflings-regular.eot
+|   ├── glyphicons-halflings-regular.ttf
+|   └── glyphicons-halflings-regular.woff
+└── thisPathIsGlobal
+    └── bootstrap.min.css
+```
 
 -----
 ### Real example (from: [uCtrl website](https://github.com/uCtrl/Website))
 #### Code
 ```
 {
-	"name": "uCtrl-Website",
-	"version": "0.0.1",
-	"contributors": [
-		"the name here <mail address here OPTIONAL>"
-	],
-	"description": "Website and portal for the uCtrl web division",
-	"keywords": [
-		"uCtrl",
-		"Automation"
-	],
-	"license": "MIT",
-	"homepage": "https://github.com/uCtrl/Website",
-	"private": true,
-	"dependencies": {
-		"angular": "~1.2.23",
-		"angular-bootstrap": "~0.11.0",
-		"angular-translate": "~2.4.0",
-		"bootstrap": "~3.2.0",
-		"bootstrap-select": "~1.6.2",
-		"fontawesome": "^4.2.0",
-		"jquery": "~1.11.1",
-		"jquery.scrollTo": "~1.4.13",
-		"ui-router": "~0.2.11",
-		"validator-js": "~3.18.0"
-	},
-	"cInstall": {
-		"folder": {
-			"js": "js/vendor/",
-			"less": "css/less/",
-			"otf, eot, svg, ttf, woff": "fonts/"
-		},
-		"option": {
-			"default": {
+    "name": "uCtrl-Website",
+    "version": "0.0.1",
+    "contributors": [
+        "the name here <mail address here OPTIONAL>"
+    ],
+    "description": "Website and portal for the uCtrl web division",
+    "keywords": [
+        "uCtrl",
+        "Automation"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/uCtrl/Website",
+    "private": true,
+    "dependencies": {
+        "angular": "~1.2.23",
+        "angular-bootstrap": "~0.11.0",
+        "angular-translate": "~2.4.0",
+        "bootstrap": "~3.2.0",
+        "bootstrap-select": "~1.6.2",
+        "fontawesome": "^4.2.0",
+        "jquery": "~1.11.1",
+        "jquery.scrollTo": "~1.4.13",
+        "ui-router": "~0.2.11",
+        "validator-js": "~3.18.0"
+    },
+    "cInstall": {
+        "folder": {
+            "js": "js/vendor/",
+            "less": "css/less/",
+            "otf, eot, svg, ttf, woff": "fonts/"
+        },
+        "option": {
+            "default": {
                 "folder": "public"
             }
-		},
-		"source": {
-			"angular": {
-				"angular.js": "angular.js"
-			},
-			"angular-bootstrap": {
-				"ui-bootstrap.js": "ui-bootstrap.js",
-				"ui-bootstrap-tpls.js": "ui-bootstrap-tpls.js"
-			},
-			"angular-translate": {
-				"angular-translate.js": "angular-translate.js"
-			},
-			"bootstrap": {
-				"glyphicons-halflings-regular.*": "dist/fonts/*",
-				"bootstrap.js": "dist/js/bootstrap.js",
-				"*.less#bootstrap": "less/*.less",
-				"*.less#bootstrap/mixins": "less/mixins/*.less"
-			},
-			"bootstrap-select": {
-				"bootstrap-select.less#bootstrapSelect": "less/bootstrap-select.less",
-				"bootstrap-select.js": "dist/js/bootstrap-select.js"
-			},
-			"fontawesome": {
-				"FontAwesome.otf": "fonts/FontAwesome.otf",
-				"fontawesome-webfont.*": "fonts/fontawesome-webfont.*",
-				"*.less#fontawesome": "less/*.less"
-			},
-			"jquery": {
-				"jquery.js": "dist/jquery.js"
-			},
-			"jquery.scrollTo": {
-				"jquery.scrollTo.js": "jquery.scrollTo.js"
-			},
-			"ui-router": {
-				"angular-ui-router.js": "release/angular-ui-router.js"
-			},
-			"validator-js": {
-				"validator.js": "validator.js"
-			}
-		}
-	}
+        },
+        "source": {
+            "angular": {
+                "angular.js": "angular.js"
+            },
+            "angular-bootstrap": {
+                "ui-bootstrap.js": "ui-bootstrap.js",
+                "ui-bootstrap-tpls.js": "ui-bootstrap-tpls.js"
+            },
+            "angular-translate": {
+                "angular-translate.js": "angular-translate.js"
+            },
+            "bootstrap": {
+                "glyphicons-halflings-regular.*": "dist/fonts/*",
+                "bootstrap.js": "dist/js/bootstrap.js",
+                "*.less#bootstrap": "less/*.less",
+                "*.less#bootstrap/mixins": "less/mixins/*.less"
+            },
+            "bootstrap-select": {
+                "bootstrap-select.less#bootstrapSelect": "less/bootstrap-select.less",
+                "bootstrap-select.js": "dist/js/bootstrap-select.js"
+            },
+            "fontawesome": {
+                "FontAwesome.otf": "fonts/FontAwesome.otf",
+                "fontawesome-webfont.*": "fonts/fontawesome-webfont.*",
+                "*.less#fontawesome": "less/*.less"
+            },
+            "jquery": {
+                "jquery.js": "dist/jquery.js"
+            },
+            "jquery.scrollTo": {
+                "jquery.scrollTo.js": "jquery.scrollTo.js"
+            },
+            "ui-router": {
+                "angular-ui-router.js": "release/angular-ui-router.js"
+            },
+            "validator-js": {
+                "validator.js": "validator.js"
+            }
+        }
+    }
 }
 ```
 #### Result (folder hierarchy only)
-<ul>
-	<li>public/</li>
-	<ul>
-		<li>css/</li>
-		<ul>
-			<li>bootstrap/</li>
-			<ul>
-				<li><u>files</u></li>
-			</ul>
-			<li>bootStrapSelect/</li>
-			<ul>
-				<li>mixins</li>
-				<ul>
-					<li><u>files</u></li>
-				</ul>
-				<li><u>files</u></li>
-			</ul>
-			<li>fontawesome/</li>
-			<ul>
-				<li><u>files</u></li>
-			</ul>
-		</ul>
-		<li>fonts/</li>
-		<ul>
-			<li><u>files</u></li>
-		</ul>
-		<li>js/</li>
-		<ul>
-			<li>vendor/</li>
-			<ul>
-				<li><u>files</u></li>
-			</ul>
-		</ul>
-	</ul>
-</ul>
+```
+public
+├── js
+|   └── vendor
+|       └── [files]
+├── css
+|   ├── bootstrap
+|   |   ├── mixins
+|   |   |   └── [files]
+|   |   └── [files]
+|   ├── bootStrapSelect
+|   |   └── [files]
+|   └── fontawesome
+|       └── [files]
+└── fonts
+    └── [files]
+```
 
 ## Version notes
 ### 0.0.1 - Alpha 1
@@ -475,8 +379,13 @@ For example, see [Specifying files to ignore](#SFTI) in the Examples section.
 * Add way to ignore file.
 * Repair documentation (missing documentation to use the `default` option in it's new way).
 
+### 0.0.5 - Alpha 5
+* Add new command `automatic` to let clean-bower-installer automatically select between update or install action to ask bower to do.
+* Now the API commands `automatically`, `install` and `update` no more return a output but execute the `run` command automatically.
+* Now you can specify extension(s) to ignore when you call the `min` option.
+
 ## Incoming
-* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.5)
-* Option to remove the bower folder after use. (Target version: 0.0.6)
+* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.6)
+* Option to remove the bower folder after use. (Target version: 0.0.7)
 * Add test in the lib (Target version: 0.1.0)
 * Write the Wiki (Target version: 0.1.0)
