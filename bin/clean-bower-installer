@@ -16,7 +16,7 @@ var regex = {
 	startWithSlash: new RegExp("^\/.*"),
 	containAsterisk: new RegExp("\\*", "g"),
 	containDoubleAsterisk: new RegExp("[\\*]{2}", "g"),
-	containMin: new RegExp("\.min", "g")
+	containMin: new RegExp("[.]min", "g")
 };
 
 var bowerPath,
@@ -38,7 +38,8 @@ var option = {
 			"rename": false,
 			"ignoreExt": []
 		},
-		"removeAfter": false
+		"removeAfter": false,
+		"verbose": false
 	},
 	folder = {},
 	source = {};
@@ -246,6 +247,7 @@ function runCBI() {
 	directory = config.directory;
 	cwd = config.cwd;
 
+	// TODO reformat the way this function was call to remove the second call dans the verbose error
 	if (command !== "") {
 		if (command === "update") {
 			// Test if the bower folder exist
@@ -256,10 +258,16 @@ function runCBI() {
 		}
 
 		if (command === "install" || command === "update") {
-			if (customConfigG !== "") {
-				bower.commands[command](customConfigG).
+			if (customConfigG.hasOwnProperty("cwd")) {
+				bower.commands[command](undefined, undefined, customConfigG).
 					on("end", function(installed) {
-						console.log(installed);
+						if (option.verbose) {
+							if (Object.keys(installed).length === 0) {
+								console.log("The bower command " + command + " do not return any information.");
+							} else {
+								console.dir(installed);
+							}
+						}
 
 						command = "";
 
@@ -268,7 +276,13 @@ function runCBI() {
 			} else {
 				bower.commands[command](undefined, undefined, { cwd: bowerPath }).
 					on("end", function(installed) {
-						console.log(installed);
+						if (option.verbose) {
+							if (Object.keys(installed).length === 0) {
+								console.log("The bower command " + command + " do not return any information.");
+							} else {
+								console.dir(installed);
+							}
+						}
 
 						command = "";
 
@@ -319,11 +333,13 @@ function runCBI() {
 	// Read bower.json cInstall data
 	var cInstall = bowerJSON.cInstall;
 	if (cInstall !== undefined) {
-		if (cInstall.option !== undefined) {
+		if (cInstall.hasOwnProperty("option")) {
 			// To parse only new option specified by the user
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					if (typeof cInstall.option[setup] === "object") {
+					if (setup === "verbose" && option.verbose === false) {
+						option.verbose = cInstall.option.verbose;
+					} else if (typeof cInstall.option[setup] === "object") {
 
 						for (var subSetup in cInstall.option[setup]) {
 							if (cInstall.option[setup].hasOwnProperty(subSetup) && option[setup].hasOwnProperty(subSetup)) {
@@ -404,12 +420,17 @@ if (require.main === module) {
 		update: ["u", "Run bower update command"],
 		bower: [false, "Input the bower.json file path.", "path", "" ],
 		min: ["m", "Try to get .min file version first."],
-		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."]
+		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
+		verbose: ["V", "Get more information from the tool."]
 	});
 
 	// CLI input treatment
 	cli.main(function(args, options) {
 		bowerPath = path.join(cwd, options.bower);
+
+		if (options.verbose) {
+			option.verbose = true;
+		}
 
 		// Add load of minimised file version and renaming of them if needed
 		if (options.renameMin) {
@@ -447,7 +468,7 @@ if (require.main === module) {
 		 * @param [bowerCustomConfig] {object}
 		 */
 		automatic: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || "";
+			customConfigG = bowerCustomConfig || {};
 
 			getMin = false;
 			renameMin = false;
@@ -468,7 +489,7 @@ if (require.main === module) {
 		 * @param [bowerCustomConfig] {object}
 		 */
 		install: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || "";
+			customConfigG = bowerCustomConfig || {};
 
 			getMin = false;
 			renameMin = false;
@@ -489,7 +510,7 @@ if (require.main === module) {
 		 * @param [bowerCustomConfig] {object}
 		 */
 		update: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || "";
+			customConfigG = bowerCustomConfig || {};
 
 			getMin = false;
 			renameMin = false;
