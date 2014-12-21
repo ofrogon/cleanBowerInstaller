@@ -20,6 +20,7 @@ var regex = {
 };
 
 var bowerPath,
+	bowerJSON,
 	cwd = process.cwd(),
 	directory,
 	getMin = false,
@@ -209,7 +210,15 @@ function generateFileList() {
  * Move the files from the bower repository to their destination
  */
 function copyFiles() {
-	var file, length, i, filesToMove = generateFileList();
+	function copyDone() {
+		progression++;
+
+		if (progression === length) {
+			deferred.resolve();
+		}
+	}
+
+	var file, length, i, filesToMove = generateFileList(), deferred = q.defer(), progression = 0;
 
 	// If file list generation was stop by error
 	if (filesToMove === false) {
@@ -222,80 +231,48 @@ function copyFiles() {
 		file = filesToMove[i];
 		fs.copy(file.from, path.join(file.to, file.rename), function(err) {
 			if (err && err[0].code !== "ENOENT") {
-				return console.error(err);
+				deferred.reject(err);
+			} else {
+				copyDone();
 			}
 		});
 	}
+
+	return deferred.promise;
 }
 
-/**
- * Clean-Bower-Install main logic function
- */
-function runCBI() {
-	var bowerJSON,
-		bp = path.join(bowerPath, "bower.json");
+function getBowerJson() {
+	var bp = path.join(bowerPath, "bower.json"),
+		exist = fs.existsSync(bp);
 
-	if (fs.existsSync(bp)) {
-		bowerJSON = require(bp);
+	if (exist) {
+		bowerJSON = fs.readJsonSync(bp);
 	} else {
-		console.error("No bower.json file found in the folder: " + bowerPath);
-		process.exit(1);
+		bowerJSON = {};
 	}
+}
 
-	// Read .bowerrc config
-	var config = require("bower-config").read();
-	directory = config.directory;
-	cwd = config.cwd;
+function runBower(command) {
+	if (!customConfigG.hasOwnProperty("cwd")) {
+		customConfigG.cwd = bowerPath;
+	}
+	return bower.commands[command](undefined, undefined, customConfigG);
+}
 
-	// TODO reformat the way this function was call to remove the second call dans the verbose error
-	if (command !== "") {
-		if (command === "update") {
-			// Test if the bower folder exist
-			if (!fs.existsSync(directory)) {
-				console.error(colors.red("Their is no loaded bower libs on your computer. Add the install option and retry the module execution."));
-				process.exit(1);
-			}
-		}
+function determineCommand() {
+	var deferred = q.defer();
 
-		if (command === "install" || command === "update") {
-			if (customConfigG.hasOwnProperty("cwd")) {
-				bower.commands[command](undefined, undefined, customConfigG).
-					on("end", function(installed) {
-						if (option.verbose) {
-							if (Object.keys(installed).length === 0) {
-								console.log("The bower command " + command + " do not return any information.");
-							} else {
-								console.dir(installed);
-							}
-						}
+	getBowerJson();
 
-						command = "";
-
-						runCBI();
-					});
-			} else {
-				bower.commands[command](undefined, undefined, { cwd: bowerPath }).
-					on("end", function(installed) {
-						if (option.verbose) {
-							if (Object.keys(installed).length === 0) {
-								console.log("The bower command " + command + " do not return any information.");
-							} else {
-								console.dir(installed);
-							}
-						}
-
-						command = "";
-
-						runCBI();
-					});
-			}
-		} else if (command === "automatic") {
-			if (!fs.existsSync(directory)) {
-				command = "install";
-			} else {
-				var neededLibs = [];
-				var alreadyInstallLibs = fs.readdirSync(directory);
-				var lib;
+	fs.exists(directory, function (err, exist) {
+		if (err) {
+			deferred.reject(err);
+		} else if (!exist) {
+			// There is no bower_components folder
+			deferred.resolve("install");
+		} else {
+			fs.readdir(directory, function (err, alreadyInstallLibs) {
+				var neededLibs = [], lib;
 
 				if (bowerJSON.hasOwnProperty("dependencies")) {
 					for (lib in bowerJSON.dependencies) {
@@ -315,20 +292,32 @@ function runCBI() {
 
 				// If the bower folder exist but the content is not the same
 				if (arraysIdentical(neededLibs, alreadyInstallLibs)) {
-					command = "update";
+					deferred.resolve("update");
 				} else {
-					command = "install";
+					runBower("prune").on("end", function () {
+						deferred.resolve("install");
+					});
 				}
-			}
-
-			runCBI();
-		} else {
-			console.error(colors.red("Unrecognised command from the cli receive. The application stop."));
-			process.exit(1);
+			});
 		}
+	});
 
-		return;
-	}
+	return deferred.promise;
+}
+
+/**
+ * Clean-Bower-Install main logic function
+ */
+function runCBI() {
+	var deferred = q.defer();
+
+	// Test if we have read the bower.json file first
+	getBowerJson();
+
+	// Read .bowerrc config
+	var config = require("bower-config").read();
+	directory = config.directory;
+	cwd = config.cwd;
 
 	// Read bower.json cInstall data
 	var cInstall = bowerJSON.cInstall;
@@ -337,7 +326,7 @@ function runCBI() {
 			// To parse only new option specified by the user
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					if (setup === "verbose" && option.verbose === false) {
+					if (setup === "verbose") {
 						option.verbose = cInstall.option.verbose;
 					} else if (typeof cInstall.option[setup] === "object") {
 
@@ -398,12 +387,224 @@ function runCBI() {
 			source = cInstall.source;
 		}
 
-		copyFiles();
+		copyFiles().done(function () {
+			deferred.resolve("clean-bower-installer execution successfully done!");
+		});
 
 	} else {
-		console.log(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section were found in the bower.json file."));
+		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section were found in the bower.json file."));
 	}
+
+	return deferred.promise;
 }
+
+/* API commands *******************************************************************************************************/
+/**
+ * This object contain all the API commands for this module
+ *
+ * @type {{install: Function, update: Function, run: Function, runMin: Function, runMinR: Function}}
+ */
+var commands = {
+	/**
+	 * Use the bower programmatic API to call the install command
+	 *
+	 * @param [bowerCustomConfig] {object}
+	 */
+	automatic: function (bowerCustomConfig) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = false;
+		renameMin = false;
+
+		if (customConfigG.hasOwnProperty("cwd")) {
+			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
+		}
+
+		determineCommand().then(
+			function (command) {
+				runBower(command).on("end", function (installed) {
+					runCBI().then(
+						function (message) {
+							if (option.verbose) {
+								if (Object.keys(installed).length === 0) {
+									endMessage = "The bower command " + command + " do not return any information.\n";
+								} else {
+									endMessage = JSON.parse(installed) + "\n";
+								}
+							}
+
+							deferred.resolve(endMessage + message);
+						},
+						function (err) {
+							deferred.reject(err);
+						}
+					);
+				});
+			},
+			function (err) {
+				deferred.reject(err);
+			}
+		);
+
+		return deferred.promise;
+	},
+	/** Use the bower programmatic API to call the install command
+	 *
+	 * @param [bowerCustomConfig] {object}
+	 * @returns {*}
+	 */
+	install: function (bowerCustomConfig) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = false;
+		renameMin = false;
+
+		if (customConfigG.hasOwnProperty("cwd")) {
+			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
+		}
+
+		runBower("install").on("end", function (installed) {
+			runCBI().then(
+				function (message) {
+					if (option.verbose) {
+						if (Object.keys(installed).length === 0) {
+							endMessage = "The bower command " + command + " do not return any information.\n";
+						} else {
+							endMessage = JSON.stringify(installed)+ "\n";
+						}
+					}
+
+					deferred.resolve(endMessage + message);
+				},
+				function (err) {
+					deferred.reject(err);
+				}
+			);
+		});
+
+		return deferred.promise;
+	},
+	/**
+	 * Use the bower programmatic API to call the update command
+	 *
+	 * @param [bowerCustomConfig] {object}
+	 */
+	update: function (bowerCustomConfig) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = false;
+		renameMin = false;
+
+		if (customConfigG.hasOwnProperty("cwd")) {
+			bowerPath = path.join(cwd, customConfigG.cwd);
+		} else {
+			bowerPath = cwd;
+		}
+
+		runBower("update").on("end", function (installed) {
+			runCBI().then(
+				function (message) {
+					if (option.verbose) {
+						if (Object.keys(installed).length === 0) {
+							endMessage = "The bower command " + command + " do not return any information.";
+						} else {
+							endMessage = JSON.parse(installed);
+						}
+					}
+
+					deferred.resolve(endMessage + message);
+				},
+				function (err) {
+					deferred.reject(err);
+				}
+			);
+		});
+
+		return deferred.promise;
+	},
+	/**
+	 * Execute clean-bower-installer main goal
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	run: function (bowerFilePath) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = false;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || "");
+
+		runCBI().then(
+			function (message) {
+				deferred.resolve(endMessage + "\n" + message);
+			},
+			function (err) {
+				deferred.reject(err);
+			}
+		);
+
+		return deferred.promise;
+	},
+	/**
+	 * Execute clean-bower-installer main goal with min option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMin: function (bowerFilePath) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = true;
+		renameMin = false;
+
+		bowerPath = path.join(cwd, bowerFilePath || "");
+
+		runCBI().then(
+			function (message) {
+				deferred.resolve(endMessage + "\n" + message);
+			},
+			function (err) {
+				deferred.reject(err);
+			}
+		);
+
+		return deferred.promise;
+	},
+	/**
+	 * Execute clean-bower-installer main goal with min and rename option
+	 *
+	 * @param [bowerFilePath] {string}
+	 */
+	runMinR: function (bowerFilePath) {
+		var deferred = q.defer(), endMessage = "";
+		customConfigG = bowerCustomConfig || {};
+
+		getMin = true;
+		renameMin = true;
+
+		bowerPath = path.join(cwd, bowerFilePath || "");
+
+		runCBI().then(
+			function (message) {
+				deferred.resolve(endMessage + "\n" + message);
+			},
+			function (err) {
+				deferred.reject(err);
+			}
+		);
+
+		return deferred.promise;
+	}
+};
 
 if (require.main === module) {
 	/* CLI section ********************************************************************************************************/
@@ -445,129 +646,32 @@ if (require.main === module) {
 		}
 
 		if (options.automatic) {
-			command = "automatic";
+			commands.automatic().then(
+				function (message) {
+					console.log(message);
+				}, function (err) {
+					console.log(colors.red(err));
+				}
+			);
 		} else if (options.install) {
-			command = "install";
+			commands.install().then(
+				function (message) {
+					console.log(message);
+				}, function (err) {
+					console.log(colors.red(err));
+				}
+			);
 		} else if (options.update) {
-			command = "update";
+			commands.update().then(
+				function (message) {
+					console.log(message);
+				}, function (err) {
+					console.log(colors.red(err));
+				}
+			);
 		}
-
-		runCBI();
 	});
 } else {
-	/* API commands *******************************************************************************************************/
-	/**
-	 * This object contain all the API commands for this module
-	 *
-	 * @type {{install: Function, update: Function, run: Function, runMin: Function, runMinR: Function}}
-	 */
-	var commands = {
-		/**
-		 * Use the bower programmatic API to call the install command
-		 *
-		 * @param [bowerCustomConfig] {object}
-		 */
-		automatic: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || {};
-
-			getMin = false;
-			renameMin = false;
-
-			if (customConfigG.hasOwnProperty("cwd")) {
-				bowerPath = path.join(cwd, customConfigG.cwd);
-			} else {
-				bowerPath = cwd;
-			}
-
-			command = "automatic";
-
-			runCBI();
-		},
-		/**
-		 * Use the bower programmatic API to call the install command
-		 *
-		 * @param [bowerCustomConfig] {object}
-		 */
-		install: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || {};
-
-			getMin = false;
-			renameMin = false;
-
-			if (customConfigG.hasOwnProperty("cwd")) {
-				bowerPath = path.join(cwd, customConfigG.cwd);
-			} else {
-				bowerPath = cwd;
-			}
-
-			command = "install";
-
-			runCBI();
-		},
-		/**
-		 * Use the bower programmatic API to call the update command
-		 *
-		 * @param [bowerCustomConfig] {object}
-		 */
-		update: function(bowerCustomConfig) {
-			customConfigG = bowerCustomConfig || {};
-
-			getMin = false;
-			renameMin = false;
-
-			if (customConfigG.hasOwnProperty("cwd")) {
-				bowerPath = path.join(cwd, customConfigG.cwd);
-			} else {
-				bowerPath = cwd;
-			}
-
-			command = "update";
-
-			runCBI();
-		},
-		/**
-		 * Execute clean-bower-installer main goal
-		 *
-		 * @param [bowerFilePath] {string}
-		 */
-		run: function(bowerFilePath) {
-			getMin = false;
-			renameMin = false;
-
-			bowerPath = path.join(cwd, bowerFilePath || "");
-
-			command = "install";
-
-			runCBI();
-		},
-		/**
-		 * Execute clean-bower-installer main goal with min option
-		 *
-		 * @param [bowerFilePath] {string}
-		 */
-		runMin: function(bowerFilePath) {
-			getMin = true;
-			renameMin = false;
-
-			bowerPath = path.join(cwd, bowerFilePath || "");
-
-			runCBI();
-		},
-		/**
-		 * Execute clean-bower-installer main goal with min and rename option
-		 *
-		 * @param [bowerFilePath] {string}
-		 */
-		runMinR: function(bowerFilePath) {
-			getMin = true;
-			renameMin = true;
-
-			bowerPath = path.join(cwd, bowerFilePath || "");
-
-			runCBI();
-		}
-	};
-
 	module.exports = {
 		automatic: commands.automatic,
 		install: commands.install,

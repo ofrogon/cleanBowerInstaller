@@ -1,0 +1,3 @@
+Test the verbose function at false.
+
+The result must not contain some output from the bower command.
