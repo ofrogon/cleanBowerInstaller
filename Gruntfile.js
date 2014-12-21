@@ -7,13 +7,42 @@ module.exports = function (grunt) {
 			options: {
 				jshintrc: true
 			},
-			all: ["Gruntfile.js", "bin/clean-bower-installer", "test/**/*.js"]
+			dev: {
+				files: {
+					src: [
+						"Gruntfile.js",
+						"bin/clean-bower-installer",
+						"test/test.js"
+					]
+				}
+			},
+			prod: {
+				files: {
+					src: [
+						"Gruntfile.js",
+						"bin/clean-bower-installer"
+					]
+				}
+			}
+		},
+		run: {
+			runTests: {
+				options: {
+					cwd: "./test"
+				},
+				command: "node",
+				args: ["test.js"]
+			}
 		}
 	});
 
 	// Load the plugin that provides the "jshint" task.
 	grunt.loadNpmTasks("grunt-contrib-jshint");
+	// Load the plugin that provides the "run" task.
+	grunt.loadNpmTasks("grunt-run");
 
 	//Custom Task
-	grunt.registerTask("codeQualityCheckup", ["jshint"]);
+	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
+	grunt.registerTask("test", ["run:runTests"]);
+	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
 };

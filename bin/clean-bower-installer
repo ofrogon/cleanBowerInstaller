@@ -217,7 +217,17 @@ function copyFiles() {
 		}
 	}
 
-	var file, length, i, filesToMove = generateFileList(), deferred = q.defer(), progression = 0;
+	function moveTheFile(file) {
+		fs.copy(file.from, path.join(file.to, file.rename), function (err) {
+			if (err && err[0].code !== "ENOENT") {
+				deferred.reject(err);
+			} else {
+				copyDone();
+			}
+		});
+	}
+
+	var length, i, filesToMove = generateFileList(), deferred = q.defer(), progression = 0;
 
 	// If file list generation was stop by error
 	if (filesToMove === false || filesToMove === undefined || filesToMove.length === 0) {
@@ -227,14 +237,7 @@ function copyFiles() {
 	// Copy and rename (if needed) files in the filesToMove array
 	length = filesToMove.length;
 	for (i = 0; i < length; i++) {
-		file = filesToMove[i];
-		fs.copy(file.from, path.join(file.to, file.rename), function(err) {
-			if (err && err[0].code !== "ENOENT") {
-				deferred.reject(err);
-			} else {
-				copyDone();
-			}
-		});
+		moveTheFile(filesToMove[i]);
 	}
 
 	return deferred.promise;
@@ -325,7 +328,7 @@ function runCBI() {
 			// To parse only new option specified by the user
 			for (var setup in cInstall.option) {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					if (setup === "verbose") {
+					if (setup === "verbose" && require.main !== module) {
 						option.verbose = cInstall.option.verbose;
 					} else if (typeof cInstall.option[setup] === "object") {
 
@@ -473,7 +476,7 @@ var commands = {
 				function (message) {
 					if (option.verbose) {
 						if (Object.keys(installed).length === 0) {
-							endMessage = "The bower command " + command + " do not return any information.\n";
+							endMessage = "The bower command \"install\" do not return any information.\n";
 						} else {
 							endMessage = JSON.stringify(installed)+ "\n";
 						}
@@ -512,7 +515,7 @@ var commands = {
 				function (message) {
 					if (option.verbose) {
 						if (Object.keys(installed).length === 0) {
-							endMessage = "The bower command " + command + " do not return any information.";
+							endMessage = "The bower command \"update\" do not return any information.";
 						} else {
 							endMessage = JSON.parse(installed);
 						}
@@ -536,8 +539,11 @@ var commands = {
 	run: function (bowerFilePath) {
 		var deferred = q.defer();
 
-		getMin = false;
-		renameMin = false;
+		// To not erase cli option
+		if (require.main !== module) {
+			getMin = false;
+			renameMin = false;
+		}
 
 		bowerPath = path.join(cwd, bowerFilePath || "");
 
@@ -623,8 +629,6 @@ if (require.main === module) {
 
 	// CLI input treatment
 	cli.main(function(args, options) {
-		bowerPath = path.join(cwd, options.bower);
-
 		if (options.verbose) {
 			option.verbose = true;
 		}
@@ -642,27 +646,43 @@ if (require.main === module) {
 		}
 
 		if (options.automatic) {
-			commands.automatic().then(
+			commands.automatic({cwd: options.bower}).then(
 				function (message) {
 					console.log(message);
+					process.exit(0);
 				}, function (err) {
 					console.log(colors.red(err));
+					process.exit(1);
 				}
 			);
 		} else if (options.install) {
-			commands.install().then(
+			commands.install({cwd: options.bower}).then(
 				function (message) {
 					console.log(message);
+					process.exit(0);
 				}, function (err) {
 					console.log(colors.red(err));
+					process.exit(1);
 				}
 			);
 		} else if (options.update) {
-			commands.update().then(
+			commands.update({cwd: options.bower}).then(
 				function (message) {
 					console.log(message);
+					process.exit(0);
 				}, function (err) {
 					console.log(colors.red(err));
+					process.exit(1);
+				}
+			);
+		} else {
+			commands.run(options.bower).then(
+				function (message) {
+					console.log(message);
+					process.exit(0);
+				}, function (err) {
+					console.log(colors.red(err));
+					process.exit(1);
 				}
 			);
 		}
