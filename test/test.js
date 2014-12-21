@@ -8,7 +8,7 @@ var cbi = require("../bin/clean-bower-installer"),
 
 var errors = [],
 	errorCount = 0,
-	currentTest = 0;
+	currentTest = -1;
 
 var defaultBowerFile = "{\n" +
 	"\t\"name\": \"test1\",\n" +
@@ -267,12 +267,12 @@ var test = [
 	 */
 		function () {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test4"})
+			.install(["angular"], {}, {cwd: "test6"})
 			.on("end", function () {
-				cbi.runMinR("test4").then(
+				cbi.runMinR("test6").then(
 					function () {
-						if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test4/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test6/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.js"))) {
@@ -317,6 +317,8 @@ var test = [
 
 var testNumber = Object.keys(test).length;
 function runNextTest() {
+	currentTest++;
+
 	// Just in case a test crash
 	if (fs.existsSync(path.join(__dirname, "temp"))) {
 		fs.removeSync(path.join(__dirname, "temp"));
@@ -332,7 +334,6 @@ function runNextTest() {
 			console.log(colors.red("\nThere had been " + errorCount + " error(s) while testing clean-bower-installer."));
 		}
 	}
-	currentTest++;
 }
 
 runNextTest();
