@@ -32,6 +32,11 @@ var defaultBowerFile = "{\n" +
 	"\t}\n" +
 	"}";
 
+/**
+ * Print on the console the test output (success or error(s))
+ *
+ * @param name {string}
+ */
 function testDisplay(name) {
 	errorCount += errors.length;
 
@@ -48,11 +53,14 @@ function testDisplay(name) {
 	errors = [];
 }
 
+/**
+ * Array holding all the test to be executed
+ */
 var test = [
 	/*API tests ----------------------------------------------------------------------*/
 	/**
 	 * Test file without file type folder (API)
-	 * 0
+	 * #00
 	 */
 	function () {
 		cbi.install({cwd: "test0"}).then(
@@ -82,7 +90,7 @@ var test = [
 	},
 	/**
 	 * Test the verbose function at true (API)
-	 * 1
+	 * #01
 	 */
 	function () {
 		cbi.install({cwd: "test1"}).then(
@@ -112,7 +120,7 @@ var test = [
 	},
 	/**
 	 * Test the verbose function at false (API)
-	 * 2
+	 * #02
 	 */
 		function () {
 		cbi.install({cwd: "test2"}).then(
@@ -142,7 +150,7 @@ var test = [
 	},
 	/**
 	 * Test the update method (API)
-	 * 3
+	 * #03
 	 */
 		function () {
 		// 1 Install an old library version
@@ -198,7 +206,7 @@ var test = [
 	},
 	/**
 	 * Test the run method (API)
-	 * 4
+	 * #04
 	 */
 		function () {
 		bower.commands
@@ -231,7 +239,7 @@ var test = [
 	},
 	/**
 	 * Test the runMin method (API)
-	 * 5
+	 * #05
 	 */
 		function () {
 		bower.commands
@@ -284,7 +292,7 @@ var test = [
 	},
 	/**
 	 * Test the runMinR method (API)
-	 * 6
+	 * #06
 	 */
 		function () {
 		bower.commands
@@ -340,7 +348,7 @@ var test = [
 	/*CLI tests ----------------------------------------------------------------------*/
 	/**
 	 * Test file without file type folder (CLI)
-	 * 7
+	 * #07
 	 */
 		function () {
 
@@ -370,7 +378,7 @@ var test = [
 	},
 	/**
 	 * Test the verbose function at true (CLI)
-	 * 8
+	 * #08
 	 */
 		function () {
 		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test1\"", function (err, result) {
@@ -399,7 +407,7 @@ var test = [
 	},
 	/**
 	 * Test the verbose function at false (CLI)
-	 * 9
+	 * #09
 	 */
 		function () {
 		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test2\"", function (err, result) {
@@ -428,7 +436,7 @@ var test = [
 	},
 	/**
 	 * Test the update method (CLI)
-	 * 10
+	 * #10
 	 */
 		function () {
 		// 1 Install an old library version
@@ -483,7 +491,7 @@ var test = [
 	},
 	/**
 	 * Test the run method (CLI)
-	 * 11
+	 * #11
 	 */
 		function () {
 		bower.commands
@@ -516,7 +524,7 @@ var test = [
 	},
 	/**
 	 * Test the runMin method (CLI)
-	 * 12
+	 * #12
 	 */
 		function () {
 		bower.commands
@@ -568,7 +576,7 @@ var test = [
 	},
 	/**
 	 * Test the runMinR method (CLI)
-	 * 13
+	 * #13
 	 */
 		function () {
 		bower.commands
@@ -619,9 +627,14 @@ var test = [
 			}
 		);
 	}
+	// TODO add tests: "test the override of -V for the cli"
+	// TODO optimise the use of the folders for the tests
 ];
 
 var testNumber = Object.keys(test).length;
+/**
+ * Execute the next test in the object "test"
+ */
 function runNextTest() {
 	currentTest++;
 

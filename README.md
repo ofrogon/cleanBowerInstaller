@@ -41,35 +41,43 @@ clean-bower-installer [OPTIONS] [ARGS]
 ## API
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
-| `commands.automatic({[Object]})` | Shortcut for `bower.commands.install()` or `bower.commands.update()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
-| `commands.install({[Object]})` | Shortcut for `bower.commands.install()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
-| `commands.update({[Object]})`  | Shortcut for `bower.commands.update()` then `commands.run()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail. |
-| `commands.run()`     | Execute the clean-bower-installer action.                             |
+| `commands.automatic({bowerOptions})` | Shortcut for `bower.commands.install()` or `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.install({bowerOptions})`   | Shortcut for `bower.commands.install()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.update({bowerOptions})`    | Shortcut for `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail. |
+| `commands.run([string])`             | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. <br/> As argument you can give the path to the bower.json file.|
+| `commands.runMin([string])`          | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy this file over the standard one, keeping the .min extension. <br/> As argument you can give the path to the bower.json file.|
+| `commands.runMinR([string])`         | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy this file over the standard one, keeping the name specified in the bower.json file. <br/> As argument you can give the path to the bower.json file.|
 
-Then, for example, you can use it like this:
+### API function return
+All these method use "q", then they return promise. So you can use `then()`, `.finally()`, `.done()`. See the [q documentation](https://github.com/kriskowal/q/wiki/API-Reference#promise-methods) for more details about the use of promise.
+
+### Examples
+For more examples about the use of the API or the CLI, look at the [test/test.js](https://github.com/ofrogon/cleanBowerInstaller/blob/defaultAction/test/test.js) file.
 ```
-var cbi = require('clean-bower-installer').commands;
+var cbi = require("../bin/clean-bower-installer");
 
-// This function will be useful in the next examples
-function isEmptyObject(obj) {
-    var name;
-    for (name in obj) {
-        return false;
+/* Ex. 1: Run the API command "automatic" for a bower.json file in an other folder */
+cbi.automatic({cwd: "some/folder/path/relative"}).then(
+    function (message) {
+        // On success
+    },
+    function (err) {
+        // On error
     }
-    return true;
-}
+);
 
-/* Ex. 1: Run clean-bower-installer automatic command */
-cbi.automatic();
+/* Ex. 2: Run the API command "update" and call a method on either, the fulfillment or rejection of the method */
+cbi.update().finally(
+    function() {
+        // On success or error
+    }
+);
 
-/* Ex. 2: Run clean-bower-installer update command */
-cbi.update();
-
-/* Ex. 3: Run clean-bower-installer install command */
+/* Ex. 3: Run the API command "install" and don't care to do something on finish.*/
 cbi.install();
 
-/* Ex. 4: Run bower libs update */
-cbi.run();
+/* Ex. 4: Execute the tool clean-bower-installer without updating the content of the bower_components folder. Also here we only want to do an action on the tool execution failure */
+cbi.run("some/folder/path/relative");
 ```
 
 ## Options
@@ -391,8 +399,10 @@ public
 * Various regression fixes on the API.
 
 ### 0.0.7 - Alpha 7
-* Add option `verbose` to display/return more informations from the tool execution.
+* Add option `verbose` to display/return more information from the tool execution.
 * A lot of bug fixes.
+* Change most of the method to be asynchronous.
+* Change how the API and the CLI mode were using each other.
 
 ## Incoming
 * Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.7)

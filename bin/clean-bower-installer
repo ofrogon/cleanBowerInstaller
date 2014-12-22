@@ -11,7 +11,7 @@ var path = require("path"),
 	pkg = require("../package.json"),
 	q = require("q");
 
-//Regex
+//Regex object
 var regex = {
 	startWithSlash: new RegExp("^\/.*"),
 	containAsterisk: new RegExp("\\*", "g"),
@@ -243,6 +243,9 @@ function copyFiles() {
 	return deferred.promise;
 }
 
+/**
+ * Short method to get the bower.json file
+ */
 function getBowerJson() {
 	var bp = path.join(bowerPath, "bower.json"),
 		exist = fs.existsSync(bp);
@@ -254,6 +257,12 @@ function getBowerJson() {
 	}
 }
 
+/**
+ * Run a bower command and return the promise
+ *
+ * @param command {string}
+ * @returns {promise}
+ */
 function runBower(command) {
 	if (!customConfigG.hasOwnProperty("cwd")) {
 		customConfigG.cwd = bowerPath;
@@ -261,6 +270,11 @@ function runBower(command) {
 	return bower.commands[command](undefined, undefined, customConfigG);
 }
 
+/**
+ * When the automatic command is use, this method find which bower command must be call
+ *
+ * @returns {promise}
+ */
 function determineCommand() {
 	var deferred = q.defer();
 
@@ -309,6 +323,8 @@ function determineCommand() {
 
 /**
  * Clean-Bower-Install main logic function
+ *
+ * @returns {promise}
  */
 function runCBI() {
 	var deferred = q.defer();
@@ -400,7 +416,6 @@ function runCBI() {
 	return deferred.promise;
 }
 
-/* API commands *******************************************************************************************************/
 /**
  * This object contain all the API commands for this module
  *
@@ -411,6 +426,7 @@ var commands = {
 	 * Use the bower programmatic API to call the install command
 	 *
 	 * @param [bowerCustomConfig] {object}
+	 * @returns {promise}
 	 */
 	automatic: function (bowerCustomConfig) {
 		var deferred = q.defer(), endMessage = "";
@@ -456,7 +472,7 @@ var commands = {
 	/** Use the bower programmatic API to call the install command
 	 *
 	 * @param [bowerCustomConfig] {object}
-	 * @returns {*}
+	 * @returns {promise}
 	 */
 	install: function (bowerCustomConfig) {
 		var deferred = q.defer(), endMessage = "";
@@ -496,6 +512,7 @@ var commands = {
 	 * Use the bower programmatic API to call the update command
 	 *
 	 * @param [bowerCustomConfig] {object}
+	 * @returns {promise}
 	 */
 	update: function (bowerCustomConfig) {
 		var deferred = q.defer(), endMessage = "";
@@ -535,6 +552,7 @@ var commands = {
 	 * Execute clean-bower-installer main goal
 	 *
 	 * @param [bowerFilePath] {string}
+	 * @returns {promise}
 	 */
 	run: function (bowerFilePath) {
 		var deferred = q.defer();
@@ -562,6 +580,7 @@ var commands = {
 	 * Execute clean-bower-installer main goal with min option
 	 *
 	 * @param [bowerFilePath] {string}
+	 * @returns {promise}
 	 */
 	runMin: function (bowerFilePath) {
 		var deferred = q.defer();
@@ -586,6 +605,7 @@ var commands = {
 	 * Execute clean-bower-installer main goal with min and rename option
 	 *
 	 * @param [bowerFilePath] {string}
+	 * @returns {promise}
 	 */
 	runMinR: function (bowerFilePath) {
 		var deferred = q.defer();
@@ -688,6 +708,7 @@ if (require.main === module) {
 		}
 	});
 } else {
+	/* API section ********************************************************************************************************/
 	module.exports = {
 		automatic: commands.automatic,
 		install: commands.install,
