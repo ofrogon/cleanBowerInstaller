@@ -1,6 +1,6 @@
 {
 	"name": "clean-bower-installer",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "Tool to install pre-selected bower dependencies",
 	"keywords": [
 		"bower",
@@ -25,11 +25,16 @@
 		"bower-config": "^0.5.2",
 		"cli": "~0.6.4",
 		"colors": "~1.0.2",
-		"fs-extra": "^0.12.0",
-		"glob": "~4.2.0"
+		"fs-extra": "^0.13.0",
+		"glob": "^4.3.1",
+		"q": "^2.0.0"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.5",
+		"grunt-contrib-jshint": "~0.10.0",
+		"grunt-run": "~0.3.0"
 	},
 	"engines": {
 		"node": ">=0.10.0"
-	},
-	"preferGlobal": true
+	}
 }

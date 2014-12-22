@@ -1,0 +1,22 @@
+{
+	"name": "test1",
+	"dependencies": {
+		"angular": "~1.3.0"
+	},
+	"cInstall": {
+		"option": {
+			"default": {
+				"folder": "../temp"
+			},
+			"verbose": true
+		},
+		"folder": {
+
+		},
+		"source": {
+			"angular": {
+				"angular.js": "angular.js"
+			}
+		}
+	}
+}
