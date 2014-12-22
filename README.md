@@ -1,5 +1,5 @@
 # clean-bower-installer
-This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need from all the files bower download.
+This tool allows you to install bower dependencies without including the entire repo. It also adds a way to specify and take only what you really need from all the files that bower download.
 
 [![Build Status](https://img.shields.io/travis/ofrogon/cleanBowerInstaller/master.svg?style=flat)](https://travis-ci.org/ofrogon/cleanBowerInstaller)
 [![Dependency Status](https://david-dm.org/ofrogon/cleanBowerInstaller.svg?style=flat)](https://david-dm.org/ofrogon/cleanBowerInstaller)
@@ -34,19 +34,19 @@ clean-bower-installer [OPTIONS] [ARGS]
 | `--bower=`"path"   | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
 | `-m`, `--min`      | Copy .min file version first, if it don't exist it copy the standard version. |
 | `-M`, `--renameMin`| Copy .min file version first, if it don't exist it copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
-| `-v`, `--version`  | Display the version of the tool install on your computer.             |
-| `-V`, `--verbose`  | Display on the terminal more information during the tool execution.   |
+| `-v`, `--version`  | Display the version of the tool installed on your computer.           |
+| `-V`, `--verbose`  | Return more information during the tool execution.                    |
 | `-h`, `--help`     | Display the help and usage details.                                   |
 
 ## API
 | Element            | Value to provide                                                      |
 |--------------------|-----------------------------------------------------------------------|
-| `commands.automatic({bowerOptions})` | Shortcut for `bower.commands.install()` or `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
-| `commands.install({bowerOptions})`   | Shortcut for `bower.commands.install()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. <br/> You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
-| `commands.update({bowerOptions})`    | Shortcut for `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/>You can pass as argument an object containing some bower custom configuration also here see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail. |
+| `commands.automatic({bowerOptions})` | Shortcut for `bower.commands.install()` or `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/> You can also pass as argument an object containing some bower custom configuration, see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.install({bowerOptions})`   | Shortcut for `bower.commands.install()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail. <br/> You can also pass as argument an object containing some bower custom configuration, see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail.|
+| `commands.update({bowerOptions})`    | Shortcut for `bower.commands.update()`, see [the bower programmatic-api documentation](http://bower.io/docs/api/#programmatic-api) for more detail.<br/>You can also pass as argument an object containing some bower custom configuration, see [the bower configuration documentation](http://bower.io/docs/config/#bowerrc-specification) for more detail. |
 | `commands.run([string])`             | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. <br/> As argument you can give the path to the bower.json file.|
-| `commands.runMin([string])`          | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy this file over the standard one, keeping the .min extension. <br/> As argument you can give the path to the bower.json file.|
-| `commands.runMinR([string])`         | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy this file over the standard one, keeping the name specified in the bower.json file. <br/> As argument you can give the path to the bower.json file.|
+| `commands.runMin([string])`          | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy the file over the standard one, keeping the .min. <br/> As argument you can give the path to the bower.json file.|
+| `commands.runMinR([string])`         | Execute the tool clean-bower-installer action without any call to bower. So only the file copy will be executed. Also, when the minimized file version exist, the tool will copy the file over the standard one, keeping the name specified in the bower.json file. <br/> As argument you can give the path to the bower.json file.|
 
 ### API function return
 All these method use "q", then they return promise. So you can use `then()`, `.finally()`, `.done()`. See the [q documentation](https://github.com/kriskowal/q/wiki/API-Reference#promise-methods) for more details about the use of promise.
@@ -56,7 +56,7 @@ For more examples about the use of the API or the CLI, look at the [test/test.js
 ```
 var cbi = require("../bin/clean-bower-installer");
 
-/* Ex. 1: Run the API command "automatic" for a bower.json file in an other folder */
+/* Ex. 1: Run the API command "automatic" for a bower.json file in another folder */
 cbi.automatic({cwd: "some/folder/path/relative"}).then(
     function (message) {
         // On success
@@ -66,7 +66,7 @@ cbi.automatic({cwd: "some/folder/path/relative"}).then(
     }
 );
 
-/* Ex. 2: Run the API command "update" and call a method on either, the fulfillment or rejection of the method */
+/* Ex. 2: Run the API command "update" and call a method on either, the fulfilment or rejection of the method */
 cbi.update().finally(
     function() {
         // On success or error
@@ -91,9 +91,9 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 
 ## Ignore files
 
-To ignore some files that a pattern include, you can specify the files you want to ignore in the library file listing the `!` symbol and pass him a *string* or a *Array* with the files (or pattern) you want to be ignore.
+To ignore some files that a pattern include, you can specifies the files you want to ignore in the library file, listing the `!` symbol and pass it a *string* or an *Array* with the files (or pattern) you want to ignore.
 
-**Important**: To ignore files, you can either list the paths to the ignored files, or you can use a pattern, like `**/file.ext`.
+**Important**: To ignore files, you can either list the path of the ignored files or you can use a pattern like `**/file.ext`.
 
 For example, see [Specifying files to ignore](#SFTI) in the Examples section.
 
@@ -194,7 +194,7 @@ public
                 "bootstrap.js": "dist/js/bootstrap.js",
                 "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
                 "bootstrap.css": "dist/css/bootstrap.css",
-                "bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
+                "bootstrap.min.css#/thisPathIsGlobal": "dist/css/bootstrap.min.css"
             }
         }
     }
@@ -402,10 +402,10 @@ public
 * Add option `verbose` to display/return more information from the tool execution.
 * A lot of bug fixes.
 * Change most of the method to be asynchronous.
-* Change how the API and the CLI mode were using each other.
+* Now, the CLI commands call the API ones.
+* Add some test for the default tool actions.
 
 ## Incoming
-* Option to set a default action, for example, you will be able to always specify the execution of bower update or install when executing the module (Target version: 0.0.7)
-* Option to remove the bower folder after use. (Target version: 0.0.8)
-* Add test in the lib (Target version: 0.1.0)
-* Write the Wiki (Target version: 0.1.0)
+* Option to remove the bower folder after use. (Target version: 0.0.8).
+* Add test for the tool (Target version: 0.1.0).
+* Write the Wiki (Target version: 0.1.0).
