@@ -197,7 +197,7 @@ function generateFileList() {
 			if (filesTo.ignore[i].from === filesTo.move[j].from) {
 				filesTo.move.splice(j, 1);
 
-				length2 --;
+				length2--;
 			}
 		}
 	}
@@ -494,7 +494,7 @@ var commands = {
 						if (Object.keys(installed).length === 0) {
 							endMessage = "The bower command \"install\" do not return any information.\n";
 						} else {
-							endMessage = JSON.stringify(installed)+ "\n";
+							endMessage = JSON.stringify(installed) + "\n";
 						}
 					}
 
@@ -648,7 +648,7 @@ if (require.main === module) {
 	});
 
 	// CLI input treatment
-	cli.main(function(args, options) {
+	cli.main(function (args, options) {
 		if (options.verbose) {
 			option.verbose = true;
 		}

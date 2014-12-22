@@ -628,6 +628,11 @@ var test = [
 		);
 	}
 	// TODO add tests: "test the override of -V for the cli"
+	// TODO add tests: "test the ignore"
+	// TODO add tests: "test without default.folder"
+	// TODO add tests: "test with default.minFolder"
+	// TODO add tests: "test with option min"
+	// TODO add tests: "test with option min.ignoreExt"
 	// TODO optimise the use of the folders for the tests
 ];
 
