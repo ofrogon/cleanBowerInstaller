@@ -1,1 +1,1 @@
-Test the work of the runMinR method.
+Test the work of the removeAfter argument.

@@ -27,16 +27,17 @@ clean-bower-installer [OPTIONS] [ARGS]
 
 ### List of option
 
-| Command            | Result                                                                |
-|--------------------|-----------------------------------------------------------------------|
-| `-i`, `--install`  | Run the command "bower install" before execute clean-bower-installer. |
-| `-u`, `--update`   | Run the command "bower update" before execute clean-bower-installer.  |
-| `--bower=`"path"   | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
-| `-m`, `--min`      | Copy .min file version first, if it don't exist it copy the standard version. |
-| `-M`, `--renameMin`| Copy .min file version first, if it don't exist it copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
-| `-v`, `--version`  | Display the version of the tool installed on your computer.           |
-| `-V`, `--verbose`  | Return more information during the tool execution.                    |
-| `-h`, `--help`     | Display the help and usage details.                                   |
+| Command              | Result                                                                |
+|----------------------|-----------------------------------------------------------------------|
+| `-i`, `--install`    | Run the command "bower install" before execute clean-bower-installer. |
+| `-u`, `--update`     | Run the command "bower update" before execute clean-bower-installer.  |
+| `--bower=`"path"     | By entering the relative path to the bower.json file you can run the command from a different folder than the one containing the bower.json file. ex.:`bower=some/fake/path`|
+| `-m`, `--min`        | Copy .min file version first, if it don't exist it copy the standard version. |
+| `-M`, `--renameMin`  | Copy .min file version first, if it don't exist it copy the standard version **and** rename the file as specified in the bower.json file (can be used to remove the .min extension). |
+| `-v`, `--version`    | Display the version of the tool installed on your computer.           |
+| `-V`, `--verbose`    | Return more information during the tool execution.                    |
+| `-r`, `--removeAfter`| Remove the bower_components folder after tool execution.              |
+| `-h`, `--help`       | Display the help and usage details.                                   |
 
 ## API
 | Element            | Value to provide                                                      |
@@ -88,6 +89,7 @@ These elements can be set in the cInstall>option section of the *bower.json* fil
 | `default`         | Object. <br/> **Option 1**: `folder`, string, give there the folder from where you want all your files to be copied relative to. (default value: `.`)<br/> **Option 2**: `minFolder`, string, write here where you want all your minimized files version to be copied relative to. This folder will be use only if the module was executed with the `min > get` option at true.<br/>Ex: `option: {"folder": "public", "minFolder": "packages/prod/public"}` |
 | `min`             | Object. <br/> **Option 1**: `get`, boolean, if true get the minimise file version. <br/>**Option 2**: `rename`, boolean, if true rename the file as specified in the bower.json file. If `get` value is false, the value of `rename` will be ignored.<br/>**Option 3**: `ignoreExt`, array of string, each extensions list in this array will be ignored when the `min` option is use.<br/>*By default these two values are false.* <br/>Ex 1: `"min": {"get": true, "rename": false}` is the equivalent of the CLI `clean-bower-installer -m`<br/>Ex 2: `"min": {"get": true, "rename": true}` is the equivalent of the CLI `clean-bower-installer -M`<br/>Ex 3: `"min": {"ignoreExt": ["less"]}` can be use to ignore all less files when you use the `min` option.|
 | `verbose`         | Boolean (default value: **false**) <br/> Return more information from the tool execution. |
+| `removeAfter`     | Boolean (default value: **false**) <br/> If true, remove the bower_components folder after the tool execution. |
 
 ## Ignore files
 
@@ -405,7 +407,9 @@ public
 * Now, the CLI commands call the API ones.
 * Add some test for the default tool actions.
 
+### 0.0.8 - Alpha 8
+* Add option `removeAfter` to delete the bower_components folder after the tool execution.
+
 ## Incoming
-* Option to remove the bower folder after use. (Target version: 0.0.8).
 * Add test for the tool (Target version: 0.1.0).
 * Write the Wiki (Target version: 0.1.0).
