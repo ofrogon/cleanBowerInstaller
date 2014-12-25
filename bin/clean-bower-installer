@@ -346,6 +346,8 @@ function runCBI() {
 				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
 					if (setup === "verbose" && require.main !== module) {
 						option.verbose = cInstall.option.verbose;
+					} else if (setup === "removeAfter" && require.main !== module) {
+						option.removeAfter = cInstall.option.removeAfter
 					} else if (typeof cInstall.option[setup] === "object") {
 
 						for (var subSetup in cInstall.option[setup]) {
@@ -406,6 +408,10 @@ function runCBI() {
 		}
 
 		copyFiles().done(function () {
+			// Remove the bower_components folder if the option is set
+			if (option.removeAfter && fs.existsSync(path.join(bowerPath, "bower_components"))) {
+				fs.removeSync(path.join(bowerPath, "bower_components"));
+			}
 			deferred.resolve("clean-bower-installer execution successfully done!");
 		});
 
@@ -644,13 +650,18 @@ if (require.main === module) {
 		bower: [false, "Input the bower.json file path.", "path", "" ],
 		min: ["m", "Try to get .min file version first."],
 		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
-		verbose: ["V", "Get more information from the tool."]
+		verbose: ["V", "Get more information from the tool."],
+		removeAfter: ["r", "Remove the bower_components folder after execution."]
 	});
 
 	// CLI input treatment
 	cli.main(function (args, options) {
 		if (options.verbose) {
 			option.verbose = true;
+		}
+
+		if (options.removeAfter) {
+			option.removeAfter = true;
 		}
 
 		// Add load of minimised file version and renaming of them if needed

@@ -626,6 +626,64 @@ var test = [
 				});
 			}
 		);
+	},
+	/**
+	 * Test the removeAfter argument (API)
+	 * #14
+	 */
+		function () {
+		cbi.install({cwd: "test7"}).then(
+			function () {
+				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {
+					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
+					fs.removeSync(path.join(__dirname, "test7/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "temp"))) {
+					fs.removeSync(path.join(__dirname, "temp"));
+				} else {
+					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "temp/") + " have not been created.");
+				}
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			},
+			function (err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		);
+	},
+	/**
+	 * Test the removeAfter argument (CLI)
+	 * #15
+	 */
+		function () {
+
+		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function (err) {
+			if (err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			} else {
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "temp"))) {
+					fs.removeSync(path.join(__dirname, "temp"));
+				} else {
+					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "temp/") + " have not been created.");
+				}
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		});
 	}
 	// TODO add tests: "test the override of -V for the cli"
 	// TODO add tests: "test the ignore"
