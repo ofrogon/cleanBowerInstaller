@@ -662,16 +662,16 @@ var test = [
 	 */
 		function () {
 
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test7\"", function (err) {
+		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function (err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			} else {
-				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
-					fs.removeSync(path.join(__dirname, "test7/bower_components"));
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp"))) {
