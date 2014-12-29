@@ -62,9 +62,9 @@ var test = [
 	 * Test file without file type folder (API)
 	 * #00
 	 */
-	function () {
+	function() {
 		cbi.install({cwd: "test0"}).then(
-			function () {
+			function() {
 				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
 					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				} else {
@@ -80,7 +80,7 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -92,9 +92,9 @@ var test = [
 	 * Test the verbose function at true (API)
 	 * #01
 	 */
-	function () {
+	function() {
 		cbi.install({cwd: "test1"}).then(
-			function (result) {
+			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test1/bower_components"))) {
 					fs.removeSync(path.join(__dirname, "test1/bower_components"));
 				}
@@ -110,7 +110,7 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -122,9 +122,9 @@ var test = [
 	 * Test the verbose function at false (API)
 	 * #02
 	 */
-		function () {
+	function() {
 		cbi.install({cwd: "test2"}).then(
-			function (result) {
+			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
 					fs.removeSync(path.join(__dirname, "test2/bower_components"));
 				}
@@ -140,7 +140,7 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -152,12 +152,12 @@ var test = [
 	 * Test the update method (API)
 	 * #03
 	 */
-		function () {
+	function() {
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test3"})
-			.on("end", function () {
+			.on("end", function() {
 
 				// 2 remove the bower folder
 				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
@@ -172,11 +172,11 @@ var test = [
 
 				// 4 run cbi update
 				cbi.install({cwd: "test3"}).then(
-					function () {
+					function() {
 						// 5 run bower update
 						bower.commands
 							.update([], {save: true}, {cwd: "test3"})
-							.on("end", function (update) {
+							.on("end", function(update) {
 
 								// 6 if no result the lib is at the last version, so it work
 								if (Object.keys(update).length !== 0) {
@@ -195,7 +195,7 @@ var test = [
 								runNextTest();
 							});
 					},
-					function (err) {
+					function(err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
@@ -208,12 +208,12 @@ var test = [
 	 * Test the run method (API)
 	 * #04
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test4"})
-			.on("end", function () {
+			.on("end", function() {
 				cbi.run("test4").then(
-					function () {
+					function() {
 						if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test4/bower_components"));
 						}
@@ -227,7 +227,7 @@ var test = [
 						testDisplay("Test" + currentTest);
 						runNextTest();
 					},
-					function (err) {
+					function(err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
@@ -241,12 +241,12 @@ var test = [
 	 * Test the runMin method (API)
 	 * #05
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test5"})
-			.on("end", function () {
+			.on("end", function() {
 				cbi.runMin("test5").then(
-					function () {
+					function() {
 						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test5/bower_components"));
 						}
@@ -256,14 +256,14 @@ var test = [
 							var i;
 							var count = 0;
 							fs.createReadStream(path.join(__dirname, "temp/angular.min.js"), {start: 0, end: 99})
-								.on("data", function (chunk) {
+								.on("data", function(chunk) {
 									for (i = 0; i < chunk.length; ++i) {
 										if (chunk[i] === 10) {
 											count++;
 										}
 									}
 								})
-								.on("end", function () {
+								.on("end", function() {
 									if (count > 10) {
 										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command runMin().");
 									}
@@ -280,7 +280,7 @@ var test = [
 							runNextTest();
 						}
 					},
-					function (err) {
+					function(err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
@@ -294,12 +294,12 @@ var test = [
 	 * Test the runMinR method (API)
 	 * #06
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test6"})
-			.on("end", function () {
+			.on("end", function() {
 				cbi.runMinR("test6").then(
-					function () {
+					function() {
 						if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test6/bower_components"));
 						}
@@ -309,14 +309,14 @@ var test = [
 							var i;
 							var count = 0;
 							fs.createReadStream(path.join(__dirname, "temp/angular.js"), {start: 0, end: 99})
-								.on("data", function (chunk) {
+								.on("data", function(chunk) {
 									for (i = 0; i < chunk.length; ++i) {
 										if (chunk[i] === 10) {
 											count++;
 										}
 									}
 								})
-								.on("end", function () {
+								.on("end", function() {
 									if (count > 10) {
 										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command runMinR().");
 									}
@@ -334,7 +334,7 @@ var test = [
 							runNextTest();
 						}
 					},
-					function (err) {
+					function(err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
@@ -350,9 +350,8 @@ var test = [
 	 * Test file without file type folder (CLI)
 	 * #07
 	 */
-		function () {
-
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function (err) {
+	function() {
+		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -380,8 +379,8 @@ var test = [
 	 * Test the verbose function at true (CLI)
 	 * #08
 	 */
-		function () {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test1\"", function (err, result) {
+	function() {
+		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test1\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -409,8 +408,8 @@ var test = [
 	 * Test the verbose function at false (CLI)
 	 * #09
 	 */
-		function () {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test2\"", function (err, result) {
+	function() {
+		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test2\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -438,12 +437,12 @@ var test = [
 	 * Test the update method (CLI)
 	 * #10
 	 */
-		function () {
+	function() {
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test3"})
-			.on("end", function () {
+			.on("end", function() {
 
 				// 2 remove the bower folder
 				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
@@ -457,7 +456,7 @@ var test = [
 				}
 
 				// 4 run cbi update
-				exec("node ../bin/clean-bower-installer -u --bower=\"../test/test3\"", function (err) {
+				exec("node ../bin/clean-bower-installer -u --bower=\"../test/test3\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -467,7 +466,7 @@ var test = [
 						// 5 run bower update
 						bower.commands
 							.update([], {save: true}, {cwd: "test3"})
-							.on("end", function (update) {
+							.on("end", function(update) {
 
 								// 6 if no result the lib is at the last version, so it work
 								if (Object.keys(update).length !== 0) {
@@ -493,12 +492,12 @@ var test = [
 	 * Test the run method (CLI)
 	 * #11
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test4"})
-			.on("end", function () {
+			.on("end", function() {
 
-				exec("node ../bin/clean-bower-installer --bower=\"../test/test4\"", function (err) {
+				exec("node ../bin/clean-bower-installer --bower=\"../test/test4\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -526,11 +525,11 @@ var test = [
 	 * Test the runMin method (CLI)
 	 * #12
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test5"})
-			.on("end", function () {
-				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test5\"", function (err) {
+			.on("end", function() {
+				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test5\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -546,14 +545,14 @@ var test = [
 							var i;
 							var count = 0;
 							fs.createReadStream(path.join(__dirname, "temp/angular.min.js"), {start: 0, end: 99})
-								.on("data", function (chunk) {
+								.on("data", function(chunk) {
 									for (i = 0; i < chunk.length; ++i) {
 										if (chunk[i] === 10) {
 											count++;
 										}
 									}
 								})
-								.on("end", function () {
+								.on("end", function() {
 									if (count > 10) {
 										errors.push("Test" + currentTest + " error: The angular.js file copy by the command -m wasn't the minimised one.");
 									}
@@ -578,11 +577,11 @@ var test = [
 	 * Test the runMinR method (CLI)
 	 * #13
 	 */
-		function () {
+	function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test6"})
-			.on("end", function () {
-				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test6\"", function (err) {
+			.on("end", function() {
+				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test6\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -598,14 +597,14 @@ var test = [
 							var i;
 							var count = 0;
 							fs.createReadStream(path.join(__dirname, "temp/angular.js"), {start: 0, end: 99})
-								.on("data", function (chunk) {
+								.on("data", function(chunk) {
 									for (i = 0; i < chunk.length; ++i) {
 										if (chunk[i] === 10) {
 											count++;
 										}
 									}
 								})
-								.on("end", function () {
+								.on("end", function() {
 									if (count > 10) {
 										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command -M.");
 									}
@@ -631,9 +630,9 @@ var test = [
 	 * Test the removeAfter argument (API)
 	 * #14
 	 */
-		function () {
+	function() {
 		cbi.install({cwd: "test7"}).then(
-			function () {
+			function() {
 				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
 					fs.removeSync(path.join(__dirname, "test7/bower_components"));
@@ -648,7 +647,7 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -660,9 +659,9 @@ var test = [
 	 * Test the removeAfter argument (CLI)
 	 * #15
 	 */
-		function () {
+	function() {
 
-		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function (err) {
+		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -689,8 +688,8 @@ var test = [
 	 * Test the verbose override (CLI)
 	 * #16
 	 */
-		function () {
-		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test2\"", function (err, result) {
+	function() {
+		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test2\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -718,9 +717,9 @@ var test = [
 	 * Test the file ignore (API)
 	 * #17
 	 */
-		function () {
+	function() {
 		cbi.install({cwd: "test8"}).then(
-			function () {
+			function() {
 				if (fs.existsSync(path.join(__dirname, "test8/bower_components"))) {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
 					fs.removeSync(path.join(__dirname, "test8/bower_components"));
@@ -741,7 +740,7 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -753,9 +752,9 @@ var test = [
 	 * Test without option (API)
 	 * #18
 	 */
-		function () {
+	function() {
 		cbi.install({cwd: "test9"}).then(
-			function () {
+			function() {
 				if (fs.existsSync(path.join(__dirname, "test9/bower_components"))) {
 					fs.removeSync(path.join(__dirname, "test9/bower_components"));
 				} else {
@@ -771,7 +770,209 @@ var test = [
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			},
-			function (err) {
+			function(err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		);
+	},
+	/**
+	 * Test the runMin method with default.minFolder(API)
+	 * #19
+	 */
+	function() {
+		bower.commands
+			.install(["angular"], {}, {cwd: "test10"})
+			.on("end", function() {
+				cbi.runMin("test10").then(
+					function() {
+						if (fs.existsSync(path.join(__dirname, "test10/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test10/bower_components"));
+						}
+
+						if (fs.existsSync(path.join(__dirname, "tempMin/angular.min.js"))) {
+							// Verify that the file is the minimised one using his number of line
+							var i;
+							var count = 0;
+							fs.createReadStream(path.join(__dirname, "tempMin/angular.min.js"), {start: 0, end: 99})
+								.on("data", function(chunk) {
+									for (i = 0; i < chunk.length; ++i) {
+										if (chunk[i] === 10) {
+											count++;
+										}
+									}
+								})
+								.on("end", function() {
+									if (count > 10) {
+										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command install().");
+									}
+
+									fs.removeSync(path.join(__dirname, "tempMin"));
+
+									testDisplay("Test" + currentTest);
+									runNextTest();
+								});
+						} else {
+							errors.push("Test" + currentTest + " error: The angular.min.js file was not copy by the command install().");
+
+							testDisplay("Test" + currentTest);
+							runNextTest();
+						}
+					},
+					function(err) {
+						errors.push("Error in test" + currentTest + ": " + err);
+
+						testDisplay("Test" + currentTest);
+						runNextTest();
+					}
+				);
+			}
+		);
+	},
+	/**
+	 * Test the runMinR method (CLI)
+	 * #20
+	 */
+	function() {
+		bower.commands
+			.install(["angular"], {}, {cwd: "test10"})
+			.on("end", function() {
+				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test10\"", function(err) {
+					if (err) {
+						errors.push("Error in test" + currentTest + ": " + err);
+
+						testDisplay("Test" + currentTest);
+						runNextTest();
+					} else {
+						if (fs.existsSync(path.join(__dirname, "test10/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test10/bower_components"));
+						}
+
+						if (fs.existsSync(path.join(__dirname, "tempMin/angular.js"))) {
+							// Verify that the file is the minimised one using his number of line
+							var i;
+							var count = 0;
+							fs.createReadStream(path.join(__dirname, "tempMin/angular.js"), {start: 0, end: 99})
+								.on("data", function(chunk) {
+									for (i = 0; i < chunk.length; ++i) {
+										if (chunk[i] === 10) {
+											count++;
+										}
+									}
+								})
+								.on("end", function() {
+									if (count > 10) {
+										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command -M.");
+									}
+
+									fs.removeSync(path.join(__dirname, "tempMin"));
+
+									testDisplay("Test" + currentTest);
+									runNextTest();
+								});
+
+						} else {
+							errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command -M.");
+
+							testDisplay("Test" + currentTest);
+							runNextTest();
+						}
+					}
+				});
+			}
+		);
+	},
+	/**
+	 * Test the runMin method with default.minFolder(API)
+	 * #21
+	 */
+	function() {
+		cbi.install({cwd: "test11"}).then(
+			function() {
+				if (fs.existsSync(path.join(__dirname, "test11/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test11/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "tempMin/angular.min.js"))) {
+					// Verify that the file is the minimised one using his number of line
+					var i;
+					var count = 0;
+					fs.createReadStream(path.join(__dirname, "tempMin/angular.min.js"), {start: 0, end: 99})
+						.on("data", function(chunk) {
+							for (i = 0; i < chunk.length; ++i) {
+								if (chunk[i] === 10) {
+									count++;
+								}
+							}
+						})
+						.on("end", function() {
+							if (count > 10) {
+								errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command install().");
+							}
+
+							fs.removeSync(path.join(__dirname, "tempMin"));
+
+							testDisplay("Test" + currentTest);
+							runNextTest();
+						});
+				} else {
+					errors.push("Test" + currentTest + " error: The angular.min.js file was not copy by the command install().");
+
+					testDisplay("Test" + currentTest);
+					runNextTest();
+				}
+			},
+			function(err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		);
+	},
+	/**
+	 * Test the runMin method with default.minFolder(API)
+	 * #22
+	 */
+	function() {
+		cbi.install({cwd: "test12"}).then(
+			function() {
+				if (fs.existsSync(path.join(__dirname, "test12/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test12/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "tempMin/angular.js"))) {
+					// Verify that the file is the minimised one using his number of line
+					var i;
+					var count = 0;
+					fs.createReadStream(path.join(__dirname, "tempMin/angular.js"), {start: 0, end: 99})
+						.on("data", function(chunk) {
+							for (i = 0; i < chunk.length; ++i) {
+								if (chunk[i] === 10) {
+									count++;
+								}
+							}
+						})
+						.on("end", function() {
+							if (count > 10) {
+								errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command install().");
+							}
+
+							fs.removeSync(path.join(__dirname, "tempMin"));
+
+							testDisplay("Test" + currentTest);
+							runNextTest();
+						});
+				} else {
+					errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command install().");
+
+					testDisplay("Test" + currentTest);
+					runNextTest();
+				}
+			},
+			function(err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
@@ -779,9 +980,6 @@ var test = [
 			}
 		);
 	}
-	// TODO add tests: "test with default.minFolder"
-	// TODO add tests: "test with option min"
-	// TODO add tests: "test with option min.ignoreExt"
 	// TODO optimise the use of the folders for the tests
 ];
 
@@ -797,18 +995,23 @@ function runNextTest() {
 		fs.removeSync(path.join(__dirname, "temp"));
 	}
 
+	// Just in case a test crash
+	if (fs.existsSync(path.join(__dirname, "tempMin"))) {
+		fs.removeSync(path.join(__dirname, "tempMin"));
+	}
+
 	if (currentTest < testNumber) {
 		test[currentTest]();
 	} else {
 		//All tests done
 		if (errorCount === 0) {
 			console.log(colors.green("\nAll clean-bower-installer test had pass."));
-			setTimeout(function () {
+			setTimeout(function() {
 				process.exit(0);
 			}, 1000);
 		} else {
 			console.log(colors.red("\nThere had been " + errorCount + " error(s) while testing clean-bower-installer."));
-			setTimeout(function () {
+			setTimeout(function() {
 				process.exit(1);
 			}, 2000);
 		}

@@ -1,0 +1,22 @@
+{
+	"name": "test10",
+	"dependencies": {
+		"angular": "~1.3.0"
+	},
+	"cInstall": {
+		"option": {
+			"default": {
+				"folder": "../tempMin"
+			},
+			"min": {
+				"get": true,
+				"rename": true
+			}
+		},
+		"source": {
+			"angular": {
+				"angular.js": "angular.js"
+			}
+		}
+	}
+}
