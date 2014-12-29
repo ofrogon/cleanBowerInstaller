@@ -246,7 +246,7 @@ public
                 "bootstrap.js": "dist/js/bootstrap.js",
                 "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
                 "bootstrap.css": "dist/css/bootstrap.css",
-                "bootstrap.min.css"#/thisPathIsGlobal: "dist/css/bootstrap.min.css"
+                "bootstrap.min.css#/thisPathIsGlobal": "dist/css/bootstrap.min.css"
             }
         }
     }

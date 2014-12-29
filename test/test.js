@@ -44,7 +44,7 @@ function testDisplay(name) {
 		console.log(colors.yellow("The " + name + " have fail due to the next error(s):"));
 
 		for (var i = 0; i < errors.length; i++) {
-			console.log(colors.yellow(errors[i]));
+			console.log(colors.yellow("\t" + errors[i]));
 		}
 	} else {
 		console.log(colors.cyan("The execution of " + name + " pass without error."));
@@ -684,10 +684,101 @@ var test = [
 				runNextTest();
 			}
 		});
+	},
+	/**
+	 * Test the verbose override (CLI)
+	 * #16
+	 */
+		function () {
+		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test2\"", function (err, result) {
+			if (err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			} else {
+				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test2/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "temp"))) {
+					fs.removeSync(path.join(__dirname, "temp"));
+				}
+
+				if (result === "clean-bower-installer execution successfully done!") {
+					errors.push("Test" + currentTest + " error: No verbose answer were receive but we are waiting for one.");
+				}
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		});
+	},
+	/**
+	 * Test the file ignore (API)
+	 * #17
+	 */
+		function () {
+		cbi.install({cwd: "test8"}).then(
+			function () {
+				if (fs.existsSync(path.join(__dirname, "test8/bower_components"))) {
+					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
+					fs.removeSync(path.join(__dirname, "test8/bower_components"));
+				}
+
+				if (fs.existsSync(path.join(__dirname, "temp/fonts/glyphicons-halflings-regular.svg"))) {
+					errors.push("Test" + currentTest + " error: The file \"fonts/glyphicons-halflings-regular.svg\" was suppose to be ignore.");
+				} else if (!fs.existsSync(path.join(__dirname, "temp/fonts/glyphicons-halflings-regular.eot"))) {
+					errors.push("Test" + currentTest + " error: The file \"fonts/glyphicons-halflings-regular.eot\" wasn't suppose to be ignore.");
+				}
+
+				if (fs.existsSync(path.join(__dirname, "temp"))) {
+					fs.removeSync(path.join(__dirname, "temp"));
+				} else {
+					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "temp/") + " have not been created.");
+				}
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			},
+			function (err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		);
+	},
+	/**
+	 * Test without option (API)
+	 * #18
+	 */
+		function () {
+		cbi.install({cwd: "test9"}).then(
+			function () {
+				if (fs.existsSync(path.join(__dirname, "test9/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test9/bower_components"));
+				} else {
+					errors.push("Test" + currentTest + " error: The \"bower_components\" missing.");
+				}
+
+				if (fs.existsSync(path.join(__dirname, "test9/angular.js"))) {
+					fs.removeSync(path.join(__dirname, "test9/angular.js"));
+				} else {
+					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "test9/angular.js") + " have not been created.");
+				}
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			},
+			function (err) {
+				errors.push("Error in test" + currentTest + ": " + err);
+
+				testDisplay("Test" + currentTest);
+				runNextTest();
+			}
+		);
 	}
-	// TODO add tests: "test the override of -V for the cli"
-	// TODO add tests: "test the ignore"
-	// TODO add tests: "test without default.folder"
 	// TODO add tests: "test with default.minFolder"
 	// TODO add tests: "test with option min"
 	// TODO add tests: "test with option min.ignoreExt"
@@ -719,7 +810,7 @@ function runNextTest() {
 			console.log(colors.red("\nThere had been " + errorCount + " error(s) while testing clean-bower-installer."));
 			setTimeout(function () {
 				process.exit(1);
-			}, 1000);
+			}, 2000);
 		}
 	}
 }
