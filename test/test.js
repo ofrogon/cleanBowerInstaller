@@ -980,7 +980,6 @@ var test = [
 			}
 		);
 	}
-	// TODO optimise the use of the folders for the tests
 ];
 
 var testNumber = Object.keys(test).length;
