@@ -1,1 +1,0 @@
-Test the work of the update method.

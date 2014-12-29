@@ -10,9 +10,7 @@
 			},
 			"verbose": false
 		},
-		"folder": {
-
-		},
+		"folder": {},
 		"source": {
 			"angular": {
 				"angular.js": "angular.js"

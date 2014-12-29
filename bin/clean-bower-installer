@@ -44,7 +44,7 @@ var option = {
 	folder = {},
 	source = {};
 
-/* Execution **********************************************************************************************************/
+/* Methods ************************************************************************************************************/
 
 /**
  * Compare array
@@ -99,9 +99,10 @@ function generateFileList() {
 
 					// Ignore the specified extension(s)
 					if (ignoreExt.indexOf(extension) === -1) {
-						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can"t be use
+						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
 						if (regex.containDoubleAsterisk.test(currLib[file])) {
-							console.error(colors.red("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it."));
+							console.error(colors.red("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER." +
+								" You have to specify each folder and their destination if you really need it."));
 							console.error(colors.red("Please correct the source: " + libName));
 							return false;
 						}
@@ -347,7 +348,7 @@ function runCBI() {
 					if (setup === "verbose" && require.main !== module) {
 						option.verbose = cInstall.option.verbose;
 					} else if (setup === "removeAfter" && require.main !== module) {
-						option.removeAfter = cInstall.option.removeAfter
+						option.removeAfter = cInstall.option.removeAfter;
 					} else if (typeof cInstall.option[setup] === "object") {
 
 						for (var subSetup in cInstall.option[setup]) {
@@ -364,6 +365,20 @@ function runCBI() {
 					}
 				}
 			}
+		} else {
+			option = {
+				"default": {
+				"folder": "",
+					"minFolder": ""
+			},
+				"min": {
+				"get": false,
+					"rename": false,
+					"ignoreExt": []
+			},
+				"removeAfter": false,
+				"verbose": false
+			};
 		}
 
 		// Only if no min option already specified (via CLI -m or -M or via API runMin() or runMinR())
@@ -401,10 +416,14 @@ function runCBI() {
 					}
 				}
 			}
+		} else {
+			folder = {};
 		}
 
 		if (cInstall.source !== undefined) {
 			source = cInstall.source;
+		} else {
+			source = {};
 		}
 
 		copyFiles().done(function () {
@@ -416,7 +435,8 @@ function runCBI() {
 		});
 
 	} else {
-		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section were found in the bower.json file."));
+		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section" +
+			" were found in the bower.json file."));
 	}
 
 	return deferred.promise;
@@ -475,7 +495,8 @@ var commands = {
 
 		return deferred.promise;
 	},
-	/** Use the bower programmatic API to call the install command
+	/**
+	 * Use the bower programmatic API to call the install command
 	 *
 	 * @param [bowerCustomConfig] {object}
 	 * @returns {promise}
@@ -635,7 +656,7 @@ var commands = {
 };
 
 if (require.main === module) {
-	/* CLI section ********************************************************************************************************/
+	/* CLI section ****************************************************************************************************/
 	var cli = require("cli");
 
 	// Version display
@@ -719,7 +740,7 @@ if (require.main === module) {
 		}
 	});
 } else {
-	/* API section ********************************************************************************************************/
+	/* API section ****************************************************************************************************/
 	module.exports = {
 		automatic: commands.automatic,
 		install: commands.install,

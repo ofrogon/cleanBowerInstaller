@@ -1,3 +1,0 @@
-Test file without file type folder.
-
-Before version 0.0.7 this test will fail because this case wasn't handle at this moment.
