@@ -495,7 +495,8 @@ var commands = {
 
 		return deferred.promise;
 	},
-	/** Use the bower programmatic API to call the install command
+	/**
+	 * Use the bower programmatic API to call the install command
 	 *
 	 * @param [bowerCustomConfig] {object}
 	 * @returns {promise}
