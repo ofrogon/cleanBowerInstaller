@@ -99,9 +99,10 @@ function generateFileList() {
 
 					// Ignore the specified extension(s)
 					if (ignoreExt.indexOf(extension) === -1) {
-						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can"t be use
+						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
 						if (regex.containDoubleAsterisk.test(currLib[file])) {
-							console.error(colors.red("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER. You have to specify each folder and their destination if you really need it."));
+							console.error(colors.red("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER." +
+								" You have to specify each folder and their destination if you really need it."));
 							console.error(colors.red("Please correct the source: " + libName));
 							return false;
 						}
@@ -434,7 +435,8 @@ function runCBI() {
 		});
 
 	} else {
-		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section were found in the bower.json file."));
+		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section" +
+			" were found in the bower.json file."));
 	}
 
 	return deferred.promise;
@@ -653,7 +655,7 @@ var commands = {
 };
 
 if (require.main === module) {
-	/* CLI section ********************************************************************************************************/
+	/* CLI section ****************************************************************************************************/
 	var cli = require("cli");
 
 	// Version display
@@ -737,7 +739,7 @@ if (require.main === module) {
 		}
 	});
 } else {
-	/* API section ********************************************************************************************************/
+	/* API section ****************************************************************************************************/
 	module.exports = {
 		automatic: commands.automatic,
 		install: commands.install,

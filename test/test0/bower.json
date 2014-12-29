@@ -1,5 +1,5 @@
 {
-	"name": "test0",
+	"name": "test1",
 	"dependencies": {
 		"angular": "~1.3.0"
 	},
@@ -10,9 +10,7 @@
 			},
 			"verbose": false
 		},
-		"folder": {
-
-		},
+		"folder": {},
 		"source": {
 			"angular": {
 				"angular.js": "angular.js"

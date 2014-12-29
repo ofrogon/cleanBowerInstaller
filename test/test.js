@@ -123,10 +123,10 @@ var test = [
 	 * #02
 	 */
 	function() {
-		cbi.install({cwd: "test2"}).then(
+		cbi.install({cwd: "test0"}).then(
 			function(result) {
-				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test2/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -156,26 +156,26 @@ var test = [
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
-			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test3"})
+			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test0"})
 			.on("end", function() {
 
 				// 2 remove the bower folder
-				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test3/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				// 3 restore the bower file
-				if (fs.existsSync(path.join(__dirname, "test3/bower.json"))) {
-					fs.removeSync(path.join(__dirname, "test3/bower.json"));
-					fs.writeFileSync(path.join(__dirname, "test3/bower.json"), defaultBowerFile);
+				if (fs.existsSync(path.join(__dirname, "test0/bower.json"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower.json"));
+					fs.writeFileSync(path.join(__dirname, "test0/bower.json"), defaultBowerFile);
 				}
 
 				// 4 run cbi update
-				cbi.install({cwd: "test3"}).then(
+				cbi.install({cwd: "test0"}).then(
 					function() {
 						// 5 run bower update
 						bower.commands
-							.update([], {save: true}, {cwd: "test3"})
+							.update([], {save: true}, {cwd: "test0"})
 							.on("end", function(update) {
 
 								// 6 if no result the lib is at the last version, so it work
@@ -183,8 +183,8 @@ var test = [
 									errors.push("Test" + currentTest + " error: The Angular lib have been updated as if it have been updated before using cbi.update().");
 								}
 
-								if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
-									fs.removeSync(path.join(__dirname, "test3/bower_components"));
+								if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+									fs.removeSync(path.join(__dirname, "test0/bower_components"));
 								}
 
 								if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -210,12 +210,12 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test4"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.run("test4").then(
+				cbi.run("test0").then(
 					function() {
-						if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test4/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.js"))) {
@@ -243,12 +243,12 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test5"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.runMin("test5").then(
+				cbi.runMin("test0").then(
 					function() {
-						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test5/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.min.js"))) {
@@ -296,12 +296,12 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test6"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.runMinR("test6").then(
+				cbi.runMinR("test0").then(
 					function() {
-						if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test6/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.js"))) {
@@ -409,15 +409,15 @@ var test = [
 	 * #09
 	 */
 	function() {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test2\"", function(err, result) {
+		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			} else {
-				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test2/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -441,22 +441,22 @@ var test = [
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
-			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test3"})
+			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test0"})
 			.on("end", function() {
 
 				// 2 remove the bower folder
-				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test3/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				// 3 restore the bower file
-				if (fs.existsSync(path.join(__dirname, "test3/bower.json"))) {
-					fs.removeSync(path.join(__dirname, "test3/bower.json"));
-					fs.writeFileSync(path.join(__dirname, "test3/bower.json"), defaultBowerFile);
+				if (fs.existsSync(path.join(__dirname, "test0/bower.json"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower.json"));
+					fs.writeFileSync(path.join(__dirname, "test0/bower.json"), defaultBowerFile);
 				}
 
 				// 4 run cbi update
-				exec("node ../bin/clean-bower-installer -u --bower=\"../test/test3\"", function(err) {
+				exec("node ../bin/clean-bower-installer -u --bower=\"../test/test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -465,7 +465,7 @@ var test = [
 					} else {
 						// 5 run bower update
 						bower.commands
-							.update([], {save: true}, {cwd: "test3"})
+							.update([], {save: true}, {cwd: "test0"})
 							.on("end", function(update) {
 
 								// 6 if no result the lib is at the last version, so it work
@@ -473,8 +473,8 @@ var test = [
 									errors.push("Test" + currentTest + " error: The Angular lib have been updated as if it have been updated before using cbi.update().");
 								}
 
-								if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
-									fs.removeSync(path.join(__dirname, "test3/bower_components"));
+								if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+									fs.removeSync(path.join(__dirname, "test0/bower_components"));
 								}
 
 								if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -494,18 +494,18 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test4"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
 
-				exec("node ../bin/clean-bower-installer --bower=\"../test/test4\"", function(err) {
+				exec("node ../bin/clean-bower-installer --bower=\"../test/test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
 						runNextTest();
 					} else {
-						if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test4/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.js"))) {
@@ -527,17 +527,17 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test5"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test5\"", function(err) {
+				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
 						runNextTest();
 					} else {
-						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test5/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.min.js"))) {
@@ -579,17 +579,17 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test6"})
+			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test6\"", function(err) {
+				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
 						runNextTest();
 					} else {
-						if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test6/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "temp/angular.js"))) {
@@ -631,11 +631,11 @@ var test = [
 	 * #14
 	 */
 	function() {
-		cbi.install({cwd: "test7"}).then(
+		cbi.install({cwd: "test2"}).then(
 			function() {
-				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {
+				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
-					fs.removeSync(path.join(__dirname, "test7/bower_components"));
+					fs.removeSync(path.join(__dirname, "test2/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -689,15 +689,15 @@ var test = [
 	 * #16
 	 */
 	function() {
-		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test2\"", function(err, result) {
+		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
 				testDisplay("Test" + currentTest);
 				runNextTest();
 			} else {
-				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test2/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test0/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp"))) {
@@ -718,11 +718,11 @@ var test = [
 	 * #17
 	 */
 	function() {
-		cbi.install({cwd: "test8"}).then(
+		cbi.install({cwd: "test3"}).then(
 			function() {
-				if (fs.existsSync(path.join(__dirname, "test8/bower_components"))) {
+				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" folder still there as if it was suppose to be deleted byt the \"removeAfter\" argument.");
-					fs.removeSync(path.join(__dirname, "test8/bower_components"));
+					fs.removeSync(path.join(__dirname, "test3/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "temp/fonts/glyphicons-halflings-regular.svg"))) {
@@ -753,18 +753,18 @@ var test = [
 	 * #18
 	 */
 	function() {
-		cbi.install({cwd: "test9"}).then(
+		cbi.install({cwd: "test4"}).then(
 			function() {
-				if (fs.existsSync(path.join(__dirname, "test9/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test9/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test4/bower_components"));
 				} else {
 					errors.push("Test" + currentTest + " error: The \"bower_components\" missing.");
 				}
 
-				if (fs.existsSync(path.join(__dirname, "test9/angular.js"))) {
-					fs.removeSync(path.join(__dirname, "test9/angular.js"));
+				if (fs.existsSync(path.join(__dirname, "test4/angular.js"))) {
+					fs.removeSync(path.join(__dirname, "test4/angular.js"));
 				} else {
-					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "test9/angular.js") + " have not been created.");
+					errors.push("Test" + currentTest + " error: The file " + path.join(__dirname, "test4/angular.js") + " have not been created.");
 				}
 
 				testDisplay("Test" + currentTest);
@@ -784,12 +784,12 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test10"})
+			.install(["angular"], {}, {cwd: "test5"})
 			.on("end", function() {
-				cbi.runMin("test10").then(
+				cbi.runMin("test5").then(
 					function() {
-						if (fs.existsSync(path.join(__dirname, "test10/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test10/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test5/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "tempMin/angular.min.js"))) {
@@ -837,17 +837,17 @@ var test = [
 	 */
 	function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test10"})
+			.install(["angular"], {}, {cwd: "test5"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test10\"", function(err) {
+				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test5\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
 						testDisplay("Test" + currentTest);
 						runNextTest();
 					} else {
-						if (fs.existsSync(path.join(__dirname, "test10/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test10/bower_components"));
+						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test5/bower_components"));
 						}
 
 						if (fs.existsSync(path.join(__dirname, "tempMin/angular.js"))) {
@@ -889,10 +889,10 @@ var test = [
 	 * #21
 	 */
 	function() {
-		cbi.install({cwd: "test11"}).then(
+		cbi.install({cwd: "test6"}).then(
 			function() {
-				if (fs.existsSync(path.join(__dirname, "test11/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test11/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test6/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "tempMin/angular.min.js"))) {
@@ -937,10 +937,10 @@ var test = [
 	 * #22
 	 */
 	function() {
-		cbi.install({cwd: "test12"}).then(
+		cbi.install({cwd: "test7"}).then(
 			function() {
-				if (fs.existsSync(path.join(__dirname, "test12/bower_components"))) {
-					fs.removeSync(path.join(__dirname, "test12/bower_components"));
+				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {
+					fs.removeSync(path.join(__dirname, "test7/bower_components"));
 				}
 
 				if (fs.existsSync(path.join(__dirname, "tempMin/angular.js"))) {
