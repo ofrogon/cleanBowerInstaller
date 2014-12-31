@@ -218,12 +218,42 @@ function copyFiles() {
 		}
 	}
 
+	/**
+	 * Move the files listed in the file object
+	 *
+	 * @param file {{}}
+	 */
 	function moveTheFile(file) {
-		fs.copy(file.from, path.join(file.to, file.rename), function (err) {
-			if (err && err[0].code !== "ENOENT") {
-				deferred.reject(err);
+		/**
+		 * /function to copy file async
+		 *
+		 * @param from {string}
+		 * @param to {string}
+		 */
+		function copy(from, to) {
+			fs.readFile(from, function(err, data) {
+				if (err) {
+					deferred.reject(err);
+				} else {
+					fs.outputFile(to, data, function(err) {
+						if (err) {
+							deferred.reject(err);
+						} else {
+							copyDone();
+						}
+					});
+				}
+			});
+		}
+
+		fs.exists(path.join(file.to, file.rename), function(exist) {
+			if (exist) {
+				// Delete it before
+				fs.unlink(path.join(file.to, file.rename), function() {
+					copy(file.from, path.join(file.to, file.rename));
+				});
 			} else {
-				copyDone();
+				copy(file.from, path.join(file.to, file.rename));
 			}
 		});
 	}
@@ -281,10 +311,10 @@ function determineCommand() {
 
 	getBowerJson();
 
-	fs.exists(directory, function (err, exist) {
-		if (err) {
-			deferred.reject(err);
-		} else if (!exist) {
+	directory = directory || cwd;
+
+	fs.exists(directory, function (exist) {
+		if (!exist) {
 			// There is no bower_components folder
 			deferred.resolve("install");
 		} else {
@@ -668,7 +698,7 @@ if (require.main === module) {
 		automatic: ["a", "Automatically select the right option to execute from bower."],
 		install: ["i", "Run bower install command"],
 		update: ["u", "Run bower update command"],
-		bower: [false, "Input the bower.json file path.", "path", "" ],
+		bower: [false, "Input the bower.json file path.", "path", "." ],
 		min: ["m", "Try to get .min file version first."],
 		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
 		verbose: ["V", "Get more information from the tool."],

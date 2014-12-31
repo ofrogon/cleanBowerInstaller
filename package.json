@@ -1,6 +1,6 @@
 {
 	"name": "clean-bower-installer",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Tool to install pre-selected bower dependencies",
 	"keywords": [
 		"bower",
