@@ -12,6 +12,7 @@ module.exports = function (grunt) {
 					src: [
 						"Gruntfile.js",
 						"bin/clean-bower-installer",
+						"lib/*",
 						"test/test.js"
 					]
 				}
@@ -20,7 +21,8 @@ module.exports = function (grunt) {
 				files: {
 					src: [
 						"Gruntfile.js",
-						"bin/clean-bower-installer"
+						"bin/clean-bower-installer",
+						"lib/*"
 					]
 				}
 			}
