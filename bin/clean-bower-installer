@@ -1,34 +1,26 @@
 #!/usr/bin/env node
 "use strict";
 
-process.bin = process.title = "clean-bower-installer";
+var api = require("./../lib/api"),
+	cmd = require("./../lib/cmd"),
+	cnf = require("./../lib/readConfig"),
+	colors = require("colors");
 
-var path = require("path"),
-	fs = require("fs-extra"),
-	bower = require("bower"),
-	colors = require("colors/safe"),
-	glob = require("glob"),
-	pkg = require("../package.json"),
-	q = require("q");
+colors.setTheme({
+	input: "grey",
+	verbose: "cyan",
+	prompt: "grey",
+	info: "green",
+	data: "grey",
+	help: "cyan",
+	warn: "yellow",
+	debug: "blue",
+	error: "red"
+});
 
-//Regex object
-var regex = {
-	startWithSlash: new RegExp("^\/.*"),
-	containAsterisk: new RegExp("\\*", "g"),
-	containDoubleAsterisk: new RegExp("[\\*]{2}", "g"),
-	containMin: new RegExp("[.]min", "g")
-};
-
-var bowerPath,
-	bowerJSON,
-	cwd = process.cwd(),
-	directory,
-	getMin = false,
-	renameMin = false,
-	ignoreExt = "",
-	customConfigG;
-
-var option = {
+var config = {
+	folder: {},
+	option: {
 		"default": {
 			"folder": "",
 			"minFolder": ""
@@ -41,657 +33,17 @@ var option = {
 		"removeAfter": false,
 		"verbose": false
 	},
-	folder = {},
-	source = {};
-
-/* Methods ************************************************************************************************************/
-
-/**
- * Compare array
- *
- * @param neededLibs {Array}
- * @param alreadyInstallLibs {Array}
- * @returns {boolean}
- */
-function arraysIdentical(neededLibs, alreadyInstallLibs) {
-	var i = neededLibs.length;
-	if (i !== alreadyInstallLibs.length) {
-		return false;
-	}
-	while (i--) {
-		if (neededLibs[i] !== alreadyInstallLibs[i]) {
-			return false;
-		}
-	}
-	return true;
-}
-
-/**
- * Generate the list of the file to copy and their destination
- *
- * @returns {Array|boolean}
- */
-function generateFileList() {
-	var filesTo = {move: [], ignore: []}, action, libFolder = "", libName = "", file, files, fileNameAndExt, fileName,
-		fileFolder, extension, temp, currLib, length, i, asteriskName, f, df;
-
-	// For each lib in the source section
-	for (var lib in source) {
-		if (source.hasOwnProperty(lib)) {
-			temp = lib.split("#");
-			libName = temp[0];
-			libFolder = temp[1] || "";
-			currLib = source[lib];
-
-			// For each files to get in the lib
-			for (file in currLib) {
-				if (currLib.hasOwnProperty(file)) {
-					// If the file listed were to ignore or to copy
-					action = file === "!" ? "ignore" : "move";
-
-					temp = file.split("#");
-					fileNameAndExt = temp[0] || "*";
-					fileFolder = temp[1] || "";
-
-					temp = path.extname(fileNameAndExt);
-					fileName = path.basename(fileNameAndExt, temp);
-					extension = temp.substr(1);
-
-					// Ignore the specified extension(s)
-					if (ignoreExt.indexOf(extension) === -1) {
-						// Because of the rename function and the folder specification, the Globstar" ** matching of glob can't be use
-						if (regex.containDoubleAsterisk.test(currLib[file])) {
-							console.error(colors.red("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER." +
-								" You have to specify each folder and their destination if you really need it."));
-							console.error(colors.red("Please correct the source: " + libName));
-							return false;
-						}
-
-						// List files that fit the pattern
-						if (currLib[file] instanceof Array) {
-							length = currLib[file].length;
-
-							files = [];
-
-							for (i = 0; i < length; i++) {
-								files = files.concat(glob.sync(path.join(bowerPath, directory, libName, currLib[file][i])));
-							}
-						} else {
-							files = glob.sync(path.join(bowerPath, directory, libName, currLib[file]));
-						}
-
-						// Add the needed folders to the Array filesToMove
-						length = files.length;
-						asteriskName = false;
-
-						for (i = 0; i < length; i++) {
-							f = files[i];
-
-							if (regex.containAsterisk.test(fileName)) {
-								asteriskName = true;
-							}
-
-							// Use the name of the file to replace the * (asterisk) name
-							if (asteriskName) {
-								fileName = path.basename(f, path.extname(f));
-							}
-
-							// Try to find the min file here
-							if (getMin) {
-								if (!regex.containMin.test(f)) {
-									temp = path.extname(f);
-									var tempName = f.replace(temp, ".min" + temp);
-									if (fs.existsSync(tempName)) {
-										f = tempName;
-										if (!renameMin) {
-											fileName += ".min";
-										}
-									}
-								}
-							}
-
-							// Test if the link is global or relative
-							if (regex.startWithSlash.test(fileFolder)) {
-								// The specified file folder is global
-								filesTo[action].push({
-									"from": f,
-									"to": path.join(bowerPath, fileFolder.substr(1)),
-									"rename": fileName + path.extname(f)
-								});
-							} else if (regex.startWithSlash.test(libFolder)) {
-								// The specified lib folder is global
-								filesTo[action].push({
-									"from": f,
-									"to": path.join(bowerPath, libFolder.substr(1), fileFolder),
-									"rename": fileName + path.extname(f)
-								});
-							} else {
-								// Test if redirect the file to the minDefault folder or the default folder
-								if (getMin && option.default.minFolder !== "") {
-									df = (option.default.minFolder);
-								} else if (option.default.folder !== "") {
-									df = (option.default.folder);
-								} else {
-									df = "";
-								}
-
-								// None of the file or lib specified, then the folder is global
-								var extFolder = folder[path.extname(f).substr(1)] || "";
-								filesTo[action].push({
-									"from": f,
-									"to": path.join(bowerPath, df, extFolder, libFolder, fileFolder),
-									"rename": fileName + path.extname(f)
-								});
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	length = filesTo.ignore.length;
-	var length2 = filesTo.move.length;
-
-	for (i = 0; i < length; i++) {
-		for (var j = 0; j < length2; j++) {
-			if (filesTo.ignore[i].from === filesTo.move[j].from) {
-				filesTo.move.splice(j, 1);
-
-				length2--;
-			}
-		}
-	}
-
-	return filesTo.move;
-}
-
-/**
- * Move the files from the bower repository to their destination
- */
-function copyFiles() {
-	function copyDone() {
-		progression++;
-
-		if (progression === length) {
-			deferred.resolve();
-		}
-	}
-
-	/**
-	 * Move the files listed in the file object
-	 *
-	 * @param file {{}}
-	 */
-	function moveTheFile(file) {
-		/**
-		 * /function to copy file async
-		 *
-		 * @param from {string}
-		 * @param to {string}
-		 */
-		function copy(from, to) {
-			fs.readFile(from, function(err, data) {
-				if (err) {
-					deferred.reject(err);
-				} else {
-					fs.outputFile(to, data, function(err) {
-						if (err) {
-							deferred.reject(err);
-						} else {
-							copyDone();
-						}
-					});
-				}
-			});
-		}
-
-		fs.exists(path.join(file.to, file.rename), function(exist) {
-			if (exist) {
-				// Delete it before
-				fs.unlink(path.join(file.to, file.rename), function() {
-					copy(file.from, path.join(file.to, file.rename));
-				});
-			} else {
-				copy(file.from, path.join(file.to, file.rename));
-			}
-		});
-	}
-
-	var length, i, filesToMove = generateFileList(), deferred = q.defer(), progression = 0;
-
-	// If file list generation was stop by error
-	if (filesToMove === false || filesToMove === undefined || filesToMove.length === 0) {
-		deferred.reject("Some error happen when generating the file list");
-	}
-
-	// Copy and rename (if needed) files in the filesToMove array
-	length = filesToMove.length;
-	for (i = 0; i < length; i++) {
-		moveTheFile(filesToMove[i]);
-	}
-
-	return deferred.promise;
-}
-
-/**
- * Short method to get the bower.json file
- */
-function getBowerJson() {
-	var bp = path.join(bowerPath, "bower.json"),
-		exist = fs.existsSync(bp);
-
-	if (exist) {
-		bowerJSON = fs.readJsonSync(bp);
-	} else {
-		bowerJSON = {};
-	}
-}
-
-/**
- * Run a bower command and return the promise
- *
- * @param command {string}
- * @returns {promise}
- */
-function runBower(command) {
-	if (!customConfigG.hasOwnProperty("cwd")) {
-		customConfigG.cwd = bowerPath;
-	}
-	return bower.commands[command](undefined, undefined, customConfigG);
-}
-
-/**
- * When the automatic command is use, this method find which bower command must be call
- *
- * @returns {promise}
- */
-function determineCommand() {
-	var deferred = q.defer();
-
-	getBowerJson();
-
-	directory = directory || cwd;
-
-	fs.exists(directory, function (exist) {
-		if (!exist) {
-			// There is no bower_components folder
-			deferred.resolve("install");
-		} else {
-			fs.readdir(directory, function (err, alreadyInstallLibs) {
-				var neededLibs = [], lib;
-
-				if (bowerJSON.hasOwnProperty("dependencies")) {
-					for (lib in bowerJSON.dependencies) {
-						if (bowerJSON.dependencies.hasOwnProperty(lib)) {
-							neededLibs.push(lib);
-						}
-					}
-				}
-
-				if (bowerJSON.hasOwnProperty("devDependencies")) {
-					for (lib in bowerJSON.devDependencies) {
-						if (bowerJSON.devDependencies.hasOwnProperty(lib)) {
-							neededLibs.push(lib);
-						}
-					}
-				}
-
-				// If the bower folder exist but the content is not the same
-				if (arraysIdentical(neededLibs, alreadyInstallLibs)) {
-					deferred.resolve("update");
-				} else {
-					runBower("prune").on("end", function () {
-						deferred.resolve("install");
-					});
-				}
-			});
-		}
-	});
-
-	return deferred.promise;
-}
-
-/**
- * Clean-Bower-Install main logic function
- *
- * @returns {promise}
- */
-function runCBI() {
-	var deferred = q.defer();
-
-	// Test if we have read the bower.json file first
-	getBowerJson();
-
-	// Read .bowerrc config
-	var config = require("bower-config").read();
-	directory = config.directory;
-	cwd = config.cwd;
-
-	// Read bower.json cInstall data
-	var cInstall = bowerJSON.cInstall;
-	if (cInstall !== undefined) {
-		if (cInstall.hasOwnProperty("option")) {
-			// To parse only new option specified by the user
-			for (var setup in cInstall.option) {
-				if (cInstall.option.hasOwnProperty(setup) && option.hasOwnProperty(setup)) {
-					if (setup === "verbose" && require.main !== module) {
-						option.verbose = cInstall.option.verbose;
-					} else if (setup === "removeAfter" && require.main !== module) {
-						option.removeAfter = cInstall.option.removeAfter;
-					} else if (typeof cInstall.option[setup] === "object") {
-
-						for (var subSetup in cInstall.option[setup]) {
-							if (cInstall.option[setup].hasOwnProperty(subSetup) && option[setup].hasOwnProperty(subSetup)) {
-								option[setup][subSetup] = cInstall.option[setup][subSetup];
-							}
-						}
-
-					} else if (typeof option[setup] !== "object") {
-						option[setup] = cInstall.option[setup];
-					} else {
-						console.error(colors.red("Wrong format enter for \"" + setup + "\" in the bower.json file."));
-						process.exit(1);
-					}
-				}
-			}
-		} else {
-			option = {
-				"default": {
-				"folder": "",
-					"minFolder": ""
-			},
-				"min": {
-				"get": false,
-					"rename": false,
-					"ignoreExt": []
-			},
-				"removeAfter": false,
-				"verbose": false
-			};
-		}
-
-		// Only if no min option already specified (via CLI -m or -M or via API runMin() or runMinR())
-		if (getMin === false && renameMin === false) {
-			if (option.min.hasOwnProperty("get") && option.min.get === true) {
-				getMin = true;
-
-				// Because rename is ignored if min.get is false
-				if (option.min.hasOwnProperty("rename") && option.min.rename === true) {
-					renameMin = true;
-				}
-			}
-		}
-
-		// List the file to ignore if the option min is ask
-		if (getMin === true) {
-			if (option.min.hasOwnProperty("ignoreExt") && option.min.ignoreExt instanceof Array) {
-				ignoreExt = option.min.ignoreExt;
-			}
-		}
-
-		if (cInstall.folder !== undefined) {
-			folder = cInstall.folder;
-			var typeInTreatment;
-			for (var fileType in folder) {
-				if (folder.hasOwnProperty(fileType)) {
-					typeInTreatment = fileType.replace(/\s/g, "").split(",");
-
-					// Split into multiple value comma divided chunk
-					var length = typeInTreatment.length;
-					if (length > 1) {
-						for (var i = 0; i < length; i++) {
-							folder[typeInTreatment[i]] = folder[fileType];
-						}
-					}
-				}
-			}
-		} else {
-			folder = {};
-		}
-
-		if (cInstall.source !== undefined) {
-			source = cInstall.source;
-		} else {
-			source = {};
-		}
-
-		copyFiles().done(function () {
-			// Remove the bower_components folder if the option is set
-			if (option.removeAfter && fs.existsSync(path.join(bowerPath, "bower_components"))) {
-				fs.removeSync(path.join(bowerPath, "bower_components"));
-			}
-			deferred.resolve("clean-bower-installer execution successfully done!");
-		});
-
-	} else {
-		deferred.reject(colors.yellow("clean-bower-install execution can not be done because no \"cInstall\" section" +
-			" were found in the bower.json file."));
-	}
-
-	return deferred.promise;
-}
-
-/**
- * This object contain all the API commands for this module
- *
- * @type {{install: Function, update: Function, run: Function, runMin: Function, runMinR: Function}}
- */
-var commands = {
-	/**
-	 * Use the bower programmatic API to call the install command
-	 *
-	 * @param [bowerCustomConfig] {object}
-	 * @returns {promise}
-	 */
-	automatic: function (bowerCustomConfig) {
-		var deferred = q.defer(), endMessage = "";
-		customConfigG = bowerCustomConfig || {};
-
-		getMin = false;
-		renameMin = false;
-
-		if (customConfigG.hasOwnProperty("cwd")) {
-			bowerPath = path.join(cwd, customConfigG.cwd);
-		} else {
-			bowerPath = cwd;
-		}
-
-		determineCommand().then(
-			function (command) {
-				runBower(command).on("end", function (installed) {
-					runCBI().then(
-						function (message) {
-							if (option.verbose) {
-								if (Object.keys(installed).length === 0) {
-									endMessage = "The bower command " + command + " do not return any information.\n";
-								} else {
-									endMessage = JSON.parse(installed) + "\n";
-								}
-							}
-
-							deferred.resolve(endMessage + message);
-						},
-						function (err) {
-							deferred.reject(err);
-						}
-					);
-				});
-			},
-			function (err) {
-				deferred.reject(err);
-			}
-		);
-
-		return deferred.promise;
-	},
-	/**
-	 * Use the bower programmatic API to call the install command
-	 *
-	 * @param [bowerCustomConfig] {object}
-	 * @returns {promise}
-	 */
-	install: function (bowerCustomConfig) {
-		var deferred = q.defer(), endMessage = "";
-		customConfigG = bowerCustomConfig || {};
-
-		getMin = false;
-		renameMin = false;
-
-		if (customConfigG.hasOwnProperty("cwd")) {
-			bowerPath = path.join(cwd, customConfigG.cwd);
-		} else {
-			bowerPath = cwd;
-		}
-
-		runBower("install").on("end", function (installed) {
-			runCBI().then(
-				function (message) {
-					if (option.verbose) {
-						if (Object.keys(installed).length === 0) {
-							endMessage = "The bower command \"install\" do not return any information.\n";
-						} else {
-							endMessage = JSON.stringify(installed) + "\n";
-						}
-					}
-
-					deferred.resolve(endMessage + message);
-				},
-				function (err) {
-					deferred.reject(err);
-				}
-			);
-		});
-
-		return deferred.promise;
-	},
-	/**
-	 * Use the bower programmatic API to call the update command
-	 *
-	 * @param [bowerCustomConfig] {object}
-	 * @returns {promise}
-	 */
-	update: function (bowerCustomConfig) {
-		var deferred = q.defer(), endMessage = "";
-		customConfigG = bowerCustomConfig || {};
-
-		getMin = false;
-		renameMin = false;
-
-		if (customConfigG.hasOwnProperty("cwd")) {
-			bowerPath = path.join(cwd, customConfigG.cwd);
-		} else {
-			bowerPath = cwd;
-		}
-
-		runBower("update").on("end", function (installed) {
-			runCBI().then(
-				function (message) {
-					if (option.verbose) {
-						if (Object.keys(installed).length === 0) {
-							endMessage = "The bower command \"update\" do not return any information.";
-						} else {
-							endMessage = JSON.parse(installed);
-						}
-					}
-
-					deferred.resolve(endMessage + message);
-				},
-				function (err) {
-					deferred.reject(err);
-				}
-			);
-		});
-
-		return deferred.promise;
-	},
-	/**
-	 * Execute clean-bower-installer main goal
-	 *
-	 * @param [bowerFilePath] {string}
-	 * @returns {promise}
-	 */
-	run: function (bowerFilePath) {
-		var deferred = q.defer();
-
-		// To not erase cli option
-		if (require.main !== module) {
-			getMin = false;
-			renameMin = false;
-		}
-
-		bowerPath = path.join(cwd, bowerFilePath || "");
-
-		runCBI().then(
-			function (message) {
-				deferred.resolve(message);
-			},
-			function (err) {
-				deferred.reject(err);
-			}
-		);
-
-		return deferred.promise;
-	},
-	/**
-	 * Execute clean-bower-installer main goal with min option
-	 *
-	 * @param [bowerFilePath] {string}
-	 * @returns {promise}
-	 */
-	runMin: function (bowerFilePath) {
-		var deferred = q.defer();
-
-		getMin = true;
-		renameMin = false;
-
-		bowerPath = path.join(cwd, bowerFilePath || "");
-
-		runCBI().then(
-			function (message) {
-				deferred.resolve(message);
-			},
-			function (err) {
-				deferred.reject(err);
-			}
-		);
-
-		return deferred.promise;
-	},
-	/**
-	 * Execute clean-bower-installer main goal with min and rename option
-	 *
-	 * @param [bowerFilePath] {string}
-	 * @returns {promise}
-	 */
-	runMinR: function (bowerFilePath) {
-		var deferred = q.defer();
-
-		getMin = true;
-		renameMin = true;
-
-		bowerPath = path.join(cwd, bowerFilePath || "");
-
-		runCBI().then(
-			function (message) {
-				deferred.resolve(message);
-			},
-			function (err) {
-				deferred.reject(err);
-			}
-		);
-
-		return deferred.promise;
-	}
+	source: {},
+	bowerFileFolder: ""
 };
 
 if (require.main === module) {
-	/* CLI section ****************************************************************************************************/
-	var cli = require("cli");
+	var cli = require("cli"),
+		pkg = require("../package.json");
 
 	// Version display
-	cli.enable("version");
 	cli.setApp(pkg.name, pkg.version);
+	cli.enable("version");
 
 	// CLI options
 	cli.parse({
@@ -705,78 +57,84 @@ if (require.main === module) {
 		removeAfter: ["r", "Remove the bower_components folder after execution."]
 	});
 
-	// CLI input treatment
 	cli.main(function (args, options) {
-		if (options.verbose) {
-			option.verbose = true;
-		}
+		config.bowerFileFolder = options.bower;
 
-		if (options.removeAfter) {
-			option.removeAfter = true;
-		}
+		cnf.read(config).then(
+			function() {
+				if (options.verbose) {
+					config.option.verbose = true;
+				}
 
-		// Add load of minimised file version and renaming of them if needed
-		if (options.renameMin) {
-			getMin = true;
-			renameMin = true;
-		} else if (options.min) {
-			getMin = true;
-			renameMin = false;
-		} else {
-			getMin = false;
-			renameMin = false;
-		}
+				if (options.removeAfter) {
+					config.option.removeAfter = true;
+				}
 
-		if (options.automatic) {
-			commands.automatic({cwd: options.bower}).then(
-				function (message) {
-					console.log(message);
-					process.exit(0);
-				}, function (err) {
-					console.log(colors.red(err));
-					process.exit(1);
+				// Add load of minimised file version and renaming of them if needed
+				if (options.renameMin) {
+					config.option.min.get = true;
+					config.option.min.rename = true;
+				} else if (options.min) {
+					config.option.min.get = true;
+					config.option.min.rename = false;
+				} else {
+					config.option.min.get = false;
+					config.option.min.rename = false;
 				}
-			);
-		} else if (options.install) {
-			commands.install({cwd: options.bower}).then(
-				function (message) {
-					console.log(message);
-					process.exit(0);
-				}, function (err) {
-					console.log(colors.red(err));
-					process.exit(1);
+
+				// Actions
+				if (options.automatic) {
+					cmd.automatic(config).then(
+						function (message) {
+							console.log(message);
+							process.exit(0);
+						}, function (err) {
+							console.log(err.red);
+							process.exit(1);
+						}
+					);
+				} else if (options.install) {
+					cmd.install(config).then(
+						function (message) {
+							console.log(message);
+							process.exit(0);
+						}, function (err) {
+							console.log(err.red);
+							process.exit(1);
+						}
+					);
+				} else if (options.update) {
+					cmd.update(config).then(
+						function (message) {
+							console.log(message);
+							process.exit(0);
+						}, function (err) {
+							console.log(err.red);
+							process.exit(1);
+						}
+					);
+				} else {
+					cmd.run(config).then(
+						function (message) {
+							console.log(message);
+							process.exit(0);
+						}, function (err) {
+							console.log(err.red);
+							process.exit(1);
+						}
+					);
 				}
-			);
-		} else if (options.update) {
-			commands.update({cwd: options.bower}).then(
-				function (message) {
-					console.log(message);
-					process.exit(0);
-				}, function (err) {
-					console.log(colors.red(err));
-					process.exit(1);
-				}
-			);
-		} else {
-			commands.run(options.bower).then(
-				function (message) {
-					console.log(message);
-					process.exit(0);
-				}, function (err) {
-					console.log(colors.red(err));
-					process.exit(1);
-				}
-			);
-		}
+			}, function(err) {
+				console.error(err);
+			}
+		);
 	});
 } else {
-	/* API section ****************************************************************************************************/
+	api.config = config;
 	module.exports = {
-		automatic: commands.automatic,
-		install: commands.install,
-		update: commands.update,
-		run: commands.run,
-		runMin: commands.runMin,
-		runMinR: commands.runMinR
+		automatic: api.automatic(),
+		install: api.install(),
+		update: api.install(),
+		run: api.run()
 	};
 }
