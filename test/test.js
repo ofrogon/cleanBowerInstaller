@@ -62,7 +62,7 @@ var test = [
 	 * Test file without file type folder (API)
 	 * #00
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test0"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
@@ -92,7 +92,7 @@ var test = [
 	 * Test the verbose function at true (API)
 	 * #01
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test1"}).then(
 			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test1/bower_components"))) {
@@ -122,7 +122,7 @@ var test = [
 	 * Test the verbose function at false (API)
 	 * #02
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test0"}).then(
 			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
@@ -152,11 +152,11 @@ var test = [
 	 * Test the update method (API)
 	 * #03
 	 */
-	function() {
+		function() {
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
-			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: "test0"})
 			.on("end", function() {
 
 				// 2 remove the bower folder
@@ -208,7 +208,7 @@ var test = [
 	 * Test the run method (API)
 	 * #04
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -241,7 +241,7 @@ var test = [
 	 * Test the runMin method (API)
 	 * #05
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -294,7 +294,7 @@ var test = [
 	 * Test the runMinR method (API)
 	 * #06
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -350,7 +350,7 @@ var test = [
 	 * Test file without file type folder (CLI)
 	 * #07
 	 */
-	function() {
+		function() {
 		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
@@ -379,7 +379,7 @@ var test = [
 	 * Test the verbose function at true (CLI)
 	 * #08
 	 */
-	function() {
+		function() {
 		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test1\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
@@ -408,7 +408,7 @@ var test = [
 	 * Test the verbose function at false (CLI)
 	 * #09
 	 */
-	function() {
+		function() {
 		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
@@ -437,11 +437,11 @@ var test = [
 	 * Test the update method (CLI)
 	 * #10
 	 */
-	function() {
+		function() {
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
-			.install(["angular#>=1.2.3 <1.3.8"], { save: true }, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: "test0"})
 			.on("end", function() {
 
 				// 2 remove the bower folder
@@ -492,7 +492,7 @@ var test = [
 	 * Test the run method (CLI)
 	 * #11
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -525,7 +525,7 @@ var test = [
 	 * Test the runMin method (CLI)
 	 * #12
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -577,7 +577,7 @@ var test = [
 	 * Test the runMinR method (CLI)
 	 * #13
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -630,7 +630,7 @@ var test = [
 	 * Test the removeAfter argument (API)
 	 * #14
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test2"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test2/bower_components"))) {
@@ -659,7 +659,7 @@ var test = [
 	 * Test the removeAfter argument (CLI)
 	 * #15
 	 */
-	function() {
+		function() {
 
 		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function(err) {
 			if (err) {
@@ -688,7 +688,7 @@ var test = [
 	 * Test the verbose override (CLI)
 	 * #16
 	 */
-	function() {
+		function() {
 		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
@@ -717,7 +717,7 @@ var test = [
 	 * Test the file ignore (API)
 	 * #17
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test3"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test3/bower_components"))) {
@@ -752,7 +752,7 @@ var test = [
 	 * Test without option (API)
 	 * #18
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test4"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test4/bower_components"))) {
@@ -782,7 +782,7 @@ var test = [
 	 * Test the runMin method with default.minFolder(API)
 	 * #19
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test5"})
 			.on("end", function() {
@@ -835,7 +835,7 @@ var test = [
 	 * Test the runMinR method (CLI)
 	 * #20
 	 */
-	function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test5"})
 			.on("end", function() {
@@ -888,7 +888,7 @@ var test = [
 	 * Test the runMin method with default.minFolder(API)
 	 * #21
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test6"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test6/bower_components"))) {
@@ -936,7 +936,7 @@ var test = [
 	 * Test the runMin method with default.minFolder(API)
 	 * #22
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test7"}).then(
 			function() {
 				if (fs.existsSync(path.join(__dirname, "test7/bower_components"))) {

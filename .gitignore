@@ -36,3 +36,4 @@ test/temp
 test/test*/bower_components
 test/test*/*.js
 bower.json
+test.js
