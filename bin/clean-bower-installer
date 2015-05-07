@@ -1,20 +1,14 @@
 #!/usr/bin/env node
 "use strict";
 
-var api = require("./../lib/api"),
-	cmd = require("./../lib/cmd"),
+var cmd = require("./../lib/cmd"),
 	cnf = require("./../lib/readConfig"),
-	colors = require("colors");
+	colors = require("colors"),
+	path = require("path");
 
 colors.setTheme({
-	input: "grey",
-	verbose: "cyan",
-	prompt: "grey",
-	info: "green",
-	data: "grey",
-	help: "cyan",
+	pass: "green",
 	warn: "yellow",
-	debug: "blue",
 	error: "red"
 });
 
@@ -55,10 +49,10 @@ if (require.main === module) {
 		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
 		verbose: ["V", "Get more information from the tool."],
 		removeAfter: ["r", "Remove the bower_components folder after execution."]
-	});
+	}, null);
 
 	cli.main(function(args, options) {
-		config.bowerFileFolder = options.bower;
+		config.bowerFileFolder = path.join(process.cwd(), options.bower);
 
 		cnf.read(config).then(
 			function() {
@@ -86,40 +80,40 @@ if (require.main === module) {
 				if (options.automatic) {
 					cmd.automatic(config).then(
 						function(message) {
-							console.log(message);
+							console.log(message.pass);
 							process.exit(0);
 						}, function(err) {
-							console.log(err.red);
+							console.log(err.error);
 							process.exit(1);
 						}
 					);
 				} else if (options.install) {
 					cmd.install(config).then(
 						function(message) {
-							console.log(message);
+							console.log(message.pass);
 							process.exit(0);
 						}, function(err) {
-							console.log(err.red);
+							console.log(err.error);
 							process.exit(1);
 						}
 					);
 				} else if (options.update) {
 					cmd.update(config).then(
 						function(message) {
-							console.log(message);
+							console.log(message.pass);
 							process.exit(0);
 						}, function(err) {
-							console.log(err.red);
+							console.log(err.error);
 							process.exit(1);
 						}
 					);
 				} else {
 					cmd.run(config).then(
 						function(message) {
-							console.log(message);
+							console.log(message.pass);
 							process.exit(0);
 						}, function(err) {
-							console.log(err.red);
+							console.log(err.error);
 							process.exit(1);
 						}
 					);
@@ -130,11 +124,18 @@ if (require.main === module) {
 		);
 	});
 } else {
-	api.config = config;
-	module.exports = {
-		automatic: api.automatic(),
-		install: api.install(),
-		update: api.install(),
-		run: api.run()
-	};
+	cnf.read(config).then(
+		function() {
+			// Once ready allow functions to be uses
+			module.exports = {
+				automatic: cmd.automatic(config),
+				install: cmd.install(config),
+				update: cmd.install(config),
+				run: cmd.run(config)
+			};
+		},
+		function(err) {
+			console.warn(err);
+		}
+	);
 }
