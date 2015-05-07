@@ -21,8 +21,6 @@
 		"clean-bower-installer": "bin/clean-bower-installer"
 	},
 	"dependencies": {
-		"bower": "1.4.x",
-		"bower-config": "0.x.x",
 		"cli": "0.6.x",
 		"colors": "1.x.x",
 		"glob": "5.x.x",
@@ -31,7 +29,8 @@
 	"devDependencies": {
 		"grunt": "0.4.x",
 		"grunt-contrib-jshint": "0.11.x",
-		"grunt-run": "0.3.x"
+		"grunt-run": "0.3.x",
+		"fs-extra": "latest"
 	},
 	"engines": {
 		"node": ">=0.10.0"
