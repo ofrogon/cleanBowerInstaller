@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var cmd = require("./../lib/cmd"),
-	cnf = require("./../lib/readConfig"),
-	colors = require("colors"),
+var colors = require("colors"),
 	path = require("path");
 
 colors.setTheme({
@@ -12,28 +10,26 @@ colors.setTheme({
 	error: "red"
 });
 
-var config = {
-	folder: {},
-	option: {
-		"default": {
-			"folder": "",
-			"minFolder": ""
-		},
-		"min": {
-			"get": false,
-			"rename": false,
-			"ignoreExt": []
-		},
-		"removeAfter": false,
-		"verbose": false
-	},
-	source: {},
-	bowerFileFolder: ""
-};
-
 if (require.main === module) {
-	var cli = require("cli"),
+	var cmd = require("./../lib/cmd"),
+		cnf = require("./../lib/readConfig"),
+		cli = require("cli"),
 		pkg = require("../package.json");
+
+	/**
+	 * Format the verbose CLI return
+	 *
+	 * @param list {Array}
+	 * @returns {string}
+	 */
+	var verboseCLIReturn = function(list) {
+		var output = "";
+		for (var i = 0, j = list.length; i < j; i++) {
+			output += "Copied '" + list[i].from + "' to '" + list[i].to + "'\n";
+		}
+		return output;
+	};
+
 
 	// Version display
 	cli.setApp(pkg.name, pkg.version);
@@ -52,16 +48,18 @@ if (require.main === module) {
 	}, null);
 
 	cli.main(function(args, options) {
-		config.bowerFileFolder = path.join(process.cwd(), options.bower);
-
-		cnf.read(config).then(
-			function() {
+		cnf.read().then(
+			function(config) {
 				if (options.verbose) {
 					config.option.verbose = true;
 				}
 
 				if (options.removeAfter) {
 					config.option.removeAfter = true;
+				}
+
+				if (options.bower) {
+					config.folder = options.bower;
 				}
 
 				// Add load of minimised file version and renaming of them if needed
@@ -80,7 +78,10 @@ if (require.main === module) {
 				if (options.automatic) {
 					cmd.automatic(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -90,7 +91,10 @@ if (require.main === module) {
 				} else if (options.install) {
 					cmd.install(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -100,7 +104,10 @@ if (require.main === module) {
 				} else if (options.update) {
 					cmd.update(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -110,7 +117,10 @@ if (require.main === module) {
 				} else {
 					cmd.run(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -124,18 +134,13 @@ if (require.main === module) {
 		);
 	});
 } else {
-	cnf.read(config).then(
-		function() {
-			// Once ready allow functions to be uses
-			module.exports = {
-				automatic: cmd.automatic(config),
-				install: cmd.install(config),
-				update: cmd.install(config),
-				run: cmd.run(config)
-			};
-		},
-		function(err) {
-			console.warn(err);
-		}
-	);
+	var api = require("./../lib/api");
+	module.exports = {
+		automatic: api.automatic,
+		install: api.install,
+		update: api.install,
+		run: api.run,
+		runMin: api.runMin,
+		runMinR: api.runMinR
+	};
 }

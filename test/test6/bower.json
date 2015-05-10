@@ -6,7 +6,7 @@
 	"cInstall": {
 		"option": {
 			"default": {
-				"folder": "../tempMin"
+				"folder": "tempMin"
 			},
 			"min": {
 				"get": true,

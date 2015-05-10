@@ -30,7 +30,8 @@
 		"grunt": "0.4.x",
 		"grunt-contrib-jshint": "0.11.x",
 		"grunt-run": "0.3.x",
-		"fs-extra": "latest"
+		"fs-extra": "latest",
+		"bower": "latest"
 	},
 	"engines": {
 		"node": ">=0.10.0"

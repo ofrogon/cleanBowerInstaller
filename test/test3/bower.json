@@ -11,12 +11,14 @@
 		},
 		"option": {
 			"default": {
-				"folder": "../temp"
+				"folder": "temp"
 			}
 		},
 		"source": {
 			"bootstrap": {
-				"!": ["dist/fonts/*.svg"],
+				"!": [
+					"dist/fonts/*.svg"
+				],
 				"glyphicons-halflings-regular.*": "dist/fonts/*",
 				"bootstrap.js": "dist/js/bootstrap.js",
 				"bootstrap.css": "dist/css/bootstrap.css",
