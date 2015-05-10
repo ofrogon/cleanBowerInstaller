@@ -92,7 +92,7 @@ var test = [
 	 * Test the verbose function at true (API)
 	 * #01
 	 */
-		function() {
+	function() {
 		cbi.install({cwd: "test1"}).then(
 			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test1/bower_components"))) {
@@ -202,7 +202,8 @@ var test = [
 						runNextTest();
 					}
 				);
-			});
+			}
+		);
 	},
 	/**
 	 * Test the run method (API)
@@ -212,7 +213,7 @@ var test = [
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.run("test0").then(
+				cbi.run({cwd: "test0"}).then(
 					function() {
 						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test0/bower_components"));
@@ -241,7 +242,7 @@ var test = [
 	 * Test the runMin method (API)
 	 * #05
 	 */
-		function() {
+		/*function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -289,12 +290,12 @@ var test = [
 				);
 			}
 		);
-	},
+	},*/
 	/**
 	 * Test the runMinR method (API)
 	 * #06
 	 */
-		function() {
+		/*function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
@@ -343,7 +344,7 @@ var test = [
 				);
 			}
 		);
-	},
+	},*/
 
 	/*CLI tests ----------------------------------------------------------------------*/
 	/**

@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var cmd = require("./../lib/cmd"),
-	cnf = require("./../lib/readConfig"),
-	colors = require("colors"),
+var colors = require("colors"),
 	path = require("path");
 
 colors.setTheme({
@@ -12,27 +10,10 @@ colors.setTheme({
 	error: "red"
 });
 
-var config = {
-	folder: {},
-	option: {
-		"default": {
-			"folder": "",
-			"minFolder": ""
-		},
-		"min": {
-			"get": false,
-			"rename": false,
-			"ignoreExt": []
-		},
-		"removeAfter": false,
-		"verbose": false
-	},
-	source: {},
-	bowerFileFolder: ""
-};
-
 if (require.main === module) {
-	var cli = require("cli"),
+	var cmd = require("./../lib/cmd"),
+		cnf = require("./../lib/readConfig"),
+		cli = require("cli"),
 		pkg = require("../package.json");
 
 	// Version display
@@ -52,10 +33,8 @@ if (require.main === module) {
 	}, null);
 
 	cli.main(function(args, options) {
-		config.bowerFileFolder = path.join(process.cwd(), options.bower);
-
-		cnf.read(config).then(
-			function() {
+		cnf.read().then(
+			function(config) {
 				if (options.verbose) {
 					config.option.verbose = true;
 				}
@@ -124,18 +103,11 @@ if (require.main === module) {
 		);
 	});
 } else {
-	cnf.read(config).then(
-		function() {
-			// Once ready allow functions to be uses
-			module.exports = {
-				automatic: cmd.automatic(config),
-				install: cmd.install(config),
-				update: cmd.install(config),
-				run: cmd.run(config)
-			};
-		},
-		function(err) {
-			console.warn(err);
-		}
-	);
+	var api = require("./../lib/api");
+	module.exports = {
+		automatic: api.automatic,
+		install: api.install,
+		update: api.install,
+		run: api.run
+	};
 }
