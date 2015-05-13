@@ -16,6 +16,21 @@ if (require.main === module) {
 		cli = require("cli"),
 		pkg = require("../package.json");
 
+	/**
+	 * Format the verbose CLI return
+	 *
+	 * @param list {Array}
+	 * @returns {string}
+	 */
+	var verboseCLIReturn = function(list) {
+		var output = "";
+		for (var i = 0, j = list.length; i < j; i++) {
+			output += "Copied '" + list[i].from + "' to '" + list[i].to + "'\n";
+		}
+		return output;
+	};
+
+
 	// Version display
 	cli.setApp(pkg.name, pkg.version);
 	cli.enable("version");
@@ -59,7 +74,10 @@ if (require.main === module) {
 				if (options.automatic) {
 					cmd.automatic(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -69,7 +87,10 @@ if (require.main === module) {
 				} else if (options.install) {
 					cmd.install(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -79,7 +100,10 @@ if (require.main === module) {
 				} else if (options.update) {
 					cmd.update(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -89,7 +113,10 @@ if (require.main === module) {
 				} else {
 					cmd.run(config).then(
 						function(message) {
-							console.log(message.pass);
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log("clean-bower-installer execution successfully done!".pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -108,6 +135,8 @@ if (require.main === module) {
 		automatic: api.automatic,
 		install: api.install,
 		update: api.install,
-		run: api.run
+		run: api.run,
+		runMin: api.runMin,
+		runMinR: api.runMinR
 	};
 }

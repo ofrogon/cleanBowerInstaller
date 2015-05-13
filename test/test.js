@@ -3,7 +3,7 @@
 var cbi = require("../bin/clean-bower-installer"),
 	path = require("path"),
 	fs = require("../node_modules/fs-extra"),
-	colors = require("../node_modules/colors/safe"),
+	colors = require("colors"),
 	bower = require("../node_modules/bower"),
 	exec = require("child_process").exec;
 
@@ -19,7 +19,7 @@ var defaultBowerFile = "{\n" +
 	"\t\"cInstall\": {\n" +
 	"\t\t\"option\": {\n" +
 	"\t\t\t\"default\": {\n" +
-	"\t\t\t\t\"folder\": \"../temp\"\n" +
+	"\t\t\t\t\"folder\": \"temp\"\n" +
 	"\t\t\t},\n" +
 	"\t\t\t\"verbose\": false\n" +
 	"\t\t},\n" +
@@ -41,13 +41,13 @@ function testDisplay(name) {
 	errorCount += errors.length;
 
 	if (errors.length > 0) {
-		console.log(colors.yellow("The " + name + " have fail due to the next error(s):"));
+		console.log("The %s have fail due to the next error(s):".yellow, name);
 
 		for (var i = 0; i < errors.length; i++) {
-			console.log(colors.yellow("\t" + errors[i]));
+			console.log("\t%s".yellow, errors[i]);
 		}
 	} else {
-		console.log(colors.cyan("The execution of " + name + " pass without error."));
+		console.log("The execution of %s pass without error.".cyan, name);
 	}
 
 	errors = [];
@@ -133,7 +133,7 @@ var test = [
 					fs.removeSync(path.join(__dirname, "temp"));
 				}
 
-				if (result !== "clean-bower-installer execution successfully done!") {
+				if (result) {
 					errors.push("Test" + currentTest + " error: A verbose answer have been receive when we don't want one.");
 				}
 
@@ -242,11 +242,11 @@ var test = [
 	 * Test the runMin method (API)
 	 * #05
 	 */
-		/*function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.runMin("test0").then(
+				cbi.runMin({cwd: "test0"}).then(
 					function() {
 						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test0/bower_components"));
@@ -269,7 +269,7 @@ var test = [
 										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command runMin().");
 									}
 
-									fs.removeSync(path.join(__dirname, "temp"));
+									fs.renameSync(path.join(__dirname, "temp/angular.min.js"), path.join(__dirname, "../../temp/angular.min.js"));
 
 									testDisplay("Test" + currentTest);
 									runNextTest();
@@ -290,16 +290,16 @@ var test = [
 				);
 			}
 		);
-	},*/
+	},
 	/**
 	 * Test the runMinR method (API)
 	 * #06
 	 */
-		/*function() {
+		function() {
 		bower.commands
 			.install(["angular"], {}, {cwd: "test0"})
 			.on("end", function() {
-				cbi.runMinR("test0").then(
+				cbi.runMinR({cwd: "test0"}).then(
 					function() {
 						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test0/bower_components"));
@@ -344,7 +344,7 @@ var test = [
 				);
 			}
 		);
-	},*/
+	},
 
 	/*CLI tests ----------------------------------------------------------------------*/
 	/**
@@ -1005,12 +1005,12 @@ function runNextTest() {
 	} else {
 		//All tests done
 		if (errorCount === 0) {
-			console.log(colors.green("\nAll clean-bower-installer test had pass."));
+			console.log("\nAll clean-bower-installer test had pass.".green);
 			setTimeout(function() {
 				process.exit(0);
 			}, 1000);
 		} else {
-			console.log(colors.red("\nThere had been " + errorCount + " error(s) while testing clean-bower-installer."));
+			console.log("\nThere had been %s error(s) while testing clean-bower-installer.".red, errorCount);
 			setTimeout(function() {
 				process.exit(1);
 			}, 2000);
