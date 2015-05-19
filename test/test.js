@@ -4,6 +4,7 @@ var cbi = require("../bin/clean-bower-installer"),
 	path = require("path"),
 	fs = require("../node_modules/fs-extra"),
 	colors = require("colors"),
+	crypto = require("crypto"),
 	bower = require("../node_modules/bower"),
 	exec = require("child_process").exec;
 
@@ -92,7 +93,7 @@ var test = [
 	 * Test the verbose function at true (API)
 	 * #01
 	 */
-	function() {
+		function() {
 		cbi.install({cwd: "test1"}).then(
 			function(result) {
 				if (fs.existsSync(path.join(__dirname, "test1/bower_components"))) {
@@ -248,38 +249,27 @@ var test = [
 			.on("end", function() {
 				cbi.runMin({cwd: "test0"}).then(
 					function() {
-						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
-							fs.removeSync(path.join(__dirname, "test0/bower_components"));
-						}
-
 						if (fs.existsSync(path.join(__dirname, "temp/angular.min.js"))) {
-							// Verify that the file is the minimised one using his number of line
-							var i;
-							var count = 0;
-							fs.createReadStream(path.join(__dirname, "temp/angular.min.js"), {start: 0, end: 99})
-								.on("data", function(chunk) {
-									for (i = 0; i < chunk.length; ++i) {
-										if (chunk[i] === 10) {
-											count++;
-										}
-									}
-								})
-								.on("end", function() {
-									if (count > 10) {
-										errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command runMin().");
-									}
+							var minFileGated = fs.readFileSync(path.join(__dirname, "temp/angular.min.js"));
+							var minFileInBower = fs.readFileSync(path.join(__dirname, "test0/bower_components/angular/angular.min.js"));
 
-									fs.renameSync(path.join(__dirname, "temp/angular.min.js"), path.join(__dirname, "../../temp/angular.min.js"));
+							if (crypto.createHash('sha1').update(minFileGated).digest('hex') !== crypto.createHash('sha1').update(minFileInBower).digest('hex')) {
+								errors.push("Test" + currentTest + " error: The angular.min.js file copied by the command runMin() wasn't the minimised one.");
+							}
 
-									testDisplay("Test" + currentTest);
-									runNextTest();
-								});
 						} else {
 							errors.push("Test" + currentTest + " error: The angular.min.js file was not copy by the command runMin().");
 
 							testDisplay("Test" + currentTest);
 							runNextTest();
 						}
+
+						if (fs.existsSync(path.join(__dirname, "test0/bower_components"))) {
+							fs.removeSync(path.join(__dirname, "test0/bower_components"));
+						}
+
+						testDisplay("Test" + currentTest);
+						runNextTest();
 					},
 					function(err) {
 						errors.push("Error in test" + currentTest + ": " + err);
