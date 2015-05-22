@@ -58,6 +58,10 @@ if (require.main === module) {
 					config.option.removeAfter = true;
 				}
 
+				if (options.bower) {
+					config.folder = options.bower;
+				}
+
 				// Add load of minimised file version and renaming of them if needed
 				if (options.renameMin) {
 					config.option.min.get = true;
