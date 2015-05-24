@@ -40,7 +40,7 @@ if (require.main === module) {
 		automatic: ["a", "Automatically select the right option to execute from bower."],
 		install: ["i", "Run bower install command"],
 		update: ["u", "Run bower update command"],
-		bower: [false, "Input the bower.json file path.", "path", "."],
+		bower: [false, "Input the bower.json file path.", "path", null],
 		min: ["m", "Try to get .min file version first."],
 		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
 		verbose: ["V", "Get more information from the tool."],
@@ -48,7 +48,7 @@ if (require.main === module) {
 	}, null);
 
 	cli.main(function(args, options) {
-		cnf.read().then(
+		cnf.read({cwd: options.bower}).then(
 			function(config) {
 				if (options.verbose) {
 					config.option.verbose = true;
@@ -56,10 +56,6 @@ if (require.main === module) {
 
 				if (options.removeAfter) {
 					config.option.removeAfter = true;
-				}
-
-				if (options.bower) {
-					config.folder = options.bower;
 				}
 
 				// Add load of minimised file version and renaming of them if needed
