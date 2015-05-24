@@ -330,7 +330,7 @@ var test = [
 	 * #07
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err) {
+		exec("node ../bin/clean-bower-installer -i --bower=\"test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
