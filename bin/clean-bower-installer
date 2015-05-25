@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var colors = require("colors"),
-	path = require("path");
+var colors = require("colors");
 
 colors.setTheme({
 	pass: "green",
@@ -14,7 +13,8 @@ if (require.main === module) {
 	var cmd = require("./../lib/cmd"),
 		cnf = require("./../lib/readConfig"),
 		cli = require("cli"),
-		pkg = require("../package.json");
+		pkg = require("../package.json"),
+		successMsg = "clean-bower-installer execution successfully done!";
 
 	/**
 	 * Format the verbose CLI return
@@ -29,7 +29,6 @@ if (require.main === module) {
 		}
 		return output;
 	};
-
 
 	// Version display
 	cli.setApp(pkg.name, pkg.version);
@@ -77,7 +76,7 @@ if (require.main === module) {
 							if (config.option.verbose) {
 								console.log(verboseCLIReturn(message));
 							}
-							console.log("clean-bower-installer execution successfully done!".pass);
+							console.log(successMsg.pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -90,7 +89,7 @@ if (require.main === module) {
 							if (config.option.verbose) {
 								console.log(verboseCLIReturn(message));
 							}
-							console.log("clean-bower-installer execution successfully done!".pass);
+							console.log(successMsg.pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -103,7 +102,7 @@ if (require.main === module) {
 							if (config.option.verbose) {
 								console.log(verboseCLIReturn(message));
 							}
-							console.log("clean-bower-installer execution successfully done!".pass);
+							console.log(successMsg.pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
@@ -116,7 +115,7 @@ if (require.main === module) {
 							if (config.option.verbose) {
 								console.log(verboseCLIReturn(message));
 							}
-							console.log("clean-bower-installer execution successfully done!".pass);
+							console.log(successMsg.pass);
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
