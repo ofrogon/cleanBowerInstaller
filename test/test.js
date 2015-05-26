@@ -22,7 +22,7 @@ var defaultBowerFile = "{\n" +
 	"\t\"cInstall\": {\n" +
 	"\t\t\"option\": {\n" +
 	"\t\t\t\"default\": {\n" +
-	"\t\t\t\t\"folder\": \"temp\"\n" +
+	"\t\t\t\t\"folder\": \"../temp\"\n" +
 	"\t\t\t},\n" +
 	"\t\t\t\"verbose\": false\n" +
 	"\t\t},\n" +
@@ -640,7 +640,6 @@ var test = [
 	 * #15
 	 */
 		function() {
-
 		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
