@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var colors = require("colors"),
-	path = require("path");
+var colors = require("colors");
 
 colors.setTheme({
 	pass: "green",

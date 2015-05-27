@@ -8,6 +8,13 @@ var cbi = require("../bin/clean-bower-installer"),
 	bower = require("../node_modules/bower"),
 	exec = require("child_process").exec;
 
+colors.setTheme({
+	pass: "green",
+	warn: "yellow",
+	error: "red",
+	process: "cyan"
+});
+
 var errors = [],
 	errorCount = 0,
 	currentTest = -1,
@@ -44,13 +51,13 @@ function testDisplay(name) {
 	errorCount += errors.length;
 
 	if (errors.length > 0) {
-		console.log("The %s have fail due to the next error(s):".yellow, name);
+		console.log("The %s have fail due to the next error(s):".warn, name);
 
 		for (var i = 0; i < errors.length; i++) {
-			console.log("\t%s".yellow, errors[i]);
+			console.log("\t%s".warn, errors[i]);
 		}
 	} else {
-		console.log("The execution of %s pass without error.".cyan, name);
+		console.log("The execution of %s pass without error.".process, name);
 	}
 
 	errors = [];
@@ -214,7 +221,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 				cbi.run({cwd: "test0"}).then(
 					function() {
@@ -247,7 +254,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 				cbi.runMin({cwd: "test0"}).then(
 					function() {
@@ -255,7 +262,7 @@ var test = [
 							var minFileGated = fs.readFileSync(path.join(__dirname, "temp/angular.min.js"));
 							var minFileInBower = fs.readFileSync(path.join(__dirname, "test0/bower_components/angular/angular.min.js"));
 
-							if (crypto.createHash('sha1').update(minFileGated).digest('hex') !== crypto.createHash('sha1').update(minFileInBower).digest('hex')) {
+							if (crypto.createHash("sha1").update(minFileGated).digest("hex") !== crypto.createHash("sha1").update(minFileInBower).digest("hex")) {
 								errors.push("Test" + currentTest + " error: The angular.min.js file copied by the command runMin() wasn't the minimised one.");
 							}
 
@@ -289,7 +296,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 				cbi.runMinR({cwd: "test0"}).then(
 					function() {
@@ -298,7 +305,7 @@ var test = [
 							var minFileGated = fs.readFileSync(path.join(__dirname, "temp/angular.js"));
 							var minFileInBower = fs.readFileSync(path.join(__dirname, "test0/bower_components/angular/angular.min.js"));
 
-							if (crypto.createHash('sha1').update(minFileGated).digest('hex') !== crypto.createHash('sha1').update(minFileInBower).digest('hex')) {
+							if (crypto.createHash("sha1").update(minFileGated).digest("hex") !== crypto.createHash("sha1").update(minFileInBower).digest("hex")) {
 								errors.push("Test" + currentTest + " error: The angular.min.js file copied by the command runMin() wasn't the minimised one.");
 							}
 						} else {
@@ -474,7 +481,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 
 				exec("node ../bin/clean-bower-installer --bower=\"../test/test0\"", function(err) {
@@ -507,7 +514,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test0\"", function(err) {
 					if (err) {
@@ -559,7 +566,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test0\"", function(err) {
 					if (err) {
@@ -763,9 +770,9 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test5"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test5"})
 			.on("end", function() {
-				cbi.runMin("test5").then(
+				cbi.runMin({cwd: "test5"}).then(
 					function() {
 						if (fs.existsSync(path.join(__dirname, "test5/bower_components"))) {
 							fs.removeSync(path.join(__dirname, "test5/bower_components"));
@@ -816,7 +823,7 @@ var test = [
 	 */
 		function() {
 		bower.commands
-			.install(["angular"], {}, {cwd: "test5"})
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test5"})
 			.on("end", function() {
 				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test5\"", function(err) {
 					if (err) {
@@ -983,12 +990,12 @@ function runNextTest() {
 	} else {
 		//All tests done
 		if (errorCount === 0) {
-			console.log("\nAll clean-bower-installer test had pass.".green);
+			console.log("\nAll clean-bower-installer test had pass.".pass);
 			setTimeout(function() {
 				process.exit(0);
 			}, 1000);
 		} else {
-			console.log("\nThere had been %s error(s) while testing clean-bower-installer.".red, errorCount);
+			console.log("\nThere had been %s error(s) while testing clean-bower-installer.".error, errorCount);
 			setTimeout(function() {
 				process.exit(1);
 			}, 2000);
