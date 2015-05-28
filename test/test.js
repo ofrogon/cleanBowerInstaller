@@ -12,7 +12,7 @@ colors.setTheme({
 	pass: "green",
 	warn: "yellow",
 	error: "red",
-	process: "cyan"
+	progress: "cyan"
 });
 
 var errors = [],
@@ -57,7 +57,7 @@ function testDisplay(name) {
 			console.log("\t%s".warn, errors[i]);
 		}
 	} else {
-		console.log("The execution of %s pass without error.".process, name);
+		console.log("The execution of %s pass without error.".progress, name);
 	}
 
 	errors = [];
