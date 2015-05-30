@@ -6,12 +6,11 @@
 	"cInstall": {
 		"option": {
 			"default": {
-				"folder": "../temp"
+				"folder": "temp"
 			},
 			"verbose": true
 		},
 		"folder": {
-
 		},
 		"source": {
 			"angular": {

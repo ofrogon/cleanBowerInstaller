@@ -1,5 +1,5 @@
 {
-	"name": "test8",
+	"name": "test3",
 	"dependencies": {
 		"bootstrap": "~3.2.0"
 	},
@@ -12,11 +12,14 @@
 		"option": {
 			"default": {
 				"folder": "../temp"
-			}
+			},
+			"removeAfter": true
 		},
 		"source": {
 			"bootstrap": {
-				"!": ["dist/fonts/*.svg"],
+				"!": [
+					"dist/fonts/*.svg"
+				],
 				"glyphicons-halflings-regular.*": "dist/fonts/*",
 				"bootstrap.js": "dist/js/bootstrap.js",
 				"bootstrap.css": "dist/css/bootstrap.css",

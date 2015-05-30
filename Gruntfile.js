@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		jshint: {
@@ -12,6 +12,7 @@ module.exports = function (grunt) {
 					src: [
 						"Gruntfile.js",
 						"bin/clean-bower-installer",
+						"lib/*",
 						"test/test.js"
 					]
 				}
@@ -20,7 +21,8 @@ module.exports = function (grunt) {
 				files: {
 					src: [
 						"Gruntfile.js",
-						"bin/clean-bower-installer"
+						"bin/clean-bower-installer",
+						"lib/*"
 					]
 				}
 			}
