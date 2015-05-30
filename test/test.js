@@ -312,7 +312,7 @@ var test = [
 							errors.push("Test" + currentTest + " error: The angular.js file was not copy by the command runMinR().");
 						}
 
-						var  bc = path.join(__dirname, "test0/bower_components");
+						var bc = path.join(__dirname, "test0/bower_components");
 						if (fs.existsSync(bc)) {
 							fs.removeSync(bc);
 						}
