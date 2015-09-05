@@ -1,8 +1,11 @@
 "use strict";
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
+		setup: {
+			"testDir": ".testFolder"
+		},
 		jshint: {
 			options: {
 				jshintrc: true
@@ -27,6 +30,26 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		mochaTest: {
+			unit: {
+				options: {
+					reporter: "spec",
+					captureFile: "<%= setup.testDir %>/unitResults.txt", // Optionally capture the reporter output to a file
+					quiet: false, // Optionally suppress output to standard out (defaults to false)
+					clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
+				},
+				src: ["test/unit/**/*.js"]
+			},
+			coverage: {
+				options: {
+					reporter: "html-cov",
+					quiet: true,
+					captureFile: "<%= setup.testDir %>/coverage.html",
+					require: "blanket"
+				},
+				src: ["test/unit/**/*.js"]
+			}
+		},
 		run: {
 			runTests: {
 				options: {
@@ -38,10 +61,35 @@ module.exports = function(grunt) {
 		}
 	});
 
+	//
+	grunt.task.registerTask('coverage', 'Prepare the temp folder and run the coverage tests.', function () {
+		var fakeBowerJson = {
+			"name": "unitTest"
+		};
+
+		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
+
+		grunt.task.run("mochaTest:coverage");
+	});
+
+	grunt.task.registerTask('unit', 'Prepare the temp folder and run the coverage tests.', function () {
+		var fakeBowerJson = {
+			"name": "unitTest",
+			"cInstall": {}
+		};
+
+		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
+
+		grunt.task.run("mochaTest:unit");
+	});
+
+
 	// Load the plugin that provides the "jshint" task.
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	// Load the plugin that provides the "run" task.
 	grunt.loadNpmTasks("grunt-run");
+	// Load the plugin that provides the "mocha" task.
+	grunt.loadNpmTasks("grunt-mocha-test");
 
 	//Custom Task
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);

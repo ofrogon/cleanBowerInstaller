@@ -21,17 +21,21 @@
 		"clean-bower-installer": "bin/clean-bower-installer"
 	},
 	"dependencies": {
-		"cli": "0.7.x",
+		"cli": "0.9.x",
 		"colors": "1.1.x",
 		"glob": "5.x.x",
 		"q": "2.x.x"
 	},
 	"devDependencies": {
+		"bower": "latest",
+		"blanket": "1.x.x",
+		"chai": "3.x.x",
+		"fs-extra": "latest",
 		"grunt": "0.4.x",
 		"grunt-contrib-jshint": "0.11.x",
+		"grunt-mocha-test": "0.12.x",
 		"grunt-run": "0.3.x",
-		"fs-extra": "latest",
-		"bower": "latest"
+		"mocha": "2.2.x"
 	},
 	"engines": {
 		"node": ">=0.10.0"

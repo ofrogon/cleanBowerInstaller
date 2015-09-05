@@ -1,3 +1,4 @@
+/.testFolder
 # Created by .gitignore support plugin (hsz.mobi)
 ### Node template
 # Logs
@@ -9,13 +10,13 @@ logs
 
 
 # Dependency directory
+/.temp
 node_modules
 
 .idea
 *.iml
 
-test/temp
-test/test*/bower_components
-test/test*/*.js
-bower.json
-test.js
+test/**/temp
+test/e2e/test*/bower_components
+test/e2e/test*/*.js
+test/e2e/**/bower.json
