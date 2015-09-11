@@ -16,7 +16,8 @@ module.exports = function (grunt) {
 						"Gruntfile.js",
 						"bin/clean-bower-installer",
 						"lib/*",
-						"test/test.js"
+						"test/e2e/test.js",
+						"test/unit/**/*.test.js"
 					]
 				}
 			},
@@ -53,7 +54,7 @@ module.exports = function (grunt) {
 		run: {
 			runTests: {
 				options: {
-					cwd: "./test"
+					cwd: "./test/e2e/"
 				},
 				command: "node",
 				args: ["test.js"]
@@ -62,7 +63,7 @@ module.exports = function (grunt) {
 	});
 
 	//
-	grunt.task.registerTask('coverage', 'Prepare the temp folder and run the coverage tests.', function () {
+	grunt.task.registerTask("coverage", "Prepare the temp folder and run the coverage tests.", function () {
 		var fakeBowerJson = {
 			"name": "unitTest"
 		};
@@ -72,7 +73,7 @@ module.exports = function (grunt) {
 		grunt.task.run("mochaTest:coverage");
 	});
 
-	grunt.task.registerTask('unit', 'Prepare the temp folder and run the coverage tests.', function () {
+	grunt.task.registerTask("unit", "Prepare the temp folder and run the coverage tests.", function () {
 		var fakeBowerJson = {
 			"name": "unitTest",
 			"cInstall": {}

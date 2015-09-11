@@ -35,7 +35,7 @@ describe("api", function () {
 			);
 		});
 
-		it("good options", function() {
+		it("good options", function(done) {
 			api.automatic({cwd: ".temp/"}).then(
 				function() {
 					done();
@@ -76,7 +76,7 @@ describe("api", function () {
 			);
 		});
 
-		it("good options", function() {
+		it("good options", function(done) {
 			api.install({cwd: ".temp/"}).then(
 				function() {
 					done();

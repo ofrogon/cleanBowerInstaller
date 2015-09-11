@@ -20,7 +20,7 @@ if (require.main === module) {
 	 * Format the verbose CLI return
 	 *
 	 * @param list {Array}
-	 * @returns {string}
+	 * @returns {String}
 	 */
 	var verboseCLIReturn = function(list) {
 		var output = "";
@@ -80,6 +80,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -93,6 +94,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -106,6 +108,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -119,6 +122,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -129,13 +133,14 @@ if (require.main === module) {
 		);
 	});
 } else {
-	var api = require("./../lib/api");
-	module.exports = {
-		automatic: api.automatic,
-		install: api.install,
-		update: api.install,
-		run: api.run,
-		runMin: api.runMin,
-		runMinR: api.runMinR
-	};
+	//var api = require("./../lib/api");
+	//module.exports = {
+	//	automatic: api.automatic,
+	//	install: api.install,
+	//	update: api.install,
+	//	run: api.run,
+	//	runMin: api.runMin,
+	//	runMinR: api.runMinR
+	//};
+	module.exports = require("./../lib/api");
 }
