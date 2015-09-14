@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		setup: {
@@ -63,27 +63,79 @@ module.exports = function (grunt) {
 	});
 
 	//
-	grunt.task.registerTask("coverage", "Prepare the temp folder and run the coverage tests.", function () {
+	grunt.task.registerTask("coverage", "Prepare the temp folder and run the coverage tests.", function() {
 		var fakeBowerJson = {
-			"name": "unitTest"
-		};
+				"name": "unitTest",
+				"cInstall": {}
+			},
+			fakeBowerJson2 = {
+				"name": "option-test",
+				"dependencies": {
+					"bootstrap": "~3.2.0"
+				},
+				"cInstall": {
+					"folder": {
+						"js": "js/vendor/",
+						"css": "css/",
+						"otf, eot, svg, ttf, woff": "fonts/"
+					},
+					"option": {
+						"default": {
+							"folder": "public"
+						}
+					},
+					"source": {
+						"bootstrap": {
+							"glyphicons-halflings-regular.*": "dist/fonts/*",
+							"bootstrap.js": "dist/js/bootstrap.js",
+							"bootstrap.css": "dist/css/bootstrap.css"
+						}
+					}
+				}
+			};
 
 		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
+		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
 
 		grunt.task.run("mochaTest:coverage");
 	});
 
-	grunt.task.registerTask("unit", "Prepare the temp folder and run the coverage tests.", function () {
+	grunt.task.registerTask("unit", "Prepare the temp folder and run the coverage tests.", function() {
 		var fakeBowerJson = {
-			"name": "unitTest",
-			"cInstall": {}
-		};
+				"name": "unitTest",
+				"cInstall": {}
+			},
+			fakeBowerJson2 = {
+				"name": "option-test",
+				"dependencies": {
+					"bootstrap": "~3.2.0"
+				},
+				"cInstall": {
+					"folder": {
+						"js": "js/vendor/",
+						"css": "css/",
+						"otf, eot, svg, ttf, woff": "fonts/"
+					},
+					"option": {
+						"default": {
+							"folder": "public"
+						}
+					},
+					"source": {
+						"bootstrap": {
+							"glyphicons-halflings-regular.*": "dist/fonts/*",
+							"bootstrap.js": "dist/js/bootstrap.js",
+							"bootstrap.css": "dist/css/bootstrap.css"
+						}
+					}
+				}
+			};
 
 		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
+		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
 
 		grunt.task.run("mochaTest:unit");
 	});
-
 
 	// Load the plugin that provides the "jshint" task.
 	grunt.loadNpmTasks("grunt-contrib-jshint");

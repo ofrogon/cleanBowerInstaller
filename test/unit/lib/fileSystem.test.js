@@ -4,6 +4,9 @@ var chai = require("chai"),
 	expect = chai.expect,
 	fileSystem = require("./../../../lib/fileSystem");
 
-describe("api", function () {
+/**
+ * Test /lib/fileSystem.js
+ */
+describe("fileSystem", function () {
 
 });
