@@ -24,7 +24,7 @@
 		"cli": "0.x.x",
 		"colors": "1.1.x",
 		"glob": "5.x.x",
-		"q": "2.x.x"
+		"q": "1.x.x"
 	},
 	"devDependencies": {
 		"bower": "latest",
@@ -34,7 +34,7 @@
 		"grunt": "0.4.x",
 		"grunt-contrib-jshint": "0.11.x",
 		"grunt-mocha-test": "0.12.x",
-		"grunt-run": "0.4.x",
+		"grunt-run": "0.5.x",
 		"mocha": "2.3.x"
 	},
 	"engines": {

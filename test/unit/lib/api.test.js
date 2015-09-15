@@ -1,7 +1,6 @@
 "use strict";
 
 var chai = require("chai"),
-	path = require("path"),
 	expect = chai.expect,
 	api = require("./../../../lib/api");
 

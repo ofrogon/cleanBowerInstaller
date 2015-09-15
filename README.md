@@ -3,6 +3,7 @@ This tool allows you to install bower dependencies without including the entire 
 
 [![Build Status](https://img.shields.io/travis/ofrogon/cleanBowerInstaller/master.svg?style=flat)](https://travis-ci.org/ofrogon/cleanBowerInstaller)
 [![Dependency Status](https://david-dm.org/ofrogon/cleanBowerInstaller.svg?style=flat)](https://david-dm.org/ofrogon/cleanBowerInstaller)
+[![Coverage Status](https://coveralls.io/repos/ofrogon/cleanBowerInstaller/badge.svg?branch=master&service=github)](https://coveralls.io/github/ofrogon/cleanBowerInstaller?branch=master)
 
 ## How to install
 You can install clean-bower-installer in two ways:
