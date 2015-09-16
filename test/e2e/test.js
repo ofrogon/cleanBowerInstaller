@@ -1,11 +1,11 @@
 "use strict";
 
-var cbi = require("../bin/clean-bower-installer"),
+var cbi = require("../../."),
 	path = require("path"),
-	fs = require("../node_modules/fs-extra"),
+	fs = require("../../node_modules/fs-extra/lib/index"),
 	colors = require("colors"),
 	crypto = require("crypto"),
-	bower = require("../node_modules/bower"),
+	bower = require("../../node_modules/bower/lib/index"),
 	exec = require("child_process").exec;
 
 colors.setTheme({
@@ -337,7 +337,7 @@ var test = [
 	 * #07
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -i --bower=\"test0\"", function(err) {
+		exec("node ../../bin/clean-bower-installer -i --bower=\"test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -367,7 +367,7 @@ var test = [
 	 * #08
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test1\"", function(err, result) {
+		exec("node ../../bin/clean-bower-installer -i --bower=\"../test/test1\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -396,7 +396,7 @@ var test = [
 	 * #09
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err, result) {
+		exec("node ../../bin/clean-bower-installer -i --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -411,8 +411,8 @@ var test = [
 					fs.removeSync(tp);
 				}
 
-				if (result !== "clean-bower-installer execution successfully done!\n") {
-					errors.push("Test" + currentTest + " error: A verbose answer have been receive when we don't want one.");
+				if (result !== "") {
+					errors.push("Test" + currentTest + " error: A verbose answer have been receive when we don't want one. (" + result + ")");
 				}
 
 				testDisplay("Test" + currentTest);
@@ -428,7 +428,7 @@ var test = [
 		// 1 Install an old library version
 		// In case of a bug, you may have to change the version here for the one just before the latest
 		bower.commands
-			.install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: "test0"})
+			.install(["angular#>=1.2.3 <1.3.17"], {save: true}, {cwd: "test0"})
 			.on("end", function() {
 
 				// 2 remove the bower folder
@@ -443,7 +443,7 @@ var test = [
 				}
 
 				// 4 run cbi update
-				exec("node ../bin/clean-bower-installer -u --bower=\"../test/test0\"", function(err) {
+				exec("node ../../bin/clean-bower-installer -u --bower=\"test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -484,7 +484,7 @@ var test = [
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
 
-				exec("node ../bin/clean-bower-installer --bower=\"../test/test0\"", function(err) {
+				exec("node ../../bin/clean-bower-installer --bower=\"test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -516,7 +516,7 @@ var test = [
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -m --bower=\"../test/test0\"", function(err) {
+				exec("node ../../bin/clean-bower-installer -m --bower=\"test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -568,7 +568,7 @@ var test = [
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test0"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test0\"", function(err) {
+				exec("node ../../bin/clean-bower-installer -M --bower=\"test0\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 
@@ -647,7 +647,7 @@ var test = [
 	 * #15
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -ir --bower=\"../test/test0\"", function(err) {
+		exec("node ../../bin/clean-bower-installer -ir --bower=\"test0\"", function(err) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -675,7 +675,7 @@ var test = [
 	 * #16
 	 */
 		function() {
-		exec("node ../bin/clean-bower-installer -iV --bower=\"../test/test0\"", function(err, result) {
+		exec("node ../../bin/clean-bower-installer -iV --bower=\"../test/test0\"", function(err, result) {
 			if (err) {
 				errors.push("Error in test" + currentTest + ": " + err);
 
@@ -825,7 +825,7 @@ var test = [
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: "test5"})
 			.on("end", function() {
-				exec("node ../bin/clean-bower-installer -M --bower=\"../test/test5\"", function(err) {
+				exec("node ../../bin/clean-bower-installer -M --bower=\"test5\"", function(err) {
 					if (err) {
 						errors.push("Error in test" + currentTest + ": " + err);
 

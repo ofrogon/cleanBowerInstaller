@@ -1,3 +1,5 @@
 test
 **/bower.json
 .travis.yml
+blanket.js
+/.editorconfig

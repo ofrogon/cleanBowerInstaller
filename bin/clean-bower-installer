@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-var colors = require("colors");
+var colors = require("colors"),
+	util = require("util");
 
 colors.setTheme({
 	pass: "green",
@@ -20,7 +21,7 @@ if (require.main === module) {
 	 * Format the verbose CLI return
 	 *
 	 * @param list {Array}
-	 * @returns {string}
+	 * @returns {String}
 	 */
 	var verboseCLIReturn = function(list) {
 		var output = "";
@@ -71,18 +72,21 @@ if (require.main === module) {
 
 				// Actions
 				if (options.automatic) {
-					cmd.automatic(config).then(
-						function(message) {
-							if (config.option.verbose) {
-								console.log(verboseCLIReturn(message));
+					util.deprecate(function() {
+						cmd.automatic(config).then(
+							function(message) {
+								if (config.option.verbose) {
+									console.log(verboseCLIReturn(message));
+								}
+								console.log(successMsg.pass);
+								process.exit(0);
+							}, function(err) {
+								console.log(err.error);
+								process.stderr.write(err.error + "\n");
+								process.exit(1);
 							}
-							console.log(successMsg.pass);
-							process.exit(0);
-						}, function(err) {
-							console.log(err.error);
-							process.exit(1);
-						}
-					);
+						);
+					}, "The automatic command call for bower is deprecated, please use 'install' instead.");
 				} else if (options.install) {
 					cmd.install(config).then(
 						function(message) {
@@ -93,6 +97,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -106,6 +111,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -119,6 +125,7 @@ if (require.main === module) {
 							process.exit(0);
 						}, function(err) {
 							console.log(err.error);
+							process.stderr.write(err.error + "\n");
 							process.exit(1);
 						}
 					);
@@ -129,13 +136,5 @@ if (require.main === module) {
 		);
 	});
 } else {
-	var api = require("./../lib/api");
-	module.exports = {
-		automatic: api.automatic,
-		install: api.install,
-		update: api.install,
-		run: api.run,
-		runMin: api.runMin,
-		runMinR: api.runMinR
-	};
+	module.exports = require("./../lib/api");
 }
