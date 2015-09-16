@@ -5,6 +5,10 @@ var chai = require("chai"),
 	path = require("path"),
 	fileSystem = require("./../../../lib/fileSystem");
 
+// Legacy support
+var nodeVersion = process.versions.node.split(".");
+var legacy = !!(Number(nodeVersion[0]) === 0 && nodeVersion[1] < 11);
+
 /**
  * Test /lib/fileSystem.js
  */
@@ -84,7 +88,12 @@ describe("fileSystem", function() {
 					fileSystem.accessSync(path.join(tempFolder, "mkdirp"));
 					done("not suppose to pass because the folder were suppose to be deleted");
 				} catch (e) {
-					expect(e.code).to.equal("ENOENT");
+					if (legacy) {
+						expect(e).to.be.an.instanceof(TypeError);
+					} else {
+						expect(e.code).to.equal("ENOENT");
+					}
+
 					done();
 				}
 			});
@@ -107,7 +116,11 @@ describe("fileSystem", function() {
 						fileSystem.accessSync(path.join(tempFolder, "mkdirpQ"));
 						done("not suppose to pass because the folder were suppose to be deleted");
 					} catch (e) {
-						expect(e.code).to.equal("ENOENT");
+						if (legacy) {
+							expect(e).to.be.an.instanceof(TypeError);
+						} else {
+							expect(e.code).to.equal("ENOENT");
+						}
 						done();
 					}
 				},

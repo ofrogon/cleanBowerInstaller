@@ -33,7 +33,7 @@ describe("readConfig", function() {
 		 * Teat with a absolute path
 		 */
 		it("absolute", function(done) {
-			config.read({cwd: path.join(__dirname, "../../..", ".temp/")}).then(
+			config.read({cwd: path.join(__dirname, "../../..", ".temp")}).then(
 				function(conf) {
 					expect(conf).to.equal("Nothing to do!");
 					done();
