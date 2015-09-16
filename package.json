@@ -30,15 +30,17 @@
 		"blanket": "1.x.x",
 		"bower": "latest",
 		"chai": "3.x.x",
+		"coveralls": "^2.11.4",
 		"fs-extra": "latest",
 		"grunt": "0.4.x",
 		"grunt-contrib-jshint": "0.11.x",
+		"grunt-coveralls": "^1.0.0",
 		"grunt-mocha-test": "0.12.x",
 		"grunt-run": "0.5.x",
 		"mocha": "2.3.x"
 	},
 	"scripts": {
-		"test": "grunt test"
+		"test": "grunt unit"
 	},
 	"engines": {
 		"node": ">=0.10.0"
