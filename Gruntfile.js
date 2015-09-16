@@ -146,6 +146,6 @@ module.exports = function(grunt) {
 
 	//Custom Task
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
-	grunt.registerTask("test", ["run:runTests"]);
+	grunt.registerTask("test", ["run:runTests", "unit"]);
 	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
 };
