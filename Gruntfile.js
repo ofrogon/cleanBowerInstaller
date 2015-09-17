@@ -143,8 +143,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
-	// Load the plugin that provides the "mocha" task.
-	grunt.loadNpmTasks("grunt-coveralls");
 
 	//Custom Task
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
