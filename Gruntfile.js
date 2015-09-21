@@ -46,6 +46,16 @@ module.exports = function(grunt) {
 					reporter: "html-cov",
 					quiet: true,
 					captureFile: "<%= setup.testDir %>/coverage.html",
+					require: "blanket",
+					clearRequireCache: true // Optionally clear the require cache before running tests (defaults to false)
+				},
+				src: ["test/unit/**/*.js"]
+			},
+			lcov: {
+				options: {
+					reporter: "mocha-lcov-reporter",
+					quiet: true,
+					captureFile: "<%= setup.testDir %>/coverage.lcov",
 					require: "blanket"
 				},
 				src: ["test/unit/**/*.js"]
@@ -58,6 +68,12 @@ module.exports = function(grunt) {
 				},
 				command: "node",
 				args: ["test.js"]
+			}
+		},
+		coveralls: {
+			options: {
+				src: '<%= setup.testDir %>/coverage.lcov',
+				force: false
 			}
 		}
 	});
@@ -143,9 +159,13 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
+	// Load the plugin that provides the "coveralls" task.
+	grunt.loadNpmTasks('grunt-coveralls');
 
 	//Custom Task
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
-	grunt.registerTask("test", ["run:runTests", "unit"]);
-	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
+	grunt.registerTask("test", ["unit"]);
+	grunt.registerTask("postTest", ["mochaTest:lcov", "coveralls"]);
+	grunt.registerTask("testAll", ["run:runTests", "test"]);
+	grunt.registerTask("preCommit", ["jshint:prod", "testAll"]);
 };
