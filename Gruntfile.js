@@ -165,7 +165,7 @@ module.exports = function(grunt) {
 	//Custom Task
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
 	grunt.registerTask("test", ["unit"]);
-	grunt.registerTask("postTest", ["mochaTest:lcov", "coveralls"]);
+	grunt.registerTask("coverallsReport", ["mochaTest:lcov", "coveralls"]);
 	grunt.registerTask("testAll", ["run:runTests", "test"]);
 	grunt.registerTask("preCommit", ["jshint:prod", "testAll"]);
 };
