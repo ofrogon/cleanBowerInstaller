@@ -35,9 +35,9 @@ module.exports = function(grunt) {
 			unit: {
 				options: {
 					reporter: "spec",
-					captureFile: "<%= setup.testDir %>/unitResults.txt", // Optionally capture the reporter output to a file
-					quiet: false, // Optionally suppress output to standard out (defaults to false)
-					clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
+					captureFile: "<%= setup.testDir %>/unitResults.txt",
+					quiet: false,
+					clearRequireCache: false
 				},
 				src: ["test/unit/**/*.js"]
 			},
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 					quiet: true,
 					captureFile: "<%= setup.testDir %>/coverage.html",
 					require: "blanket",
-					clearRequireCache: true // Optionally clear the require cache before running tests (defaults to false)
+					clearRequireCache: true
 				},
 				src: ["test/unit/**/*.js"]
 			},
@@ -56,7 +56,8 @@ module.exports = function(grunt) {
 					reporter: "mocha-lcov-reporter",
 					quiet: true,
 					captureFile: "<%= setup.testDir %>/coverage.lcov",
-					require: "blanket"
+					require: "blanket",
+					clearRequireCache: true
 				},
 				src: ["test/unit/**/*.js"]
 			}
@@ -72,14 +73,15 @@ module.exports = function(grunt) {
 		},
 		coveralls: {
 			options: {
-				src: '<%= setup.testDir %>/coverage.lcov',
 				force: false
+			},
+			travis: {
+				src: "<%= setup.testDir %>/coverage.lcov"
 			}
 		}
 	});
 
-	//
-	grunt.task.registerTask("coverage", "Prepare the temp folder and run the coverage tests.", function() {
+	grunt.task.registerTask("prepareForTest", "Prepare the temp folder.", function() {
 		var fakeBowerJson = {
 				"name": "unitTest",
 				"cInstall": {}
@@ -112,45 +114,6 @@ module.exports = function(grunt) {
 
 		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
 		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
-
-		grunt.task.run("mochaTest:coverage");
-	});
-
-	grunt.task.registerTask("unit", "Prepare the temp folder and run the coverage tests.", function() {
-		var fakeBowerJson = {
-				"name": "unitTest",
-				"cInstall": {}
-			},
-			fakeBowerJson2 = {
-				"name": "option-test",
-				"dependencies": {
-					"bootstrap": "~3.2.0"
-				},
-				"cInstall": {
-					"folder": {
-						"js": "js/vendor/",
-						"css": "css/",
-						"otf, eot, svg, ttf, woff": "fonts/"
-					},
-					"option": {
-						"default": {
-							"folder": "public"
-						}
-					},
-					"source": {
-						"bootstrap": {
-							"glyphicons-halflings-regular.*": "dist/fonts/*",
-							"bootstrap.js": "dist/js/bootstrap.js",
-							"bootstrap.css": "dist/css/bootstrap.css"
-						}
-					}
-				}
-			};
-
-		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
-		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
-
-		grunt.task.run("mochaTest:unit");
 	});
 
 	// Load the plugin that provides the "jshint" task.
@@ -160,12 +123,27 @@ module.exports = function(grunt) {
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
 	// Load the plugin that provides the "coveralls" task.
-	grunt.loadNpmTasks('grunt-coveralls');
+	grunt.loadNpmTasks("grunt-coveralls");
 
-	//Custom Task
+	//Custom Task ---------------------
+	// Run the coverage test
+	grunt.registerTask("coverage", ["prepareForTest", "mochaTest:coverage"]);
+
+	// Run the unit tests
+	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit"]);
+
+	// Run JSHint to test the code quality
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
-	grunt.registerTask("test", ["unit"]);
-	grunt.registerTask("coverallsReport", ["mochaTest:lcov", "coveralls"]);
-	grunt.registerTask("testAll", ["run:runTests", "test"]);
+
+	// run tests and output all to a format that coveralls.io understand
+	grunt.registerTask("coverallsReport", ["prepareForTest", "mochaTest:lcov", "coveralls:travis"]);
+
+	// Run the useful development tests
+	grunt.registerTask("testAll", ["run:runTests", "test", "coverage"]);
+
+	// Run the action to test before committing
 	grunt.registerTask("preCommit", ["jshint:prod", "testAll"]);
+
+	// CI actions
+	grunt.registerTask("CI", ["unit", "coverallsReport"]);
 };
