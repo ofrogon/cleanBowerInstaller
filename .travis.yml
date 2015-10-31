@@ -1,13 +1,22 @@
-language: node_js
+sudo: false
 
-node_js:
-  - '0.10'
-  - '0.11'
-  - '0.12'
-  - '4'
-  - '5'
+env:
+  - NODE_VERSION=0.10
+  - NODE_VERSION=0.11
+  - NODE_VERSION=0.12
+  - NODE_VERSION=4
+  - NODE_VERSION=5
 
-before_install: npm install -g grunt-cli bower
+install:
+  - nvm install $NODE_VERSION
+  - npm install -g grunt-cli bower
+  - node --version
+  - npm --version
+  - git --version
+  - bower --version
+
+os:
+  - linux
 
 script:
   - grunt CI
