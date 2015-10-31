@@ -69,14 +69,9 @@ module.exports = function(grunt) {
 				},
 				command: "node",
 				args: ["test.js"]
-			}
-		},
-		coveralls: {
-			options: {
-				force: false
 			},
-			travis: {
-				src: "<%= setup.testDir %>/coverage.lcov"
+			coveralls: {
+				command: 'node node_modules/.bin/coveralls < <%= setup.testDir %>/coverage.lcov'
 			}
 		}
 	});
@@ -122,8 +117,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
-	// Load the plugin that provides the "coveralls" task.
-	grunt.loadNpmTasks("grunt-coveralls");
 
 	//Custom Task ---------------------
 	// Run the coverage test
@@ -136,13 +129,13 @@ module.exports = function(grunt) {
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
 
 	// run tests and output all to a format that coveralls.io understand
-	grunt.registerTask("coverallsReport", ["prepareForTest", "mochaTest:lcov", "coveralls:travis"]);
+	grunt.registerTask("coverallsReport", ["prepareForTest", "mochaTest:lcov", "run:coveralls"]);
 
 	// Run the useful development tests
-	grunt.registerTask("testAll", ["run:runTests", "test", "coverage"]);
+	grunt.registerTask("test", ["run:runTests", "unit", "coverage"]);
 
 	// Run the action to test before committing
-	grunt.registerTask("preCommit", ["jshint:prod", "testAll"]);
+	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
 
 	// CI actions
 	grunt.registerTask("CI", ["unit", "coverallsReport"]);

@@ -37,7 +37,7 @@ if (require.main === module) {
 
 	// CLI options
 	cli.parse({
-		automatic: ["a", "Automatically select the right option to execute from bower."],
+		automatic: ["a", "Automatically select the right option to execute from bower. (deprecated)"],
 		install: ["i", "Run bower install command"],
 		update: ["u", "Run bower update command"],
 		bower: [false, "Input the bower.json file path.", "path", null],
@@ -86,7 +86,7 @@ if (require.main === module) {
 								process.exit(1);
 							}
 						);
-					}, "The automatic command call for bower is deprecated, please use 'install' instead.");
+					}, "The automatic command call for bower is deprecated, please use 'update' instead.");
 				} else if (options.install) {
 					cmd.install(config).then(
 						function(message) {
