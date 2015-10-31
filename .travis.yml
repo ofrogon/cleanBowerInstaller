@@ -7,7 +7,7 @@ node_js:
   - '4'
   - '5'
 
-before_install: npm install -g grunt-cli
+before_install: npm install -g grunt-cli bower
 
 script:
   - grunt CI
