@@ -22,7 +22,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (typeof err === 'string' || err instanceof String) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -79,7 +79,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (typeof err === 'string' || err instanceof String) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -136,7 +136,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (typeof err === 'string' || err instanceof String) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -193,7 +193,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (typeof err === 'string' || err instanceof String) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);

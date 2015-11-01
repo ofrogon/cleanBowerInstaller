@@ -33,16 +33,16 @@ module.exports = function(grunt) {
 		},
 		mocha_istanbul: {
 			coverage: {
-				src: 'test/unit/lib', // a folder works nicely
+				src: "test/unit/lib",
 				options: {
-					mask: '*.test.js',
-					coverageFolder: "<%= setup.testDir %>/coverage",
+					mask: "*.test.js",
+					coverageFolder: "<%= setup.testDir %>/coverage"
 				}
 			},
 			travis: {
-				src: 'test/unit/lib', // a folder works nicely
+				src: "test/unit/lib",
 				options: {
-					mask: '*.test.js',
+					mask: "*.test.js",
 					coverageFolder: "<%= setup.testDir %>/coverage",
 					coverage: true
 				}
@@ -66,10 +66,6 @@ module.exports = function(grunt) {
 				},
 				command: "node",
 				args: ["test.js"]
-			},
-			coveralls: {
-				command: "node",
-				args: ["node_modules/.bin/coveralls", "<", "<%= setup.testDir %>/coverage.lcov"]
 			}
 		}
 	});
@@ -115,8 +111,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
-// Load the plugin that provides the "mocha_istanbul" task.
-	grunt.loadNpmTasks('grunt-mocha-istanbul');
+	// Load the plugin that provides the "mocha_istanbul" task.
+	grunt.loadNpmTasks("grunt-mocha-istanbul");
 
 	//Custom Task ---------------------
 	// Run the coverage test
@@ -135,11 +131,11 @@ module.exports = function(grunt) {
 	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
 
 	// CI actions
-	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);//"run:coveralls"
+	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);
 
-	// Event handler
-	grunt.event.on('coverage', function(lcov, done){
-		require('coveralls').handleInput(lcov, function(err){
+	// Event handler for Coveralls
+	grunt.event.on("coverage", function(lcov, done){
+		require("coveralls").handleInput(lcov, function(err){
 			if (err) {
 				return done(err);
 			}
