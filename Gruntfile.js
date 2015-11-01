@@ -31,22 +31,30 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		mocha_istanbul: {
+			coverage: {
+				src: "test/unit/lib",
+				options: {
+					mask: "*.test.js",
+					coverageFolder: "<%= setup.testDir %>/coverage"
+				}
+			},
+			travis: {
+				src: "test/unit/lib",
+				options: {
+					mask: "*.test.js",
+					coverageFolder: "<%= setup.testDir %>/coverage",
+					coverage: true
+				}
+			}
+		},
 		mochaTest: {
 			unit: {
 				options: {
 					reporter: "spec",
-					captureFile: "<%= setup.testDir %>/unitResults.txt", // Optionally capture the reporter output to a file
-					quiet: false, // Optionally suppress output to standard out (defaults to false)
-					clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
-				},
-				src: ["test/unit/**/*.js"]
-			},
-			coverage: {
-				options: {
-					reporter: "html-cov",
-					quiet: true,
-					captureFile: "<%= setup.testDir %>/coverage.html",
-					require: "blanket"
+					captureFile: "<%= setup.testDir %>/unitResults.txt",
+					quiet: false,
+					clearRequireCache: false
 				},
 				src: ["test/unit/**/*.js"]
 			}
@@ -62,8 +70,7 @@ module.exports = function(grunt) {
 		}
 	});
 
-	//
-	grunt.task.registerTask("coverage", "Prepare the temp folder and run the coverage tests.", function() {
+	grunt.task.registerTask("prepareForTest", "Prepare the temp folder.", function() {
 		var fakeBowerJson = {
 				"name": "unitTest",
 				"cInstall": {}
@@ -96,45 +103,6 @@ module.exports = function(grunt) {
 
 		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
 		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
-
-		grunt.task.run("mochaTest:coverage");
-	});
-
-	grunt.task.registerTask("unit", "Prepare the temp folder and run the coverage tests.", function() {
-		var fakeBowerJson = {
-				"name": "unitTest",
-				"cInstall": {}
-			},
-			fakeBowerJson2 = {
-				"name": "option-test",
-				"dependencies": {
-					"bootstrap": "~3.2.0"
-				},
-				"cInstall": {
-					"folder": {
-						"js": "js/vendor/",
-						"css": "css/",
-						"otf, eot, svg, ttf, woff": "fonts/"
-					},
-					"option": {
-						"default": {
-							"folder": "public"
-						}
-					},
-					"source": {
-						"bootstrap": {
-							"glyphicons-halflings-regular.*": "dist/fonts/*",
-							"bootstrap.js": "dist/js/bootstrap.js",
-							"bootstrap.css": "dist/css/bootstrap.css"
-						}
-					}
-				}
-			};
-
-		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
-		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
-
-		grunt.task.run("mochaTest:unit");
 	});
 
 	// Load the plugin that provides the "jshint" task.
@@ -143,11 +111,35 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
-	// Load the plugin that provides the "mocha" task.
-	grunt.loadNpmTasks("grunt-coveralls");
+	// Load the plugin that provides the "mocha_istanbul" task.
+	grunt.loadNpmTasks("grunt-mocha-istanbul");
 
-	//Custom Task
+	//Custom Task ---------------------
+	// Run the coverage test
+	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage"]);
+
+	// Run the unit tests
+	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit"]);
+
+	// Run JSHint to test the code quality
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
-	grunt.registerTask("test", ["run:runTests", "unit"]);
+
+	// Run the useful development tests
+	grunt.registerTask("test", ["run:runTests", "unit", "coverage"]);
+
+	// Run the action to test before committing
 	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
+
+	// CI actions
+	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);
+
+	// Event handler for Coveralls
+	grunt.event.on("coverage", function(lcov, done){
+		require("coveralls").handleInput(lcov, function(err){
+			if (err) {
+				return done(err);
+			}
+			done();
+		});
+	});
 };

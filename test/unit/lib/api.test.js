@@ -4,10 +4,6 @@ var chai = require("chai"),
 	expect = chai.expect,
 	api = require("./../../../lib/api");
 
-// Legacy support
-var nodeVersion = process.versions.node.split(".");
-var legacy = !!(Number(nodeVersion[0]) === 0 && nodeVersion[1] < 11);
-
 /**
  * Test /lib/api.js
  */
@@ -26,7 +22,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (legacy) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -83,7 +79,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (legacy) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -140,7 +136,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (legacy) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
@@ -197,7 +193,7 @@ describe("api", function () {
 				},
 				function (err) {
 					try {
-						if (legacy) {
+						if (typeof err === "string" || err instanceof String) {
 							expect(err).to.contain("No bower.json file found in");
 						} else {
 							expect(err).to.be.an.instanceof(TypeError);
