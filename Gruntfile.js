@@ -31,6 +31,23 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		mocha_istanbul: {
+			coverage: {
+				src: 'test/unit/lib', // a folder works nicely
+				options: {
+					mask: '*.test.js',
+					coverageFolder: "<%= setup.testDir %>/coverage",
+				}
+			},
+			travis: {
+				src: 'test/unit/lib', // a folder works nicely
+				options: {
+					mask: '*.test.js',
+					coverageFolder: "<%= setup.testDir %>/coverage",
+					coverage: true
+				}
+			}
+		},
 		mochaTest: {
 			unit: {
 				options: {
@@ -38,26 +55,6 @@ module.exports = function(grunt) {
 					captureFile: "<%= setup.testDir %>/unitResults.txt",
 					quiet: false,
 					clearRequireCache: false
-				},
-				src: ["test/unit/**/*.js"]
-			},
-			coverage: {
-				options: {
-					reporter: "html-cov",
-					quiet: true,
-					captureFile: "<%= setup.testDir %>/coverage.html",
-					require: "blanket",
-					clearRequireCache: true
-				},
-				src: ["test/unit/**/*.js"]
-			},
-			lcov: {
-				options: {
-					reporter: "mocha-lcov-reporter",
-					quiet: true,
-					captureFile: "<%= setup.testDir %>/coverage.lcov",
-					require: "blanket",
-					clearRequireCache: true
 				},
 				src: ["test/unit/**/*.js"]
 			}
@@ -71,7 +68,8 @@ module.exports = function(grunt) {
 				args: ["test.js"]
 			},
 			coveralls: {
-				command: 'node node_modules/.bin/coveralls < <%= setup.testDir %>/coverage.lcov'
+				command: "node",
+				args: ["node_modules/.bin/coveralls", "<", "<%= setup.testDir %>/coverage.lcov"]
 			}
 		}
 	});
@@ -117,19 +115,18 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
+// Load the plugin that provides the "mocha_istanbul" task.
+	grunt.loadNpmTasks('grunt-mocha-istanbul');
 
 	//Custom Task ---------------------
 	// Run the coverage test
-	grunt.registerTask("coverage", ["prepareForTest", "mochaTest:coverage"]);
+	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage"]);
 
 	// Run the unit tests
 	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit"]);
 
 	// Run JSHint to test the code quality
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
-
-	// run tests and output all to a format that coveralls.io understand
-	grunt.registerTask("coverallsReport", ["prepareForTest", "mochaTest:lcov", "run:coveralls"]);
 
 	// Run the useful development tests
 	grunt.registerTask("test", ["run:runTests", "unit", "coverage"]);
@@ -138,5 +135,15 @@ module.exports = function(grunt) {
 	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
 
 	// CI actions
-	grunt.registerTask("CI", ["unit", "coverallsReport"]);
+	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);//"run:coveralls"
+
+	// Event handler
+	grunt.event.on('coverage', function(lcov, done){
+		require('coveralls').handleInput(lcov, function(err){
+			if (err) {
+				return done(err);
+			}
+			done();
+		});
+	});
 };
