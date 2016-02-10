@@ -2,6 +2,8 @@
 
 var chai = require("chai"),
 	expect = chai.expect,
+	describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
 	path = require("path"),
 	config = require("./../../../lib/readConfig");
 
@@ -98,7 +100,7 @@ describe("readConfig", function() {
 			config.read({cwd: ".temp/under/"}).then(
 				function(conf) {
 					try {
-						expect(conf).to.be.deep.equal(expected);
+						expect(conf).to.eql(expected);
 						done();
 					} catch(e) {
 						done(e);

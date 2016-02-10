@@ -63,19 +63,5 @@
 	"wsh": false,
 	"yui": false,
 	"globals": {
-		"Notification": false,
-		"angular": false,
-		"describe": false,
-		"xdescribe": false,
-		"ddescribe": false,
-		"it": false,
-		"xit": false,
-		"iit": false,
-		"beforeEach": false,
-		"afterEach": false,
-		"before": false,
-		"after": false,
-		"pending": false,
-		"spyOn": false
 	}
 }

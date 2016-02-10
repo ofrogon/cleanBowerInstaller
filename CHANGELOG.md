@@ -1,11 +1,15 @@
 # Changelog
 
+## 0.3.2 - 2015-12-24
+
+- Fix cInstall.option.default.folder not impacting the cInstall.folder paths.
+
 ## 0.3.1 - 2015-11-01
 
 - Add support for coveralls.io for test coverage report.
 - Remove useless dependencies.
 - Switch blanket.js for istanbul.js as coverage test reporter.
-- Update .travis.iml file to stop use legacy version of Travis CI.
+- Update .travis.iml file to stop use legacy version of TravisCI.
 - Add test against Node.js v5.
 
 ## 0.3.0 - 2015-09-15
@@ -14,7 +18,7 @@
 - Accelerate the execution of the tool on an empty value of the field `cInstall` in the `bower.json` file.
 - Update dependencies.
 - Fix a possible error when using name with glob star.
-- Deprecated the use of `automatic` in the api (was already mark as deprecated in the cmd module).
+- Deprecated the use of `automatic` in the API (was already mark as deprecated in the cmd module).
 - Better deprecation throw, by using the Node.js `util` module.
 - Start using version 1.4.x of q instead of version 2.x.x because it wasn't updated since 2014.
 
@@ -71,9 +75,9 @@
 
 ## 0.0.3 - 2014-10-27
 
-- Add option to get minimised version of bower dependencies.
+- Add option to get minimized version of bower dependencies.
 - Add option to set a default folder for minimized files.
-- Repair the CLI commands call. Before the CLI section was call as soon as we require the clean-bower-installer module, now it not (as intended).
+- Repair the CLI commands call. Before the CLI section was called as soon as we require the clean-bower-installer module, now it is not (as intended).
 
 ## 0.0.2 - 2014-10-08
 

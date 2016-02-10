@@ -2,8 +2,11 @@
 
 var chai = require("chai"),
 	expect = chai.expect,
+	describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
 	path = require("path"),
-	fileSystem = require("./../../../lib/fileSystem");
+	fileSystem = require("./../../../lib/fileSystem"),
+	after = require("mocha/lib/mocha.js").after;
 
 // Legacy support
 var nodeVersion = process.versions.node.split(".");
@@ -21,9 +24,9 @@ describe("fileSystem", function() {
 	it("mkdirp", function(done) {
 		var toCreate = path.join(tempFolder, "mkdirp/dept1/dept2");
 		fileSystem.mkdirp(toCreate, 511, function() {
-			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp")).isDirectory()).to.be.true;
-			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp/dept1")).isDirectory()).to.be.true;
-			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp/dept1/dept2")).isDirectory()).to.be.true;
+			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp")).isDirectory()).to.equal(true);
+			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp/dept1")).isDirectory()).to.equal(true);
+			expect(fileSystem.statSync(path.join(tempFolder, "mkdirp/dept1/dept2")).isDirectory()).to.equal(true);
 			done();
 		});
 	});
@@ -35,9 +38,9 @@ describe("fileSystem", function() {
 		var toCreate = path.join(tempFolder, "mkdirpQ/dept1/dept2");
 		fileSystem.mkdirpQ(toCreate, 511).then(
 			function() {
-				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ")).isDirectory()).to.be.true;
-				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ/dept1")).isDirectory()).to.be.true;
-				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ/dept1/dept2")).isDirectory()).to.be.true;
+				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ")).isDirectory()).to.equal(true);
+				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ/dept1")).isDirectory()).to.equal(true);
+				expect(fileSystem.statSync(path.join(tempFolder, "mkdirpQ/dept1/dept2")).isDirectory()).to.equal(true);
 				done();
 			},
 			function(e) {
@@ -51,7 +54,7 @@ describe("fileSystem", function() {
 	 */
 	it("copy", function(done) {
 		fileSystem.copy(__filename, path.join(tempFolder, "copy.js"), function() {
-			expect(fileSystem.statSync(path.join(tempFolder, "copy.js")).isFile()).to.be.true;
+			expect(fileSystem.statSync(path.join(tempFolder, "copy.js")).isFile()).to.equal(true);
 			expect(fileSystem.readFileSync(path.join(tempFolder, "copy.js"), "utf8")).to.equal(fileSystem.readFileSync(__filename, "utf8"));
 			done();
 		});
@@ -63,7 +66,7 @@ describe("fileSystem", function() {
 	it("copyQ", function(done) {
 		fileSystem.copyQ(__filename, path.join(tempFolder, "copyQ.js")).then(
 			function() {
-				expect(fileSystem.statSync(path.join(tempFolder, "copyQ.js")).isFile()).to.be.true;
+				expect(fileSystem.statSync(path.join(tempFolder, "copyQ.js")).isFile()).to.equal(true);
 				expect(fileSystem.readFileSync(path.join(tempFolder, "copyQ.js"), "utf8")).to.equal(fileSystem.readFileSync(__filename, "utf8"));
 				done();
 			},
@@ -89,7 +92,7 @@ describe("fileSystem", function() {
 					done("not suppose to pass because the folder were suppose to be deleted");
 				} catch (e) {
 					if (legacy) {
-						expect(e).to.be.an.instanceof(TypeError);
+						expect(e instanceof TypeError).to.equal(true);
 					} else {
 						expect(e.code).to.equal("ENOENT");
 					}
@@ -117,7 +120,7 @@ describe("fileSystem", function() {
 						done("not suppose to pass because the folder were suppose to be deleted");
 					} catch (e) {
 						if (legacy) {
-							expect(e).to.be.an.instanceof(TypeError);
+							expect(e instanceof TypeError).to.equal(true);
 						} else {
 							expect(e.code).to.equal("ENOENT");
 						}

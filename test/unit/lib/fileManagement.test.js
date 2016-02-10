@@ -1,6 +1,8 @@
 "use strict";
 
-var path = require("path"),
+var describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
+	path = require("path"),
 	exec = require("child_process").exec,
 	config = require("./../../../lib/readConfig"),
 	fileManagement = require("./../../../lib/fileManagement");

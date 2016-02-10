@@ -2,6 +2,8 @@
 
 var chai = require("chai"),
 	expect = chai.expect,
+	describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
 	path = require("path"),
 	cmd = require("./../../../lib/cmd");
 
@@ -58,7 +60,7 @@ describe("cmd", function() {
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
 				}, function(e) {
-					expect(e).to.contain("There is no bower.json file in");
+					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
 			);
@@ -111,7 +113,7 @@ describe("cmd", function() {
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
 				}, function(e) {
-					expect(e).to.contain("There is no bower.json file in");
+					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
 			);
@@ -164,7 +166,7 @@ describe("cmd", function() {
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
 				}, function(e) {
-					expect(e).to.contain("There is no bower.json file in");
+					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
 			);
@@ -217,7 +219,7 @@ describe("cmd", function() {
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
 				}, function(e) {
-					expect(e).to.contain("There is no bower.json file in");
+					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
 			);

@@ -2,30 +2,32 @@
 
 var chai = require("chai"),
 	expect = chai.expect,
+	describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
 	api = require("./../../../lib/api");
 
 /**
  * Test /lib/api.js
  */
-describe("api", function () {
+describe("api", function() {
 	/**
 	 * Test the method "automatic" from the module api.js
 	 */
-	describe("automatic", function () {
+	describe("automatic", function() {
 		/**
 		 * Without Config object as configuration
 		 */
-		it("wrong options", function (done) {
+		it("wrong options", function(done) {
 			api.automatic("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
 						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.contain("No bower.json file found in");
+							expect(err).to.match(/No bower\.json file found in.*/);
 						} else {
-							expect(err).to.be.an.instanceof(TypeError);
+							expect(err instanceof TypeError).to.equal(true);
 						}
 						done();
 					} catch (e) {
@@ -44,7 +46,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/No bower\.json file found in.*/);
 					done();
 				}
 			);
@@ -74,15 +76,15 @@ describe("api", function () {
 		 */
 		it("wrong options", function(done) {
 			api.install("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
 						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.contain("No bower.json file found in");
+							expect(err).to.match(/No bower\.json file found in.*/);
 						} else {
-							expect(err).to.be.an.instanceof(TypeError);
+							expect(err instanceof TypeError).to.equal(true);
 						}
 						done();
 					} catch (e) {
@@ -101,7 +103,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/No bower\.json file found in.*/);
 					done();
 				}
 			);
@@ -131,15 +133,15 @@ describe("api", function () {
 		 */
 		it("wrong options", function(done) {
 			api.update("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
 						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.contain("No bower.json file found in");
+							expect(err).to.match(/^No bower\.json file found in.*/);
 						} else {
-							expect(err).to.be.an.instanceof(TypeError);
+							expect(err instanceof TypeError).to.equal(true);
 						}
 						done();
 					} catch (e) {
@@ -158,7 +160,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/No bower\.json file found in.*/);
 					done();
 				}
 			);
@@ -188,15 +190,15 @@ describe("api", function () {
 		 */
 		it("wrong options", function(done) {
 			api.run("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
 						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.contain("No bower.json file found in");
+							expect(err).to.match(/^No bower\.json file found in.*/);
 						} else {
-							expect(err).to.be.an.instanceof(TypeError);
+							expect(err instanceof TypeError).to.equal(true);
 						}
 						done();
 					} catch (e) {
@@ -215,7 +217,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/^No bower\.json file found in.*/);
 					done();
 				}
 			);
@@ -245,12 +247,12 @@ describe("api", function () {
 		 */
 		it("wrong options", function(done) {
 			api.runMin("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
-						expect(err).to.be.an.instanceof(TypeError);
+						expect(err instanceof TypeError).to.equal(true);
 						done();
 					} catch (e) {
 						done(e);
@@ -268,7 +270,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/^No bower\.json file found in.*/);
 					done();
 				}
 			);
@@ -298,12 +300,12 @@ describe("api", function () {
 		 */
 		it("wrong options", function(done) {
 			api.runMinR("this is a wrong option").then(
-				function () {
+				function() {
 					done("String pass as a accepted option but we want an object.");
 				},
-				function (err) {
+				function(err) {
 					try {
-						expect(err).to.be.an.instanceof(TypeError);
+						expect(err instanceof TypeError).to.equal(true);
 						done();
 					} catch (e) {
 						done(e);
@@ -321,7 +323,7 @@ describe("api", function () {
 					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				},
 				function(e) {
-					expect(e).to.contain("No bower.json file found in");
+					expect(e).to.match(/^No bower\.json file found in.*/);
 					done();
 				}
 			);

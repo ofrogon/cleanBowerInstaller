@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(grunt) {
-	grunt.initConfig({
+	grunt.config.init({
 		pkg: grunt.file.readJSON("package.json"),
 		setup: {
 			"testDir": ".testFolder"
@@ -56,7 +56,16 @@ module.exports = function(grunt) {
 					quiet: false,
 					clearRequireCache: false
 				},
-				src: ["test/unit/**/*.js"]
+				src: ["test/unit/**/*.test.js"]
+			},
+			e2e: {
+				options: {
+					reporter: "spec",
+					captureFile: "<%= setup.testDir %>/unitResults.txt",
+					quiet: false,
+					clearRequireCache: false
+				},
+				src: ["test/e2e/**/*.test.js"]
 			}
 		},
 		run: {
@@ -125,7 +134,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
 
 	// Run the useful development tests
-	grunt.registerTask("test", ["run:runTests", "unit", "coverage"]);
+	grunt.registerTask("test", ["run:runTests", "coverage"]);
 
 	// Run the action to test before committing
 	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
