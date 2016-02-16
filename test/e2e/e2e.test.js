@@ -7,7 +7,9 @@ var chai = require("chai"),
 	path = require("path"),
 	assert = require('assert'),
 	testFolders = require("./e2eData.test"),
-	exec = require("child_process").exec;
+	exec = require("child_process").exec,
+	crypto = require("crypto"),
+	bower = require("bower");
 
 var cbi = require("../../.");
 
@@ -37,66 +39,46 @@ function verifyFileContentJSON(path, content) {
 	}
 }
 
-function e2eTestEnvironmentCreation(obj) {
-	//Create Folders
-	for (var folder in obj) {
-		if (obj.hasOwnProperty(folder)) {
-			if (!verifyFileExist(path.join(__dirname, folder))) {
-				console.log("Create folder " + folder);
-				fs.mkdirSync(path.join(__dirname, folder));
-			}
-
-			for (var file in obj[folder]) {
-				if (obj[folder].hasOwnProperty(file)) {
-					if (file === "bower.json") {
-						obj[folder][file].name = folder;
-						if (!verifyFileExist(path.join(__dirname, folder, file))) {
-							console.log("Create file " + file + " in " + folder);
-							fs.writeFileSync(path.join(__dirname, folder, file), JSON.stringify(obj[folder][file].content));
-						}
-					} else {
-						if (!verifyFileExist(path.join(__dirname, folder, file))) {
-							console.log("Create file " + file + " in " + folder);
-							fs.mkdirSync(path.join(__dirname, folder, file));
-						}
-					}
+function e2eTestEnvironmentCreation(testNumber, done) {
+	testFolders[testNumber].bowerJson.name = testNumber;
+	fs.remove(cwd, function(err) {
+		if (err) {
+			done(err);
+		} else {
+			fs.ensureDir(cwd, function(err) {
+				if (err) {
+					done(err);
+				} else {
+					fs.writeFile(path.join(cwd, "bower.json"), JSON.stringify(testFolders[testNumber].bowerJson), function(err) {
+						done(err);
+					});
 				}
-			}
+			});
 		}
-	}
+	});
 }
 
 var cwd = path.join(__dirname, "..", "..", testFolders.folder);
 
-describe("Test file without file type folder", function() {
+describe("Test file without file type folder and verbose function at false", function() {
 	beforeEach(function(done) {
-		testFolders.test0.bowerJson.name = "test0";
-		fs.remove(cwd, function(err) {
-			if (err) {
-				done(err);
-			} else {
-				fs.ensureDir(cwd, function(err) {
-					if (err) {
-						done(err);
-					} else {
-						fs.writeFile(path.join(cwd, "bower.json"), JSON.stringify(testFolders.test0.bowerJson), function(err) {
-							done(err);
-						});
-					}
-				});
-			}
-		});
+		e2eTestEnvironmentCreation("test0", done);
 	});
 
-	// TODO old test #00
+	// TODO old test #00 and #02
 	it("API", function(done) {
 		this.timeout(10000);
 
 		cbi.install({cwd: cwd}).then(
-			function() {
-				expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
-				expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
-				done();
+			function(result) {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+					expect(result).to.be.undefined;
+					done();
+				} catch (e) {
+					done(e);
+				}
 			},
 			function(err) {
 				done(err);
@@ -104,94 +86,293 @@ describe("Test file without file type folder", function() {
 		);
 	});
 
-	// TODO old test #07
+	// TODO old test #07 and #09
 	it("CLI", function(done) {
 		this.timeout(10000);
 
-		exec("node ../../bin/clean-bower-installer -i --bower=\"../../.testFolder/tmp\"", function(err) {
+		exec("node ../../bin/clean-bower-installer -i --bower=\"../../.testFolder/tmp\"", function(err, result) {
 			if (err) {
 				done(err);
 			} else {
 				expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
 				expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+				expect(result).to.equal("clean-bower-installer execution successfully done!\n");
 				done();
 			}
 		});
 	});
 });
 
-//describe("Test the verbose function at true", function() {
-//	beforeEach(function(done) {
-//		fs.remove(cwd, function(err) {
-//			if (err) {
-//				done(err);
-//			} else {
-//				fs.write(path.join(cwd, "bower.json"), testFolders.test1["bower.json"], function(err){
-//					done(err);
-//				});
-//			}
-//		});
-//	});
+describe("Test the verbose function at true", function() {
+	beforeEach(function(done) {
+		e2eTestEnvironmentCreation("test1", done);
+	});
+
+	// TODO old test #01
+	it("API", function(done) {
+		this.timeout(10000);
+
+		cbi.install({cwd: cwd}).then(
+			function(result) {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+					expect(result.length).equal(1);
+					expect(result[0].from).match(/.*angular\.js$/);
+					expect(result[0].from).match(/.*angular\.js$/);
+					done();
+				} catch (e) {
+					done(e);
+				}
+			},
+			function(err) {
+				done(err);
+			}
+		);
+	});
+
+	// TODO old test #08
+	it("CLI", function(done) {
+		this.timeout(10000);
+
+		exec("node ../../bin/clean-bower-installer -i --bower=\"../../.testFolder/tmp\"", function(err, result) {
+			if (err) {
+				done(err);
+			} else {
+				expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+				expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+				expect(result).match(/.*clean-bower-installer execution successfully done!\n$/);
+				done();
+			}
+		});
+	});
+});
+
+describe("Test the update method", function() {
+	beforeEach(function(done) {
+		e2eTestEnvironmentCreation("test1", done);
+	});
+
+	// TODO old test #03
+	it("API", function(done) {
+		this.timeout(30000);
+
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: cwd})
+			.on("end", function() {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+				} catch (e) {
+					done(e);
+				}
+
+				testFolders.test0.bowerJson.name = "test0";
+				fs.writeFile(path.join(cwd, "bower.json"), JSON.stringify(testFolders.test0.bowerJson), function(err) {
+					if (err) {
+						done(err);
+					} else {
+						cbi.update({cwd: cwd}).then(
+							function() {
+								bower.commands
+									.update([], {save: true}, {cwd: cwd})
+									.on("end", function(update) {
+										try {
+											expect(Object.keys(update).length).equal(0);
+											expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+											expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+											done();
+										} catch (e) {
+											done(e);
+										}
+									});
+							},
+							function(err) {
+								done(err);
+							}
+						);
+					}
+				});
+			})
+			.on("error", function(err) {
+				done(err);
+			});
+	});
+
+	// TODO old test #10
+	it("CLI", function(done) {
+		this.timeout(30000);
+
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: cwd})
+			.on("end", function() {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+				} catch (e) {
+					done(e);
+				}
+
+				testFolders.test0.bowerJson.name = "test0";
+				exec("node ../../bin/clean-bower-installer -u --bower=\"" + cwd + "\"", function(err) {
+					if (err) {
+						done(err);
+					} else {
+						bower.commands
+							.update([], {save: true}, {cwd: cwd})
+							.on("end", function(update) {
+								try {
+									expect(Object.keys(update).length).equal(0);
+									expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+									expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+									done();
+								} catch (e) {
+									done(e);
+								}
+							});
+					}
+				});
+			});
+	});
+});
+
+describe("Test the run method", function() {
+	beforeEach(function(done) {
+		e2eTestEnvironmentCreation("test1", done);
+	});
+
+	// TODO old test 4
+	it("API", function(done) {
+		this.timeout(30000);
+
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+			.on("end", function() {
+					cbi.run({cwd: cwd}).then(
+						function() {
+							try {
+								expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+								done();
+							} catch (e) {
+								done(e);
+							}
+						},
+						function(err) {
+							done(err);
+						}
+					);
+				}
+			).on("error", function(err) {
+			done(err);
+		});
+	});
+
+	// TODO old test 11 verify this test
+	it("CLI", function(done) {
+		this.timeout(30000);
+
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+			.on("end", function() {
+				exec("node ../../bin/clean-bower-installer --bower=\"" + cwd + "\"", function(err) {
+					if (err) {
+						done(err);
+					} else {
+						try {
+							expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+							expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+							expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+							done();
+						} catch (e) {
+							done(e);
+						}
+					}
+				});
+			})
+			.on("error", function(err) {
+				done(err);
+			});
+	});
+});
+
+describe("Test the runMin method", function() {
+	beforeEach(function(done) {
+		e2eTestEnvironmentCreation("test1", done);
+	});
+
+	// TODO old test 5
+	it("API", function(done) {
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+			.on("end", function() {
+					cbi.runMin({cwd: cwd}).then(
+						function() {
+							try {
+								expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "dest/angular.min.js"))).equal(true);
+
+								var minFileGated = fs.readFileSync(path.join(cwd, "dest/angular.min.js")),
+									minFileInBower = fs.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+
+								expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+
+								done();
+							} catch (e) {
+								done(e);
+							}
+						},
+						function(err) {
+							done(err);
+						}
+					);
+				}
+			);
+	});
+
+	// TODO old test 12
+	it("CLI", function(done) {
+		bower.commands
+			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+			.on("end", function() {
+					exec("node ../../bin/clean-bower-installer -m --bower=\"" + cwd + "\"", function(err) {
+						if (err) {
+							done(err);
+						} else {
+							try {
+								expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "dest/angular.min.js"))).equal(true);
+
+								var minFileGated = fs.readFileSync(path.join(cwd, "dest/angular.min.js")),
+									minFileInBower = fs.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+
+								expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+
+								done();
+							} catch (e) {
+								done(e);
+							}
+						}
+					});
+				}
+			);
+	});
+});
+
+// describe("Test the runMinR method", function() {
+// 	beforeEach(function(done) {
+// 		e2eTestEnvironmentCreation("test1", done);
+// 	});
+// 	it("API", function() {
 //
-//	it("API", function() {
-//		//TODO TEST that!
-//	});
+// 	});
 //
-//	it("CLI", function() {
+// 	it("CLI", function() {
 //
-//	});
-//});
-//
-//describe("Test the verbose function at false", function() {
-//	it("API", function() {
-//
-//	});
-//
-//	it("CLI", function() {
-//
-//	});
-//});
-//
-//describe("Test the update method", function() {
-//	it("API", function() {
-//
-//	});
-//
-//	it("CLI", function() {
-//
-//	});
-//});
-//
-//describe("Test the run method", function() {
-//	it("API", function() {
-//
-//	});
-//
-//	it("CLI", function() {
-//
-//	});
-//});
-//
-//describe("Test the runMin method", function() {
-//	it("API", function() {
-//
-//	});
-//
-//	it("CLI", function() {
-//
-//	});
-//});
-//
-//describe("Test the runMinR method", function() {
-//	it("API", function() {
-//
-//	});
-//
-//	it("CLI", function() {
-//
-//	});
-//});
-//
+// 	});
+// });
+
 //describe("Test the removeAfter argument", function() {
 //	it("API", function() {
 //

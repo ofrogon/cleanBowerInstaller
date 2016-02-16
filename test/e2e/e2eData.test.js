@@ -27,7 +27,7 @@ var angularBower2 = {
 	"cInstall": {
 		"option": {
 			"default": {
-				"folder": "temp"
+				"folder": "dest"
 			},
 			"verbose": true
 		},
