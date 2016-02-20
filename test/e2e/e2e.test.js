@@ -1,17 +1,22 @@
+"use strict";
+
 var chai = require("chai"),
 	expect = chai.expect,
 	describe = require("mocha/lib/mocha.js").describe,
+	after = require("mocha/lib/mocha.js").after,
 	it = require("mocha/lib/mocha.js").it,
-	beforeEach = require("mocha/lib/mocha.js").beforeEach,
-	fs = require("fs-extra"),
+	beforeEach = require("mocha/lib/mocha.js").beforeEach;
+
+var fs = require("fs-extra"),
 	path = require("path"),
-	assert = require('assert'),
-	testFolders = require("./e2eData.test"),
 	exec = require("child_process").exec,
 	crypto = require("crypto"),
 	bower = require("bower");
 
-var cbi = require("../../.");
+var testFolders = require("./e2eData.test"),
+	cbi = require("../../."),
+	cliPath = path.join(__dirname, "../../bin/clean-bower-installer"),
+	cwd = path.join(__dirname, "..", "..", testFolders.folder);
 
 function verifyFileExist(path) {
 	try {
@@ -42,14 +47,11 @@ function e2eTestEnvironmentCreation(testNumber, done) {
 	});
 }
 
-var cwd = path.join(__dirname, "..", "..", testFolders.folder);
-
 describe("Test file without file type folder and verbose function at false", function() {
 	beforeEach(function(done) {
 		e2eTestEnvironmentCreation("test0", done);
 	});
 
-	// TODO old test #00 and #02
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -72,11 +74,10 @@ describe("Test file without file type folder and verbose function at false", fun
 		);
 	});
 
-	// TODO old test #07 and #09
 	it("CLI", function(done) {
 		this.timeout(10000);
 
-		exec("node ../../bin/clean-bower-installer -i --bower=\"../../.testFolder/tmp\"", function(err, result) {
+		exec("node " + cliPath + " -i --bower=\"" + cwd + "\"", function(err, result) {
 			if (err) {
 				done(err);
 			} else {
@@ -96,7 +97,6 @@ describe("Test the verbose function at true", function() {
 		e2eTestEnvironmentCreation("test1", done);
 	});
 
-	// TODO old test #01
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -121,11 +121,10 @@ describe("Test the verbose function at true", function() {
 		);
 	});
 
-	// TODO old test #08
 	it("CLI", function(done) {
 		this.timeout(10000);
 
-		exec("node ../../bin/clean-bower-installer -i --bower=\"../../.testFolder/tmp\"", function(err, result) {
+		exec("node " + cliPath + " -i --bower=\"" + cwd + "\"", function(err, result) {
 			if (err) {
 				done(err);
 			} else {
@@ -145,7 +144,6 @@ describe("Test the update method", function() {
 		e2eTestEnvironmentCreation("test1", done);
 	});
 
-	// TODO old test #03
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -197,7 +195,6 @@ describe("Test the update method", function() {
 			});
 	});
 
-	// TODO old test #10
 	it("CLI", function(done) {
 		this.timeout(10000);
 
@@ -212,7 +209,7 @@ describe("Test the update method", function() {
 				}
 
 				testFolders.test0.bowerJson.name = "test0";
-				exec("node ../../bin/clean-bower-installer -u --bower=\"" + cwd + "\"", function(err) {
+				exec("node " + cliPath + " -u --bower=\"" + cwd + "\"", function(err) {
 					if (err) {
 						done(err);
 					} else {
@@ -247,7 +244,6 @@ describe("Test the run method", function() {
 		e2eTestEnvironmentCreation("test1", done);
 	});
 
-	// TODO old test 4
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -278,14 +274,13 @@ describe("Test the run method", function() {
 			});
 	});
 
-	// TODO old test 11 verify this test
 	it("CLI", function(done) {
 		this.timeout(10000);
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
 			.on("end", function() {
-				exec("node ../../bin/clean-bower-installer --bower=\"" + cwd + "\"", function(err) {
+				exec("node " + cliPath + " --bower=\"" + cwd + "\"", function(err) {
 					if (err) {
 						done(err);
 					} else {
@@ -313,7 +308,6 @@ describe("Test the runMin method", function() {
 		e2eTestEnvironmentCreation("test1", done);
 	});
 
-	// TODO old test 5
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -348,14 +342,13 @@ describe("Test the runMin method", function() {
 			});
 	});
 
-	// TODO old test 12
 	it("CLI", function(done) {
 		this.timeout(10000);
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
 			.on("end", function() {
-					exec("node ../../bin/clean-bower-installer -m --bower=\"" + cwd + "\"", function(err) {
+					exec("node " + cliPath + " -m --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
 						} else {
@@ -388,7 +381,6 @@ describe("Test the runMinR method", function() {
 		e2eTestEnvironmentCreation("test1", done);
 	});
 
-	// TODO old test 06
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -423,14 +415,13 @@ describe("Test the runMinR method", function() {
 			});
 	});
 
-	//TODO old test 13
 	it("CLI", function(done) {
 		this.timeout(10000);
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
 			.on("end", function() {
-					exec("node ../../bin/clean-bower-installer -M --bower=\"" + cwd + "\"", function(err) {
+					exec("node " + cliPath + " -M --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
 						} else {
@@ -463,7 +454,6 @@ describe("Test the removeAfter argument", function() {
 		e2eTestEnvironmentCreation("test2", done);
 	});
 
-	//TODO old test 14
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -485,11 +475,10 @@ describe("Test the removeAfter argument", function() {
 		);
 	});
 
-	//TODO old test 15
 	it("CLI", function(done) {
 		this.timeout(10000);
 
-		exec("node ../../bin/clean-bower-installer -ir --bower=\"" + cwd + "\"", function(err) {
+		exec("node " + cliPath + " -ir --bower=\"" + cwd + "\"", function(err) {
 			if (err) {
 				done(err);
 			} else {
@@ -512,15 +501,10 @@ describe("Test the verbose override", function() {
 		e2eTestEnvironmentCreation("test0", done);
 	});
 
-	//it("", function(done){
-	//
-	//});
-
-	// TODO old test 16
 	it("CLI", function(done) {
 		this.timeout(10000);
 
-		exec("node ../../bin/clean-bower-installer -iV --bower=\"" + cwd + "\"", function(err, result) {
+		exec("node " + cliPath + " -iV --bower=\"" + cwd + "\"", function(err, result) {
 			if (err) {
 				done(err);
 			} else {
@@ -544,7 +528,6 @@ describe("Test the file ignore", function() {
 		e2eTestEnvironmentCreation("test3", done);
 	});
 
-	// TODO old test 17
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -569,10 +552,6 @@ describe("Test the file ignore", function() {
 			}
 		);
 	});
-
-	//it("", function(done){
-	//
-	//});
 });
 
 describe("Test without option", function() {
@@ -580,7 +559,6 @@ describe("Test without option", function() {
 		e2eTestEnvironmentCreation("test4", done);
 	});
 
-	// TODO old test 18
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -593,7 +571,7 @@ describe("Test without option", function() {
 
 					done();
 				} catch (e) {
-					done(e)
+					done(e);
 				}
 			},
 			function(err) {
@@ -601,10 +579,6 @@ describe("Test without option", function() {
 			}
 		);
 	});
-
-	//it("", function(done){
-	//
-	//});
 });
 
 describe("Test the runMin method with default.minFolder", function() {
@@ -612,7 +586,6 @@ describe("Test the runMin method with default.minFolder", function() {
 		e2eTestEnvironmentCreation("test6", done);
 	});
 
-	// TODO old test 19
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -647,14 +620,13 @@ describe("Test the runMin method with default.minFolder", function() {
 			});
 	});
 
-	//TODO old test 20
 	it("CLI", function(done) {
 		this.timeout(10000);
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
 			.on("end", function() {
-					exec("node ../../bin/clean-bower-installer -M --bower=\"" + cwd + "\"", function(err) {
+					exec("node " + cliPath + " -M --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
 						} else {
@@ -687,7 +659,6 @@ describe("Test the option.min.get config", function() {
 		e2eTestEnvironmentCreation("test6", done);
 	});
 
-	//TODO old test 21
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -713,10 +684,6 @@ describe("Test the option.min.get config", function() {
 			}
 		);
 	});
-
-	//it("", function(){
-	//
-	//});
 });
 
 describe("Test the option.min.get and config.min.rename config", function() {
@@ -724,7 +691,6 @@ describe("Test the option.min.get and config.min.rename config", function() {
 		e2eTestEnvironmentCreation("test7", done);
 	});
 
-	//TODO old test 21
 	it("API", function(done) {
 		this.timeout(10000);
 
@@ -750,8 +716,14 @@ describe("Test the option.min.get and config.min.rename config", function() {
 			}
 		);
 	});
+});
 
-	//it("", function(){
-	//
-	//});
+after(function(done){
+	fs.remove(cwd, function(err) {
+		if (err) {
+			done(err);
+		} else {
+			done();
+		}
+	});
 });

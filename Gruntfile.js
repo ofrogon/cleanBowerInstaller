@@ -10,28 +10,20 @@ module.exports = function(grunt) {
 			options: {
 				jshintrc: true
 			},
-			dev: {
-				files: {
-					src: [
-						"Gruntfile.js",
-						"bin/clean-bower-installer",
-						"lib/*",
-						"test/e2e/test.js",
-						"test/unit/**/*.test.js"
-					]
-				}
-			},
-			prod: {
-				files: {
-					src: [
-						"Gruntfile.js",
-						"bin/clean-bower-installer",
-						"lib/*"
-					]
-				}
-			}
+			dev: [
+				"Gruntfile.js",
+				"bin/clean-bower-installer",
+				"lib/*.js",
+				"test/e2e/*.js",
+				"test/unit/**/*.test.js"
+			],
+			prod: [
+				"Gruntfile.js",
+				"bin/clean-bower-installer",
+				"lib/*.js"
+			]
 		},
-		mocha_istanbul: {
+		"mocha_istanbul": {
 			coverage: {
 				src: "test/unit/lib",
 				options: {
@@ -143,8 +135,8 @@ module.exports = function(grunt) {
 	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);
 
 	// Event handler for Coveralls
-	grunt.event.on("coverage", function(lcov, done){
-		require("coveralls").handleInput(lcov, function(err){
+	grunt.event.on("coverage", function(lcov, done) {
+		require("coveralls").handleInput(lcov, function(err) {
 			if (err) {
 				return done(err);
 			}
