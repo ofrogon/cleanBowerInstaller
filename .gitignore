@@ -10,14 +10,8 @@ logs
 
 
 # Dependency directory
-/.temp
 /.coveralls.yml
 node_modules
 
 .idea
 *.iml
-
-test/**/temp
-test/e2e/test*/bower_components
-test/e2e/test*/*.js
-test/e2e/**/bower.json

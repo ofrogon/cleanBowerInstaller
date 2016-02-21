@@ -1,6 +1,12 @@
 "use strict";
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
+	// Time the Grunt execution
+	require("time-grunt")(grunt);
+
+	// Load additional Grunt tasks
+	grunt.loadTasks("./task");
+
 	grunt.config.init({
 		pkg: grunt.file.readJSON("package.json"),
 		setup: {
@@ -10,17 +16,12 @@ module.exports = function(grunt) {
 			options: {
 				jshintrc: true
 			},
-			dev: [
+			all: [
 				"Gruntfile.js",
 				"bin/clean-bower-installer",
 				"lib/*.js",
 				"test/e2e/*.js",
 				"test/unit/**/*.test.js"
-			],
-			prod: [
-				"Gruntfile.js",
-				"bin/clean-bower-installer",
-				"lib/*.js"
 			]
 		},
 		"mocha_istanbul": {
@@ -59,57 +60,11 @@ module.exports = function(grunt) {
 				},
 				src: ["test/e2e/**/*.test.js"]
 			}
-		},
-		run: {
-			runTests: {
-				options: {
-					cwd: "./test/e2e/"
-				},
-				command: "node",
-				args: ["test.js"]
-			}
 		}
-	});
-
-	grunt.task.registerTask("prepareForTest", "Prepare the temp folder.", function() {
-		var fakeBowerJson = {
-				"name": "unitTest",
-				"cInstall": {}
-			},
-			fakeBowerJson2 = {
-				"name": "option-test",
-				"dependencies": {
-					"bootstrap": "~3.2.0"
-				},
-				"cInstall": {
-					"folder": {
-						"js": "js/vendor/",
-						"css": "css/",
-						"otf, eot, svg, ttf, woff": "fonts/"
-					},
-					"option": {
-						"default": {
-							"folder": "public"
-						}
-					},
-					"source": {
-						"bootstrap": {
-							"glyphicons-halflings-regular.*": "dist/fonts/*",
-							"bootstrap.js": "dist/js/bootstrap.js",
-							"bootstrap.css": "dist/css/bootstrap.css"
-						}
-					}
-				}
-			};
-
-		grunt.file.write(".temp/bower.json", JSON.stringify(fakeBowerJson));
-		grunt.file.write(".temp/under/bower.json", JSON.stringify(fakeBowerJson2));
 	});
 
 	// Load the plugin that provides the "jshint" task.
 	grunt.loadNpmTasks("grunt-contrib-jshint");
-	// Load the plugin that provides the "run" task.
-	grunt.loadNpmTasks("grunt-run");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
 	// Load the plugin that provides the "mocha_istanbul" task.
@@ -117,26 +72,20 @@ module.exports = function(grunt) {
 
 	//Custom Task ---------------------
 	// Run the coverage test
-	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage"]);
+	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage", "cleanForTest"]);
 
 	// Run the unit tests
-	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit"]);
-
-	// Run JSHint to test the code quality
-	grunt.registerTask("codeQualityCheckup", ["jshint:dev"]);
+	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit", "cleanForTest"]);
 
 	// Run the useful development tests
-	grunt.registerTask("test", ["run:runTests", "coverage"]);
-
-	// Run the action to test before committing
-	grunt.registerTask("preCommit", ["jshint:prod", "test"]);
+	grunt.registerTask("test", ["mochaTest:e2e", "coverage", "jshint:all"]);
 
 	// CI actions
-	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis"]);
+	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanForTest"]);
 
 	// Event handler for Coveralls
-	grunt.event.on("coverage", function(lcov, done) {
-		require("coveralls").handleInput(lcov, function(err) {
+	grunt.event.on("coverage", function (lcov, done) {
+		require("coveralls").handleInput(lcov, function (err) {
 			if (err) {
 				return done(err);
 			}

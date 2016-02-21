@@ -72,14 +72,14 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.automatic(config).then(
 				function() {
 					done();
 				}, function() {
-					done("Suppose to found a bower.json file in .temp folder.");
+					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
 		});
@@ -125,14 +125,14 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.install(config).then(
 				function() {
 					done();
 				}, function() {
-					done("Suppose to found a bower.json file in .temp folder.");
+					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
 		});
@@ -178,14 +178,14 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.update(config).then(
 				function() {
 					done();
 				}, function() {
-					done("Suppose to found a bower.json file in .temp folder.");
+					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
 		});
@@ -231,14 +231,14 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.run(config).then(
 				function() {
 					done();
 				}, function() {
-					done("Suppose to found a bower.json file in .temp folder.");
+					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
 		});
@@ -249,7 +249,7 @@ describe("cmd", function() {
 		it("rename", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			config.option.min.get = true;
 			config.option.min.rename = true;
 			this.timeout(longTimeOut);
@@ -258,7 +258,7 @@ describe("cmd", function() {
 				function() {
 					done();
 				}, function() {
-					done("Suppose to found a bower.json file in .temp folder.");
+					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
 		});
@@ -269,7 +269,7 @@ describe("cmd", function() {
 		it("removeAfter", function(done) {
 			var config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.temp");
+			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			config.option.removeAfter = true;
 			this.timeout(longTimeOut);
 

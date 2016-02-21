@@ -56,7 +56,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.automatic({cwd: ".temp/"}).then(
+			api.automatic({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},
@@ -113,7 +113,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.install({cwd: ".temp/"}).then(
+			api.install({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},
@@ -170,7 +170,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.update({cwd: ".temp/"}).then(
+			api.update({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},
@@ -227,7 +227,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.run({cwd: ".temp/"}).then(
+			api.run({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},
@@ -280,7 +280,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.runMin({cwd: ".temp/"}).then(
+			api.runMin({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},
@@ -333,7 +333,7 @@ describe("api", function() {
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.runMinR({cwd: ".temp/"}).then(
+			api.runMinR({cwd: ".testFolder/tempU/"}).then(
 				function() {
 					done();
 				},

@@ -16,7 +16,7 @@ var legacy = !!(Number(nodeVersion[0]) === 0 && nodeVersion[1] < 11);
  * Test /lib/fileSystem.js
  */
 describe("fileSystem", function() {
-	var tempFolder = path.join(__dirname, "../../../", ".temp");
+	var tempFolder = path.join(__dirname, "../../../", ".testFolder/tempU");
 
 	/**
 	 * Test the mkdirp method

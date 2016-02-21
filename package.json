@@ -1,48 +1,49 @@
 {
-	"name": "clean-bower-installer",
-	"version": "0.3.2",
-	"description": "Tool to install pre-selected bower dependencies",
-	"keywords": [
-		"bower",
-		"clean",
-		"installer"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ofrogon/cleanBowerInstaller"
-	},
-	"bugs": {
-		"url": "https://github.com/ofrogon/cleanBowerInstaller/issues"
-	},
-	"license": "MIT",
-	"author": "Alexandre Beaudoin <ofrogon@gmail.com>",
-	"main": "bin/clean-bower-installer",
-	"bin": {
-		"clean-bower-installer": "bin/clean-bower-installer"
-	},
-	"dependencies": {
-		"cli": "0.x.x",
-		"colors": "1.1.x",
-		"glob": "7.x.x",
-		"q": "1.x.x"
-	},
-	"devDependencies": {
-		"bower": "latest",
-		"chai": "3.x.x",
-		"coveralls": "2.11.x",
-		"fs-extra": "latest",
-		"grunt": "0.4.x",
-		"grunt-contrib-jshint": "1.0.x",
-		"grunt-mocha-istanbul": "3.0.x",
-		"grunt-mocha-test": "0.12.x",
-		"grunt-run": "0.5.x",
-		"istanbul": "0.4.x",
-		"mocha": "2.4.x"
-	},
-	"scripts": {
-		"test": "grunt unit"
-	},
-	"engines": {
-		"node": ">=0.10.0"
-	}
+  "name": "clean-bower-installer",
+  "version": "0.3.2",
+  "description": "Tool to install pre-selected bower dependencies",
+  "keywords": [
+    "bower",
+    "clean",
+    "installer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ofrogon/cleanBowerInstaller"
+  },
+  "bugs": {
+    "url": "https://github.com/ofrogon/cleanBowerInstaller/issues"
+  },
+  "license": "MIT",
+  "author": "Alexandre Beaudoin <ofrogon@gmail.com>",
+  "main": "bin/clean-bower-installer",
+  "bin": {
+    "clean-bower-installer": "bin/clean-bower-installer"
+  },
+  "dependencies": {
+    "cli": "0.x.x",
+    "colors": "1.1.x",
+    "glob": "7.x.x",
+    "q": "1.x.x"
+  },
+  "devDependencies": {
+    "bower": "latest",
+    "chai": "3.x.x",
+    "coveralls": "2.11.x",
+    "fs-extra": "latest",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "1.0.x",
+    "grunt-mocha-istanbul": "3.0.x",
+    "grunt-mocha-test": "0.12.x",
+    "istanbul": "0.4.x",
+    "mocha": "2.4.x",
+    "time-grunt": "^1.3.0"
+  },
+  "scripts": {
+    "unit": "grunt unit",
+    "test": "grunt test"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
 }

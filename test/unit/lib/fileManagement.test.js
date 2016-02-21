@@ -17,7 +17,7 @@ describe("fileManagement", function() {
 	it("moveFiles", function(done) {
 		this.timeout(15000);
 
-		config.read({cwd: path.join(__dirname, "../../../.temp/under")}).then(
+		config.read({cwd: path.join(__dirname, "../../../.testFolder/tempU/under")}).then(
 			function(conf) {
 				exec("bower install", {cwd: conf.cwd}, function(error) {
 					if (error) {
@@ -45,7 +45,7 @@ describe("fileManagement", function() {
 	it("moveFilesAndRemove", function(done) {
 		this.timeout(15000);
 
-		config.read({cwd: path.join(__dirname, "../../../.temp/under")}).then(
+		config.read({cwd: path.join(__dirname, "../../../.testFolder/tempU/under")}).then(
 			function(conf) {
 				exec("bower install", {cwd: conf.cwd}, function(error) {
 					if (error) {
