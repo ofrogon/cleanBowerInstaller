@@ -1,14 +1,11 @@
 # Changelog
 
-## 0.3.3 - 2016-02-20
+## 0.3.2 - 2016-02-20
 
 - Update dependencies.
 - Change the way the e2e tests were done. Now we use Mocha instead of some custom tests runner.
 - Simplify the usage of Grunt.
 - Fix typos.
-
-## 0.3.2 - 2015-12-24
-
 - Fix cInstall.option.default.folder not impacting the cInstall.folder paths.
 
 ## 0.3.1 - 2015-11-01
