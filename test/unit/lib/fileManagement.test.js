@@ -1,6 +1,8 @@
 "use strict";
 
-var path = require("path"),
+var describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
+	path = require("path"),
 	exec = require("child_process").exec,
 	config = require("./../../../lib/readConfig"),
 	fileManagement = require("./../../../lib/fileManagement");
@@ -15,7 +17,7 @@ describe("fileManagement", function() {
 	it("moveFiles", function(done) {
 		this.timeout(15000);
 
-		config.read({cwd: path.join(__dirname, "../../../.temp/under")}).then(
+		config.read({cwd: path.join(__dirname, "../../../.testFolder/tempU/under")}).then(
 			function(conf) {
 				exec("bower install", {cwd: conf.cwd}, function(error) {
 					if (error) {
@@ -43,7 +45,7 @@ describe("fileManagement", function() {
 	it("moveFilesAndRemove", function(done) {
 		this.timeout(15000);
 
-		config.read({cwd: path.join(__dirname, "../../../.temp/under")}).then(
+		config.read({cwd: path.join(__dirname, "../../../.testFolder/tempU/under")}).then(
 			function(conf) {
 				exec("bower install", {cwd: conf.cwd}, function(error) {
 					if (error) {

@@ -2,6 +2,8 @@
 
 var chai = require("chai"),
 	expect = chai.expect,
+	describe = require("mocha/lib/mocha.js").describe,
+	it = require("mocha/lib/mocha.js").it,
 	path = require("path"),
 	config = require("./../../../lib/readConfig");
 
@@ -18,7 +20,7 @@ describe("readConfig", function() {
 		 * Test with a relative path
 		 */
 		it("relative", function(done) {
-			config.read({cwd: ".temp/"}).then(
+			config.read({cwd: ".testFolder/tempU/"}).then(
 				function(conf) {
 					expect(conf).to.equal("Nothing to do!");
 					done();
@@ -33,7 +35,7 @@ describe("readConfig", function() {
 		 * Teat with a absolute path
 		 */
 		it("absolute", function(done) {
-			config.read({cwd: path.join(__dirname, "../../..", ".temp")}).then(
+			config.read({cwd: path.join(__dirname, "../../..", ".testFolder/tempU")}).then(
 				function(conf) {
 					expect(conf).to.equal("Nothing to do!");
 					done();
@@ -53,7 +55,7 @@ describe("readConfig", function() {
 		 * A file without data in it
 		 */
 		it("bower.json file without config", function(done) {
-			config.read({cwd: ".temp/"}).then(
+			config.read({cwd: ".testFolder/tempU/"}).then(
 				function(conf) {
 					expect(conf).to.equal("Nothing to do!");
 					done();
@@ -92,13 +94,13 @@ describe("readConfig", function() {
 						"bootstrap.css": "dist/css/bootstrap.css"
 					}
 				},
-				"cwd": ".temp/under/"
+				"cwd": ".testFolder/tempU/under/"
 			};
 
-			config.read({cwd: ".temp/under/"}).then(
+			config.read({cwd: ".testFolder/tempU/under/"}).then(
 				function(conf) {
 					try {
-						expect(conf).to.be.deep.equal(expected);
+						expect(conf).to.eql(expected);
 						done();
 					} catch(e) {
 						done(e);
