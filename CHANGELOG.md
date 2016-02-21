@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 - 2016-02-20
+
+- Update dependencies.
+- Change the way the e2e tests were done. Now we use Mocha instead of some custom tests runner.
+- Simplify the usage of Grunt.
+- Fix typos.
+
 ## 0.3.2 - 2015-12-24
 
 - Fix cInstall.option.default.folder not impacting the cInstall.folder paths.
@@ -8,8 +15,8 @@
 
 - Add support for coveralls.io for test coverage report.
 - Remove useless dependencies.
-- Switch blanket.js for istanbul.js as coverage test reporter.
-- Update .travis.iml file to stop use legacy version of TravisCI.
+- Switch blanket.js for istanbul.js as coverage test reporters.
+- Update .travis.iml file to stop using legacy version of TravisCI.
 - Add test against Node.js v5.
 
 ## 0.3.0 - 2015-09-15
@@ -17,8 +24,8 @@
 - Enhance error handle in `api.js`.
 - Accelerate the execution of the tool on an empty value of the field `cInstall` in the `bower.json` file.
 - Update dependencies.
-- Fix a possible error when using name with glob star.
-- Deprecated the use of `automatic` in the API (was already mark as deprecated in the cmd module).
+- Fix a possible error when using names with glob star.
+- Deprecated the use of `automatic` in the API (was already marked as deprecated in the cmd module).
 - Better deprecation throw, by using the Node.js `util` module.
 - Start using version 1.4.x of q instead of version 2.x.x because it wasn't updated since 2014.
 
@@ -36,7 +43,7 @@
 
 - Bug fixes: Error in the execution of the command "automatic".
 - Bug fixes: Error when execute the tool using CLI.
-- Bug fixes: Error when executing the command "automatic" or "install" two times in a row.
+- Bug fixes: Error when executing the command "automatic" or "install" twice in a row.
 - Bug fixes: Repair bug with option bower in CLI.
 
 ## 0.1.0 - 2014-12-29
@@ -55,7 +62,7 @@
 - A lot of bug fixes.
 - Change most of the method to be asynchronous.
 - Now, the CLI commands call the API ones.
-- Add some test for the default tool actions.
+- Add some test for the default tools actions.
 
 ## 0.0.6 - 2014-11-25
 
@@ -64,14 +71,14 @@
 
 ## 0.0.5 - 2014-11-25
 
-- Add new command `automatic` to let clean-bower-installer automatically select between update or install action to ask bower to do.
-- Now the API commands `automatically`, `install` and `update` no more return a output but execute the `run` command automatically.
+- Add new command `automatic` to let clean-bower-installer automatically selects between update or install action to ask bower to do.
+- Now the API commands `automatically`, `install` and `update` no more return an output but execute the `run` command automatically.
 - Now you can specify extension(s) to ignore when you call the `min` option.
 
 ## 0.0.4 - 2014-10-28
 
-- Add way to ignore file.
-- Repair documentation (missing documentation to use the `default` option in it's new way).
+- Add way to ignore files.
+- Repair documentation (missing documentation to use the `default` option in its new way).
 
 ## 0.0.3 - 2014-10-27
 
@@ -82,8 +89,8 @@
 ## 0.0.2 - 2014-10-08
 
 - Add API.
-- Remove error message when rewriting file.
-- Mac compatibility restoration.
+- Remove error message when rewriting files.
+- Mac’s compatibility restoration.
 - Various bug fixes.
 
 ## 0.0.1 - 2014-10-04

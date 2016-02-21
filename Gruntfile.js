@@ -72,16 +72,16 @@ module.exports = function (grunt) {
 
 	//Custom Task ---------------------
 	// Run the coverage test
-	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage", "cleanForTest"]);
+	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage", "cleanAfterTest"]);
 
 	// Run the unit tests
-	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit", "cleanForTest"]);
+	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit", "cleanAfterTest"]);
 
 	// Run the useful development tests
 	grunt.registerTask("test", ["mochaTest:e2e", "coverage", "jshint:all"]);
 
 	// CI actions
-	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanForTest"]);
+	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanAfterTest"]);
 
 	// Event handler for Coveralls
 	grunt.event.on("coverage", function (lcov, done) {
