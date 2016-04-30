@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 - 2016-04-
+
+- Fix issue #14
+- Fix file renaming
+- Update dependencies.
+- Add test against Node.js v6.
+
 ## 0.3.2 - 2016-02-20
 
 - Update dependencies.

@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 	// Time the Grunt execution
 	require("time-grunt")(grunt);
 
@@ -84,8 +84,8 @@ module.exports = function (grunt) {
 	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanAfterTest"]);
 
 	// Event handler for Coveralls
-	grunt.event.on("coverage", function (lcov, done) {
-		require("coveralls").handleInput(lcov, function (err) {
+	grunt.event.on("coverage", function(lcov, done) {
+		require("coveralls").handleInput(lcov, function(err) {
 			if (err) {
 				return done(err);
 			}
