@@ -718,6 +718,67 @@ describe("Test the option.min.get and config.min.rename config", function() {
 	});
 });
 
+describe("Test file rename, specify folder and ignore file", function() {
+	beforeEach(function(done) {
+		e2eTestEnvironmentCreation("test8", done);
+	});
+
+	it("API", function(done) {
+		this.timeout(10000);
+
+		cbi.install({cwd: cwd}).then(
+			function() {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower_components/bootstrap"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower_components/jquery"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/css/bootstrap.css"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.eot"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.ttf"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.woff"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/js/vendor/banana.js"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/js/vendor/min/bootstrap.min.js"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/thisPathIsGlobal/bootstrap.min.css"))).equal(true);
+
+					done();
+				} catch (e) {
+					done(e);
+				}
+			},
+			function(err) {
+				done(err);
+			}
+		);
+	});
+
+	it("CLI", function(done) {
+		this.timeout(10000);
+
+		exec("node " + cliPath + " -i --bower=\"" + cwd + "\"", function(err) {
+			if (err) {
+				done(err);
+			} else {
+				try {
+					expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower_components/bootstrap"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "bower_components/jquery"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/css/bootstrap.css"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.eot"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.ttf"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/fonts/glyphicons-halflings-regular.woff"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/js/vendor/banana.js"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/js/vendor/min/bootstrap.min.js"))).equal(true);
+					expect(verifyFileExist(path.join(cwd, "public/thisPathIsGlobal/bootstrap.min.css"))).equal(true);
+
+					done();
+				} catch (e) {
+					done(e);
+				}
+			}
+		});
+	});
+});
+
 after(function(done){
 	fs.remove(cwd, function(err) {
 		if (err) {
