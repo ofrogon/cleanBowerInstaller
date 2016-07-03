@@ -1,6 +1,6 @@
 {
 	"name": "clean-bower-installer",
-	"version": "0.3.2",
+	"version": "0.3.4",
 	"description": "Tool to install pre-selected bower dependencies",
 	"keywords": [
 		"bower",
@@ -31,7 +31,7 @@
 		"chai": "3.x.x",
 		"coveralls": "2.11.x",
 		"fs-extra": "latest",
-		"grunt": "1.x.x",
+		"grunt": "1.0.x",
 		"grunt-contrib-jshint": "1.0.x",
 		"grunt-mocha-istanbul": "5.0.x",
 		"grunt-mocha-test": "0.12.x",

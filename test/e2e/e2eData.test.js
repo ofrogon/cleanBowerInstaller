@@ -172,6 +172,35 @@ var bootstrapBower = {
 	}
 };
 
+var renamingFolderAndFileIgnore = {
+	"name": "",
+	"dependencies": {
+		"bootstrap": "~3.2.0"
+	},
+	"cInstall": {
+		"folder": {
+			"js": "js/vendor/",
+			"css": "css/",
+			"otf, eot, svg, ttf, woff": "fonts/"
+		},
+		"option": {
+			"default": {
+				"folder": "public"
+			}
+		},
+		"source": {
+			"bootstrap": {
+				"!": ["dist/fonts/*.svg"],
+				"glyphicons-halflings-regular.*": "dist/fonts/*",
+				"banana.js": "dist/js/bootstrap.js",
+				"bootstrap.min.js#min": "dist/js/bootstrap.min.js",
+				"bootstrap.css": "dist/css/bootstrap.css",
+				"bootstrap.min.css#/thisPathIsGlobal": "dist/css/bootstrap.min.css"
+			}
+		}
+	}
+};
+
 var testFolders = {
 	"test0": {
 		bowerJson: angularBower
@@ -196,6 +225,9 @@ var testFolders = {
 	},
 	"test7": {
 		bowerJson: angularBower7
+	},
+	"test8": {
+		bowerJson: renamingFolderAndFileIgnore
 	},
 	folder: ".testFolder/tmp"
 };

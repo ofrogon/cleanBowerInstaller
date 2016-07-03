@@ -6,6 +6,7 @@ env:
   - NODE_VERSION=0.12
   - NODE_VERSION=4
   - NODE_VERSION=5
+  - NODE_VERSION=6
 
 install:
   - nvm install $NODE_VERSION
