@@ -21,8 +21,8 @@
 		"clean-bower-installer": "bin/clean-bower-installer"
 	},
 	"dependencies": {
-		"cli": "0.x.x",
 		"colors": "1.1.x",
+		"commander": "^2.9.0",
 		"glob": "7.x.x",
 		"q": "1.x.x"
 	},
@@ -31,9 +31,9 @@
 		"chai": "3.x.x",
 		"coveralls": "2.11.x",
 		"fs-extra": "latest",
-		"grunt": "0.4.x",
+		"grunt": "1.x.x",
 		"grunt-contrib-jshint": "1.0.x",
-		"grunt-mocha-istanbul": "3.0.x",
+		"grunt-mocha-istanbul": "5.0.x",
 		"grunt-mocha-test": "0.12.x",
 		"istanbul": "0.4.x",
 		"mocha": "2.4.x",

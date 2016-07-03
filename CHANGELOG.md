@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3 - 2016-07-02
+
+- Switch the use of the module `cli` for `commander` after the security alert on `cli`.
+- Update dependencies.
+
 ## 0.3.2 - 2016-02-20
 
 - Update dependencies.

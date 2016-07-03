@@ -13,7 +13,7 @@ colors.setTheme({
 if (require.main === module) {
 	var cmd = require("./../lib/cmd"),
 		cnf = require("./../lib/readConfig"),
-		cli = require("cli"),
+		program = require("commander"),
 		pkg = require("../package.json"),
 		successMsg = "clean-bower-installer execution successfully done!";
 
@@ -23,7 +23,7 @@ if (require.main === module) {
 	 * @param list {Array}
 	 * @returns {String}
 	 */
-	var verboseCLIReturn = function(list) {
+	var verboseCLIReturn = function (list) {
 		var output = "";
 		for (var i = 0, j = list.length; i < j; i++) {
 			output += "Copied '" + list[i].from + "' to '" + list[i].to + "'\n";
@@ -31,110 +31,104 @@ if (require.main === module) {
 		return output;
 	};
 
-	// Version display
-	cli.setApp(pkg.name, pkg.version);
-	cli.enable("version");
+	program
+		.version(pkg.version, "-v, --version")
+		.option("-a, --automatic", "Automatically select the right option to execute from bower. (deprecated)", null, null)
+		.option("-i, --install", "Run bower install command", null, null)
+		.option("-u, --update", "Run bower update command", null, null)
+		.option("--bower [path]", "Input the bower.json file path.", ".", null)
+		.option("-m, --min", "Try to get .min file version first.", null, null)
+		.option("-M, --renameMin", "Try to get .min file version first and keep the name specified in the bower.json file.", null, null)
+		.option("-V, --verbose", "Get more information from the tool.", null, null)
+		.option("-r, --removeAfter", "Remove the bower_components folder after execution.", null, null)
+		.parse(process.argv);
 
-	// CLI options
-	cli.parse({
-		automatic: ["a", "Automatically select the right option to execute from bower. (deprecated)"],
-		install: ["i", "Run bower install command"],
-		update: ["u", "Run bower update command"],
-		bower: [false, "Input the bower.json file path.", "path", null],
-		min: ["m", "Try to get .min file version first."],
-		renameMin: ["M", "Try to get .min file version first and keep the name specified in the bower.json file."],
-		verbose: ["V", "Get more information from the tool."],
-		removeAfter: ["r", "Remove the bower_components folder after execution."]
-	}, null);
-
-	cli.main(function(args, options) {
-		cnf.read({cwd: options.bower}).then(
-			function(config) {
-				if (options.verbose) {
-					config.option.verbose = true;
-				}
-
-				if (options.removeAfter) {
-					config.option.removeAfter = true;
-				}
-
-				// Add load of minimised file version and renaming of them if needed
-				if (options.renameMin) {
-					config.option.min.get = true;
-					config.option.min.rename = true;
-				} else if (options.min) {
-					config.option.min.get = true;
-					config.option.min.rename = false;
-				} else {
-					config.option.min.get = false;
-					config.option.min.rename = false;
-				}
-
-				// Actions
-				if (options.automatic) {
-					util.deprecate(function() {
-						cmd.automatic(config).then(
-							function(message) {
-								if (config.option.verbose) {
-									console.log(verboseCLIReturn(message));
-								}
-								console.log(successMsg.pass);
-								process.exit(0);
-							}, function(err) {
-								console.log(err.error);
-								process.stderr.write(err.error + "\n");
-								process.exit(1);
-							}
-						);
-					}, "The automatic command call for bower is deprecated, please use 'update' instead.");
-				} else if (options.install) {
-					cmd.install(config).then(
-						function(message) {
-							if (config.option.verbose) {
-								console.log(verboseCLIReturn(message));
-							}
-							console.log(successMsg.pass);
-							process.exit(0);
-						}, function(err) {
-							console.log(err.error);
-							process.stderr.write(err.error + "\n");
-							process.exit(1);
-						}
-					);
-				} else if (options.update) {
-					cmd.update(config).then(
-						function(message) {
-							if (config.option.verbose) {
-								console.log(verboseCLIReturn(message));
-							}
-							console.log(successMsg.pass);
-							process.exit(0);
-						}, function(err) {
-							console.log(err.error);
-							process.stderr.write(err.error + "\n");
-							process.exit(1);
-						}
-					);
-				} else {
-					cmd.run(config).then(
-						function(message) {
-							if (config.option.verbose) {
-								console.log(verboseCLIReturn(message));
-							}
-							console.log(successMsg.pass);
-							process.exit(0);
-						}, function(err) {
-							console.log(err.error);
-							process.stderr.write(err.error + "\n");
-							process.exit(1);
-						}
-					);
-				}
-			}, function(err) {
-				console.error(err);
+	cnf.read({cwd: program.bower}).then(
+		function (config) {
+			if (program.verbose) {
+				config.option.verbose = true;
 			}
-		);
-	});
+
+			if (program.removeAfter) {
+				config.option.removeAfter = true;
+			}
+
+			// Add load of minimised file version and renaming of them if needed
+			if (program.renameMin) {
+				config.option.min.get = true;
+				config.option.min.rename = true;
+			} else if (program.min) {
+				config.option.min.get = true;
+				config.option.min.rename = false;
+			} else {
+				config.option.min.get = false;
+				config.option.min.rename = false;
+			}
+
+			// Actions
+			if (program.automatic) {
+				util.deprecate(function () {
+					cmd.automatic(config).then(
+						function (message) {
+							if (config.option.verbose) {
+								console.log(verboseCLIReturn(message));
+							}
+							console.log(successMsg.pass);
+							process.exit(0);
+						}, function (err) {
+							console.log(err.error);
+							process.stderr.write(err.error + "\n");
+							process.exit(1);
+						}
+					);
+				}, "The automatic command call for bower is deprecated, please use 'update' instead.");
+			} else if (program.install) {
+				cmd.install(config).then(
+					function (message) {
+						if (config.option.verbose) {
+							console.log(verboseCLIReturn(message));
+						}
+						console.log(successMsg.pass);
+						process.exit(0);
+					}, function (err) {
+						console.log(err.error);
+						process.stderr.write(err.error + "\n");
+						process.exit(1);
+					}
+				);
+			} else if (program.update) {
+				cmd.update(config).then(
+					function (message) {
+						if (config.option.verbose) {
+							console.log(verboseCLIReturn(message));
+						}
+						console.log(successMsg.pass);
+						process.exit(0);
+					}, function (err) {
+						console.log(err.error);
+						process.stderr.write(err.error + "\n");
+						process.exit(1);
+					}
+				);
+			} else {
+				cmd.run(config).then(
+					function (message) {
+						if (config.option.verbose) {
+							console.log(verboseCLIReturn(message));
+						}
+						console.log(successMsg.pass);
+						process.exit(0);
+					}, function (err) {
+						console.log(err.error);
+						process.stderr.write(err.error + "\n");
+						process.exit(1);
+					}
+				);
+			}
+		}, function (err) {
+			console.error(err);
+		}
+	);
 } else {
 	module.exports = require("./../lib/api");
 }
