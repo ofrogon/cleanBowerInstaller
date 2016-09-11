@@ -26,7 +26,8 @@ describe("fileManagement", function() {
 						fileManagement.moveFiles(conf).then(
 							function() {
 								done();
-							}, function(e) {
+							},
+							function(e) {
 								done(e);
 							}
 						);
@@ -54,7 +55,8 @@ describe("fileManagement", function() {
 						fileManagement.moveFilesAdnRemove(conf).then(
 							function() {
 								done();
-							}, function(e) {
+							},
+							function(e) {
 								done(e);
 							}
 						);

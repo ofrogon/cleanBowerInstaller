@@ -43,7 +43,8 @@ describe("cmd", function() {
 			cmd.automatic("this is a wrong input").then(
 				function() {
 					done("The script is not suppose to run with a bad config format.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.equal("The command module do not receive any configuration.");
 					done();
 				}
@@ -59,7 +60,8 @@ describe("cmd", function() {
 			cmd.automatic(config).then(
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
@@ -78,7 +80,8 @@ describe("cmd", function() {
 			cmd.automatic(config).then(
 				function() {
 					done();
-				}, function() {
+				},
+				function() {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
@@ -96,7 +99,8 @@ describe("cmd", function() {
 			cmd.install("this is a wrong input").then(
 				function() {
 					done("The script is not suppose to run with a bad config format.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.equal("The command module do not receive any configuration.");
 					done();
 				}
@@ -112,7 +116,8 @@ describe("cmd", function() {
 			cmd.install(config).then(
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
@@ -131,7 +136,8 @@ describe("cmd", function() {
 			cmd.install(config).then(
 				function() {
 					done();
-				}, function() {
+				},
+				function() {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
@@ -149,7 +155,8 @@ describe("cmd", function() {
 			cmd.update("this is a wrong input").then(
 				function() {
 					done("The script is not suppose to run with a bad config format.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.equal("The command module do not receive any configuration.");
 					done();
 				}
@@ -165,7 +172,8 @@ describe("cmd", function() {
 			cmd.update(config).then(
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
@@ -184,7 +192,8 @@ describe("cmd", function() {
 			cmd.update(config).then(
 				function() {
 					done();
-				}, function() {
+				},
+				function() {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
@@ -202,7 +211,8 @@ describe("cmd", function() {
 			cmd.run("this is a wrong input").then(
 				function() {
 					done("The script is not suppose to run with a bad config format.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.equal("The command module do not receive any configuration.");
 					done();
 				}
@@ -218,7 +228,8 @@ describe("cmd", function() {
 			cmd.run(config).then(
 				function() {
 					done("The script is not suppose to run with no bower.json file.");
-				}, function(e) {
+				},
+				function(e) {
 					expect(e).to.match(/There is no bower\.json file in.*/);
 					done();
 				}
@@ -237,7 +248,8 @@ describe("cmd", function() {
 			cmd.run(config).then(
 				function() {
 					done();
-				}, function() {
+				},
+				function() {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
@@ -257,7 +269,8 @@ describe("cmd", function() {
 			cmd.run(config).then(
 				function() {
 					done();
-				}, function() {
+				},
+				function() {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
 			);
@@ -276,7 +289,8 @@ describe("cmd", function() {
 			cmd.run(config).then(
 				function() {
 					done("This is not suppose to pass because it missing bower dependence in the bower.json file.");
-				}, function(e) {
+				},
+				function(e) {
 					try {
 						expect(e.code).to.equal("ENOENT");
 

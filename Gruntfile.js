@@ -12,10 +12,7 @@ module.exports = function(grunt) {
 		setup: {
 			"testDir": ".testFolder"
 		},
-		jshint: {
-			options: {
-				jshintrc: true
-			},
+		eslint: {
 			all: [
 				"Gruntfile.js",
 				"bin/clean-bower-installer",
@@ -63,8 +60,8 @@ module.exports = function(grunt) {
 		}
 	});
 
-	// Load the plugin that provides the "jshint" task.
-	grunt.loadNpmTasks("grunt-contrib-jshint");
+	// Load the plugin that provides the "eslint" task.
+	grunt.loadNpmTasks("grunt-eslint");
 	// Load the plugin that provides the "mocha" task.
 	grunt.loadNpmTasks("grunt-mocha-test");
 	// Load the plugin that provides the "mocha_istanbul" task.
@@ -78,7 +75,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit", "cleanAfterTest"]);
 
 	// Run the useful development tests
-	grunt.registerTask("test", ["mochaTest:e2e", "coverage", "jshint:all"]);
+	grunt.registerTask("test", ["mochaTest:e2e", "coverage", "eslint:all"]);
 
 	// CI actions
 	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanAfterTest"]);

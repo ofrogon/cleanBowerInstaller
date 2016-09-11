@@ -102,7 +102,7 @@ describe("readConfig", function() {
 					try {
 						expect(conf).to.eql(expected);
 						done();
-					} catch(e) {
+					} catch (e) {
 						done(e);
 					}
 				},

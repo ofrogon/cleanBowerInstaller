@@ -23,7 +23,7 @@ if (require.main === module) {
 	 * @param list {Array}
 	 * @returns {String}
 	 */
-	var verboseCLIReturn = function (list) {
+	var verboseCLIReturn = function(list) {
 		var output = "";
 		for (var i = 0, j = list.length; i < j; i++) {
 			output += "Copied '" + list[i].from + "' to '" + list[i].to + "'\n";
@@ -44,7 +44,7 @@ if (require.main === module) {
 		.parse(process.argv);
 
 	cnf.read({cwd: program.bower}).then(
-		function (config) {
+		function(config) {
 			if (program.verbose) {
 				config.option.verbose = true;
 			}
@@ -67,15 +67,16 @@ if (require.main === module) {
 
 			// Actions
 			if (program.automatic) {
-				util.deprecate(function () {
+				util.deprecate(function() {
 					cmd.automatic(config).then(
-						function (message) {
+						function(message) {
 							if (config.option.verbose) {
 								console.log(verboseCLIReturn(message));
 							}
 							console.log(successMsg.pass);
 							process.exit(0);
-						}, function (err) {
+						},
+						function(err) {
 							console.log(err.error);
 							process.stderr.write(err.error + "\n");
 							process.exit(1);
@@ -84,13 +85,14 @@ if (require.main === module) {
 				}, "The automatic command call for bower is deprecated, please use 'update' instead.");
 			} else if (program.install) {
 				cmd.install(config).then(
-					function (message) {
+					function(message) {
 						if (config.option.verbose) {
 							console.log(verboseCLIReturn(message));
 						}
 						console.log(successMsg.pass);
 						process.exit(0);
-					}, function (err) {
+					},
+					function(err) {
 						console.log(err.error);
 						process.stderr.write(err.error + "\n");
 						process.exit(1);
@@ -98,13 +100,14 @@ if (require.main === module) {
 				);
 			} else if (program.update) {
 				cmd.update(config).then(
-					function (message) {
+					function(message) {
 						if (config.option.verbose) {
 							console.log(verboseCLIReturn(message));
 						}
 						console.log(successMsg.pass);
 						process.exit(0);
-					}, function (err) {
+					},
+					function(err) {
 						console.log(err.error);
 						process.stderr.write(err.error + "\n");
 						process.exit(1);
@@ -112,20 +115,22 @@ if (require.main === module) {
 				);
 			} else {
 				cmd.run(config).then(
-					function (message) {
+					function(message) {
 						if (config.option.verbose) {
 							console.log(verboseCLIReturn(message));
 						}
 						console.log(successMsg.pass);
 						process.exit(0);
-					}, function (err) {
+					},
+					function(err) {
 						console.log(err.error);
 						process.stderr.write(err.error + "\n");
 						process.exit(1);
 					}
 				);
 			}
-		}, function (err) {
+		},
+		function(err) {
 			console.error(err);
 		}
 	);

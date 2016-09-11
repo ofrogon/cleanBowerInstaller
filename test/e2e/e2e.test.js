@@ -249,7 +249,8 @@ describe("Test the run method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					cbi.run({cwd: cwd}).then(
 						function() {
 							try {
@@ -279,24 +280,25 @@ describe("Test the run method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
-				exec("node " + cliPath + " --bower=\"" + cwd + "\"", function(err) {
-					if (err) {
-						done(err);
-					} else {
-						try {
-							expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
-							expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
-							expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
-							expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+			.on("end",
+				function() {
+					exec("node " + cliPath + " --bower=\"" + cwd + "\"", function(err) {
+						if (err) {
+							done(err);
+						} else {
+							try {
+								expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "bower_components/angular"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "dest/angular.js"))).equal(true);
+								expect(verifyFileExist(path.join(cwd, "bower.json"))).equal(true);
 
-							done();
-						} catch (e) {
-							done(e);
+								done();
+							} catch (e) {
+								done(e);
+							}
 						}
-					}
-				});
-			})
+					});
+				})
 			.on("error", function(err) {
 				done(err);
 			});
@@ -313,7 +315,8 @@ describe("Test the runMin method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					cbi.runMin({cwd: cwd}).then(
 						function() {
 							try {
@@ -347,7 +350,8 @@ describe("Test the runMin method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					exec("node " + cliPath + " -m --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
@@ -386,7 +390,8 @@ describe("Test the runMinR method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					cbi.runMinR({cwd: cwd}).then(
 						function() {
 							try {
@@ -420,7 +425,8 @@ describe("Test the runMinR method", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					exec("node " + cliPath + " -M --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
@@ -591,7 +597,8 @@ describe("Test the runMin method with default.minFolder", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					cbi.runMin({cwd: cwd}).then(
 						function() {
 							try {
@@ -625,7 +632,8 @@ describe("Test the runMin method with default.minFolder", function() {
 
 		bower.commands
 			.install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
-			.on("end", function() {
+			.on("end",
+				function() {
 					exec("node " + cliPath + " -M --bower=\"" + cwd + "\"", function(err) {
 						if (err) {
 							done(err);
@@ -779,7 +787,7 @@ describe("Test file rename, specify folder and ignore file", function() {
 	});
 });
 
-after(function(done){
+after(function(done) {
 	fs.remove(cwd, function(err) {
 		if (err) {
 			done(err);
