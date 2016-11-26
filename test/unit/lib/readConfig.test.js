@@ -1,16 +1,33 @@
 "use strict";
 
-var chai = require("chai"),
-	expect = chai.expect,
-	describe = require("mocha/lib/mocha.js").describe,
-	it = require("mocha/lib/mocha.js").it,
-	path = require("path"),
-	config = require("./../../../lib/readConfig");
+var chai = require("chai");
+var expect = chai.expect;
+var path = require("path");
+var config = require("./../../../dist/lib/readConfig").default;
+var fs = require("fs-extra");
+
+var share = require("../../share");
 
 /**
  * Test /lib/readConfig.js
  */
 describe("readConfig", function() {
+
+	before(function(done) {
+		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, function(err) {
+			if (err) {
+				done(err);
+			} else {
+				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, function(err) {
+					if (err) {
+						done(err);
+					} else {
+						done();
+					}
+				});
+			}
+		});
+	});
 
 	/**
 	 * Test the different type of path to read config
@@ -20,30 +37,28 @@ describe("readConfig", function() {
 		 * Test with a relative path
 		 */
 		it("relative", function(done) {
-			config.read({cwd: ".testFolder/tempU/"}).then(
-				function(conf) {
+			config({cwd: share.fakeBowerPath}, function(err, conf) {
+				if (err) {
+					done(err);
+				} else {
 					expect(conf).to.equal("Nothing to do!");
 					done();
-				},
-				function(e) {
-					done(e);
 				}
-			);
+			});
 		});
 
 		/**
 		 * Teat with a absolute path
 		 */
 		it("absolute", function(done) {
-			config.read({cwd: path.join(__dirname, "../../..", ".testFolder/tempU")}).then(
-				function(conf) {
+			config({cwd: path.join(__dirname, "../../..", share.fakeBowerPath)}, function(err, conf) {
+				if (err) {
+					done(err);
+				} else {
 					expect(conf).to.equal("Nothing to do!");
 					done();
-				},
-				function(e) {
-					done(e);
 				}
-			);
+			});
 		});
 	});
 
@@ -55,15 +70,14 @@ describe("readConfig", function() {
 		 * A file without data in it
 		 */
 		it("bower.json file without config", function(done) {
-			config.read({cwd: ".testFolder/tempU/"}).then(
-				function(conf) {
+			config({cwd: share.fakeBowerPath}, function(err, conf) {
+				if (err) {
+					done(err);
+				} else {
 					expect(conf).to.equal("Nothing to do!");
 					done();
-				},
-				function(e) {
-					done(e);
 				}
-			);
+			});
 		});
 
 		/**
@@ -97,19 +111,20 @@ describe("readConfig", function() {
 				"cwd": ".testFolder/tempU/under/"
 			};
 
-			config.read({cwd: ".testFolder/tempU/under/"}).then(
-				function(conf) {
-					try {
-						expect(conf).to.eql(expected);
-						done();
-					} catch (e) {
-						done(e);
-					}
-				},
-				function(e) {
-					done(e);
+			config({cwd: share.fakeBowerPath2}, function(err, conf) {
+				if (err) {
+					done(err);
+				} else {
+					expect(conf).to.eql(expected);
+					done();
 				}
-			);
+			});
+		});
+	});
+
+	after(function(done) {
+		fs.remove(share.testFolder, function(err) {
+			done(err);
 		});
 	});
 });

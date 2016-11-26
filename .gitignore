@@ -15,3 +15,5 @@ node_modules
 
 .idea
 *.iml
+/typings/
+/dist/
