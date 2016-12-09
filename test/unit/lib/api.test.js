@@ -1,69 +1,26 @@
 "use strict";
 
-var chai = require("chai"),
-	expect = chai.expect,
-	describe = require("mocha/lib/mocha.js").describe,
-	it = require("mocha/lib/mocha.js").it,
-	api = require("./../../../lib/api");
+const chai = require("chai");
+const expect = chai.expect;
+const api = require("../../../dist/lib/api");
+const path = require("path");
+const fs = require("fs-extra");
+
+const share = require("../../share");
 
 /**
  * Test /lib/api.js
  */
 describe("api", function() {
-	/**
-	 * Test the method "automatic" from the module api.js
-	 */
-	describe("automatic", function() {
-		/**
-		 * Without Config object as configuration
-		 */
-		it("wrong options", function(done) {
-			api.automatic("this is a wrong option").then(
-				function() {
-					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
-					try {
-						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.match(/No bower\.json file found in.*/);
-						} else {
-							expect(err instanceof TypeError).to.equal(true);
-						}
-						done();
-					} catch (e) {
-						done(e);
-					}
-				}
-			);
-		});
-
-		/**
-		 * Test default option (without bower.json file in the current folder)
-		 */
-		it("empty options", function(done) {
-			api.automatic().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/No bower\.json file found in.*/);
-					done();
-				}
-			);
-		});
-
-		/**
-		 * With a bower.json file
-		 */
-		it("good options", function(done) {
-			api.automatic({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+	before(function(done) {
+		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
+			if (err) {
+				done(err);
+			} else {
+				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+					done(err);
+				});
+			}
 		});
 	});
 
@@ -75,52 +32,41 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.install("this is a wrong option").then(
-				function() {
+			api.install("this is a wrong option", (err) => {
+				if(!err) {
 					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
+				} else {
 					try {
-						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.match(/No bower\.json file found in.*/);
-						} else {
-							expect(err instanceof TypeError).to.equal(true);
-						}
+						expect(err instanceof Error).to.equal(true);
 						done();
 					} catch (e) {
 						done(e);
 					}
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("empty options", function(done) {
-			api.install().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/No bower\.json file found in.*/);
+			api.install(null, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.install({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+			api.install({cwd: ".testFolder/tempU/"}, (err) => {
+				done(err);
+			});
 		});
 	});
 
@@ -132,52 +78,37 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.update("this is a wrong option").then(
-				function() {
+			api.update("this is a wrong option", (err) => {
+				if(err) {
+					expect(err instanceof Error).to.equal(true);
+					done();
+				} else {
 					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
-					try {
-						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.match(/^No bower\.json file found in.*/);
-						} else {
-							expect(err instanceof TypeError).to.equal(true);
-						}
-						done();
-					} catch (e) {
-						done(e);
-					}
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("empty options", function(done) {
-			api.update().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/No bower\.json file found in.*/);
+			api.update(null, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.update({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+			api.update({cwd: ".testFolder/tempU/"}, (err) => {
+				done(err);
+			});
 		});
 	});
 
@@ -189,52 +120,37 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.run("this is a wrong option").then(
-				function() {
+			api.run("this is a wrong option", (err) => {
+				if(err) {
+					expect(err instanceof Error).to.equal(true);
+					done();
+				} else {
 					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
-					try {
-						if (typeof err === "string" || err instanceof String) {
-							expect(err).to.match(/^No bower\.json file found in.*/);
-						} else {
-							expect(err instanceof TypeError).to.equal(true);
-						}
-						done();
-					} catch (e) {
-						done(e);
-					}
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("empty options", function(done) {
-			api.run().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/^No bower\.json file found in.*/);
+			api.run(null, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.run({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+			api.run({cwd: ".testFolder/tempU/"}, (err) => {
+				done(err);
+			});
 		});
 	});
 
@@ -246,48 +162,37 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.runMin("this is a wrong option").then(
-				function() {
+			api.runMin("this is a wrong option", (err) => {
+				if(err) {
+					expect(err instanceof Error).to.equal(true);
+					done();
+				} else {
 					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
-					try {
-						expect(err instanceof TypeError).to.equal(true);
-						done();
-					} catch (e) {
-						done(e);
-					}
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("empty options", function(done) {
-			api.runMin().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/^No bower\.json file found in.*/);
+			api.runMin(null, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.runMin({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+			api.runMin({cwd: ".testFolder/tempU/"}, (err) => {
+				done(err);
+			});
 		});
 	});
 
@@ -299,48 +204,43 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.runMinR("this is a wrong option").then(
-				function() {
+			api.runMinR("this is a wrong option", (err) => {
+				if(err) {
+					expect(err instanceof Error).to.equal(true);
+					done();
+				} else {
 					done("String pass as a accepted option but we want an object.");
-				},
-				function(err) {
-					try {
-						expect(err instanceof TypeError).to.equal(true);
-						done();
-					} catch (e) {
-						done(e);
-					}
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("empty options", function(done) {
-			api.runMinR().then(
-				function() {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
-				},
-				function(e) {
-					expect(e).to.match(/^No bower\.json file found in.*/);
+			api.runMinR(null, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("good options", function(done) {
-			api.runMinR({cwd: ".testFolder/tempU/"}).then(
-				function() {
-					done();
-				},
-				function(e) {
-					done(e);
-				}
-			);
+			api.runMinR({cwd: ".testFolder/tempU/"}, (err) => {
+				done(err);
+			});
+		});
+	});
+
+	after(function(done) {
+		fs.remove(share.testFolder, (err) => {
+			done(err);
 		});
 	});
 });

@@ -1,12 +1,12 @@
 "use strict";
 
-var chai = require("chai");
-var expect = chai.expect;
-var path = require("path");
-var config = require("./../../../dist/lib/readConfig").default;
-var fs = require("fs-extra");
+const chai = require("chai");
+const expect = chai.expect;
+const path = require("path");
+const config = require("./../../../dist/lib/readConfig").default;
+const fs = require("fs-extra");
 
-var share = require("../../share");
+const share = require("../../share");
 
 /**
  * Test /lib/readConfig.js
@@ -14,16 +14,12 @@ var share = require("../../share");
 describe("readConfig", function() {
 
 	before(function(done) {
-		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, function(err) {
+		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
 			if (err) {
 				done(err);
 			} else {
-				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, function(err) {
-					if (err) {
-						done(err);
-					} else {
-						done();
-					}
+				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+					done(err);
 				});
 			}
 		});
@@ -37,7 +33,7 @@ describe("readConfig", function() {
 		 * Test with a relative path
 		 */
 		it("relative", function(done) {
-			config({cwd: share.fakeBowerPath}, function(err, conf) {
+			config({cwd: share.fakeBowerPath}, (err, conf) => {
 				if (err) {
 					done(err);
 				} else {
@@ -51,7 +47,7 @@ describe("readConfig", function() {
 		 * Teat with a absolute path
 		 */
 		it("absolute", function(done) {
-			config({cwd: path.join(__dirname, "../../..", share.fakeBowerPath)}, function(err, conf) {
+			config({cwd: path.join(__dirname, "../../..", share.fakeBowerPath)}, (err, conf) => {
 				if (err) {
 					done(err);
 				} else {
@@ -70,7 +66,7 @@ describe("readConfig", function() {
 		 * A file without data in it
 		 */
 		it("bower.json file without config", function(done) {
-			config({cwd: share.fakeBowerPath}, function(err, conf) {
+			config({cwd: share.fakeBowerPath}, (err, conf) => {
 				if (err) {
 					done(err);
 				} else {
@@ -84,34 +80,51 @@ describe("readConfig", function() {
 		 * A file with some data in it
 		 */
 		it("bower.json file with config", function(done) {
-			var expected = {
-				"folder": {
-					"js": "js/vendor/",
-					"css": "css/",
-					"otf, eot, svg, ttf, woff": "fonts/",
-					"otf": "fonts/",
-					"eot": "fonts/",
-					"svg": "fonts/",
-					"ttf": "fonts/",
-					"woff": "fonts/"
-				},
-				"option": {
-					"default": {"folder": "public", "minFolder": ""},
-					"min": {"get": false, "rename": false, "ignoreExt": []},
-					"removeAfter": false,
-					"verbose": false
-				},
-				"source": {
-					"bootstrap": {
-						"glyphicons-halflings-regular.*": "dist/fonts/*",
-						"bootstrap.js": "dist/js/bootstrap.js",
-						"bootstrap.css": "dist/css/bootstrap.css"
+			const expected = {
+				"cInstall": {
+					"cwd": ".testFolder/tempU/under/",
+					"folder": {
+						"js": "js/vendor/",
+						"css": "css/",
+						"otf": "fonts/",
+						"eot": "fonts/",
+						"svg": "fonts/",
+						"ttf": "fonts/",
+						"woff": "fonts/"
+					},
+					"option": {
+						"default": {
+							"folder": "",
+							"minFolder": ""
+						},
+						"min": {
+							"get": false,
+							"ignoreExt": [],
+							"rename": false
+						},
+						"removeAfter": false,
+						"verbose": false
+					},
+					"source": {
+						"bootstrap": {
+							"bootstrap.css": "dist/css/bootstrap.css",
+							"bootstrap.js": "dist/js/bootstrap.js",
+							"glyphicons-halflings-regular.*": "dist/fonts/*"
+						}
 					}
 				},
-				"cwd": ".testFolder/tempU/under/"
+				"dependencies": {
+					"bootstrap": "~3.2.0"
+				},
+				"description": "",
+				"devDependencies": [],
+				"ignore": [],
+				"main": "",
+				"name": "option-test",
+				"version": ""
 			};
 
-			config({cwd: share.fakeBowerPath2}, function(err, conf) {
+			config({cwd: share.fakeBowerPath2}, (err, conf) => {
 				if (err) {
 					done(err);
 				} else {
@@ -123,7 +136,7 @@ describe("readConfig", function() {
 	});
 
 	after(function(done) {
-		fs.remove(share.testFolder, function(err) {
+		fs.remove(share.testFolder, (err) => {
 			done(err);
 		});
 	});

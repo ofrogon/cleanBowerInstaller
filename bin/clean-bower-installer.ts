@@ -9,8 +9,8 @@ const errorFct = (err: Error) => {
 };
 
 if (require.main === module) {
-	import * as program from "commander";
-	import * as fs from "fs";
+	const program = require("commander");
+	const fs = require("fs");
 
 	fs.readFile("../package.json", {encoding: "utf8"}, (err: Error, data: string) => {
 		if (err) {
@@ -37,5 +37,5 @@ if (require.main === module) {
 		}
 	});
 } else {
-	export { api };
+	module.exports = require("../lib/api");
 }

@@ -1,29 +1,25 @@
 "use strict";
 
-var path = require("path");
-var exec = require("child_process").exec;
-var fileManagement = require("./../../../dist/lib/fileManagement");
-var fs = require("fs-extra");
+const chai = require("chai");
+const expect = chai.expect;
 
-var share = require("../../share");
+const path = require("path");
+const exec = require("child_process").exec;
+const fileManagement = require("./../../../dist/lib/fileManagement");
+const fse = require("fs-extra");
+
+const share = require("../../share");
+const BC = require("../../../dist/lib/BowerConfiguration").BowerConfiguration;
 
 /**
  * Test /lib/fileManagement.js
  */
 describe("fileManagement", function() {
-	before(function(done) {
-		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, function(err) {
-			if (err) {
-				done(err);
-			} else {
-				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, function(err) {
-					if (err) {
-						done(err);
-					} else {
-						done();
-					}
-				});
-			}
+	const cwd = path.join(__dirname, "../../..", share.fakeBowerPath2);
+
+	beforeEach(function(done) {
+		fse.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+			done(err);
 		});
 	});
 
@@ -33,20 +29,18 @@ describe("fileManagement", function() {
 	it("moveFiles", function(done) {
 		this.timeout(15000);
 
-		var conf = Object.assign({}, share.fakeBowerJson2, {cwd: path.join(__dirname, "../../..", share.fakeBowerPath2)});
+		const conf = new BC(share.fakeBowerJson2);
 
-		exec("bower install", {cwd: conf.cwd}, function(error) {
+		conf.cInstall.cwd = cwd;
+
+		exec("bower install", {cwd: cwd}, (error) => {
 			if (error) {
 				done(error);
 			} else {
-				fileManagement.moveFiles(conf).then(
-					function() {
-						done();
-					},
-					function(e) {
-						done(e);
-					}
-				);
+				fileManagement.moveFiles(conf.cInstall, (err, msg) => {
+					expect(msg).to.be.null;
+					done(err);
+				});
 			}
 		});
 	});
@@ -57,27 +51,25 @@ describe("fileManagement", function() {
 	it("moveFilesAndRemove", function(done) {
 		this.timeout(15000);
 
-		var conf = Object.assign({}, share.fakeBowerJson2, {cwd: path.join(__dirname, "../../..", share.fakeBowerPath2)});
+		const conf = new BC(share.fakeBowerJson2);
 
-		exec("bower install", {cwd: conf.cwd}, function(error) {
+		conf.cInstall.cwd = cwd;
+
+		exec("bower install", {cwd: cwd}, (error) => {
 			if (error) {
 				done(error);
 			} else {
-				fileManagement.moveFilesAndRemove(conf).then(
-					function() {
-						done();
-					},
-					function(e) {
-						done(e);
-					}
-				);
+				fileManagement.moveFilesAndRemove(conf.cInstall, (err, msg) => {
+					expect(msg).to.be.null;
+					done(err);
+				});
 			}
 		});
 	});
 
-	// after(function(done) {
-	// 	fs.remove(share.testFolder, function(err) {
-	// 		done(err);
-	// 	});
-	// });
+	afterEach(function(done) {
+		fse.remove(share.testFolder, function(err) {
+			done(err);
+		});
+	});
 });

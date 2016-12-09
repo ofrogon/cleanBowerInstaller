@@ -11,26 +11,30 @@ import {CbiConfig} from "./BowerConfiguration";
  * @param option {Object}
  * @param callback {Function}
  */
-function callCmd(cmd: Function, option, callback: Function) {
-	option = option || {};
+function callCmd(cmd: Function, option: CbiConfig, callback: Function) {
+	if (typeof(option) === "object") {
+		option = new CbiConfig(option);
 
-	if (!option.hasOwnProperty("cwd")) {
-		option.cwd = process.cwd();
-	}
-
-	cnf(option, (err, config) => {
-		if (err) {
-			callback(err, null);
-		} else {
-			if (config === "Nothing to do!") {
-				callback(null, config);
-			} else {
-				cmd(config, (err, res) => {
-					callback(err, res);
-				});
-			}
+		if (!option.hasOwnProperty("cwd")) {
+			option.cwd = process.cwd();
 		}
-	});
+
+		cnf(option, (err, config) => {
+			if (err) {
+				callback(err, null);
+			} else {
+				if (config === "Nothing to do!") {
+					callback(null, config);
+				} else {
+					cmd(config, (err, res) => {
+						callback(err, res);
+					});
+				}
+			}
+		});
+	} else {
+		callback(new Error("Wrong option type"), null);
+	}
 }
 
 /**
@@ -39,7 +43,7 @@ function callCmd(cmd: Function, option, callback: Function) {
  * @param [option] {Object}
  * @param callback {Function}
  */
-const install = (option, callback: Function) => {
+const install = (option: CbiConfig, callback: Function) => {
 	callCmd(cmd.install, option, callback);
 };
 
@@ -49,7 +53,7 @@ const install = (option, callback: Function) => {
  * @param [option] {Object}
  * @param callback {Function}
  */
-const update = (option, callback: Function) => {
+const update = (option: CbiConfig, callback: Function) => {
 	callCmd(cmd.update, option, callback);
 };
 
@@ -59,7 +63,7 @@ const update = (option, callback: Function) => {
  * @param [option] {Object}
  * @param callback {Function}
  */
-const run = (option, callback) => {
+const run = (option: CbiConfig, callback) => {
 	callCmd(cmd.run, option, callback);
 };
 
@@ -71,15 +75,15 @@ const run = (option, callback) => {
  */
 const runMin = (option: CbiConfig, callback) => {
 	try {
-		option = option || new CbiConfig();
+		option = new CbiConfig(option);
 
 		option.option.min.get = true;
 		option.option.min.rename = false;
+
+		callCmd(cmd.run, option, callback);
 	} catch (e) {
 		callback(e, null);
 	}
-
-	callCmd(cmd.run, option, callback);
 };
 
 /**
@@ -90,15 +94,15 @@ const runMin = (option: CbiConfig, callback) => {
  */
 const runMinR = (option: CbiConfig, callback) => {
 	try {
-		option = option || new CbiConfig();
+		option = new CbiConfig(option);
 
 		option.option.min.get = true;
 		option.option.min.rename = true;
+
+		callCmd(cmd.run, option, callback);
 	} catch (e) {
 		callback(e, null);
 	}
-
-	callCmd(cmd.run, option, callback);
 };
 
 export {install, update, run, runMin, runMinR};

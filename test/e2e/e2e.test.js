@@ -1,22 +1,18 @@
 "use strict";
 
-var chai = require("chai"),
-	expect = chai.expect,
-	describe = require("mocha/lib/mocha.js").describe,
-	after = require("mocha/lib/mocha.js").after,
-	it = require("mocha/lib/mocha.js").it,
-	beforeEach = require("mocha/lib/mocha.js").beforeEach;
+const chai = require("chai");
+const expect = chai.expect;
 
-var fs = require("fs-extra"),
-	path = require("path"),
-	exec = require("child_process").exec,
-	crypto = require("crypto"),
-	bower = require("bower");
+const fs = require("fs-extra");
+const path = require("path");
+const exec = require("child_process").exec;
+const crypto = require("crypto");
+const bower = require("bower");
 
-var testFolders = require("./e2eData.test"),
-	cbi = require("../../."),
-	cliPath = path.join(__dirname, "../../bin/clean-bower-installer"),
-	cwd = path.join(__dirname, "..", "..", testFolders.folder);
+const testFolders = require("./e2eData.test");
+const cbi = require("../../dist/bin/clean-bower-installer");
+const cliPath = path.join(__dirname, "../../dist/bin/clean-bower-installer");
+const cwd = path.join(__dirname, "..", "..", testFolders.folder);
 
 function verifyFileExist(path) {
 	try {
@@ -30,15 +26,15 @@ function verifyFileExist(path) {
 
 function e2eTestEnvironmentCreation(testNumber, done) {
 	testFolders[testNumber].bowerJson.name = testNumber;
-	fs.remove(cwd, function(err) {
+	fs.remove(cwd, (err) => {
 		if (err) {
 			done(err);
 		} else {
-			fs.ensureDir(cwd, function(err) {
+			fs.ensureDir(cwd, (err) => {
 				if (err) {
 					done(err);
 				} else {
-					fs.writeFile(path.join(cwd, "bower.json"), JSON.stringify(testFolders[testNumber].bowerJson), function(err) {
+					fs.writeFile(path.join(cwd, "bower.json"), JSON.stringify(testFolders[testNumber].bowerJson), (err) => {
 						done(err);
 					});
 				}

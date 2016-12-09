@@ -1,19 +1,17 @@
 "use strict";
 
-var chai = require("chai"),
-	expect = chai.expect,
-	describe = require("mocha/lib/mocha.js").describe,
-	it = require("mocha/lib/mocha.js").it,
-	path = require("path"),
-	cmd = require("./../../../lib/cmd");
+const chai = require("chai");
+const expect = chai.expect;
+const path = require("path");
+const cmd = require("../../../dist/lib/cmd");
+const fs = require("fs-extra");
 
-var longTimeOut = 5000;
+const share = require("../../share");
 
-/**
- * Test /lib/cmd.js
- */
-describe("cmd", function() {
-	function Config() {
+const longTimeOut = 5000;
+
+class Config {
+	constructor() {
 		this.folder = {};
 		this.option = {
 			"default": {
@@ -31,60 +29,21 @@ describe("cmd", function() {
 		this.source = {};
 		this.cwd = process.cwd();
 	}
+}
 
-	/**
-	 * Test the method "automatic" from the module cmd.js
-	 */
-	describe("automatic", function() {
-		/**
-		 * Without Config object as configuration
-		 */
-		it("wrong input", function(done) {
-			cmd.automatic("this is a wrong input").then(
-				function() {
-					done("The script is not suppose to run with a bad config format.");
-				},
-				function(e) {
-					expect(e).to.equal("The command module do not receive any configuration.");
-					done();
-				}
-			);
-		});
-
-		/**
-		 * Test default option (without bower.json file in the current folder)
-		 */
-		it("no bower.json file", function(done) {
-			var config = new Config();
-
-			cmd.automatic(config).then(
-				function() {
-					done("The script is not suppose to run with no bower.json file.");
-				},
-				function(e) {
-					expect(e).to.match(/There is no bower\.json file in.*/);
-					done();
-				}
-			);
-		});
-
-		/**
-		 * With a bower.json file
-		 */
-		it("minimal config", function(done) {
-			var config = new Config();
-
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
-			this.timeout(longTimeOut);
-
-			cmd.automatic(config).then(
-				function() {
-					done();
-				},
-				function() {
-					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
-				}
-			);
+/**
+ * Test /lib/cmd.js
+ */
+describe("cmd", function() {
+	before(function(done) {
+		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
+			if (err) {
+				done(err);
+			} else {
+				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+					done(err);
+				});
+			}
 		});
 	});
 
@@ -96,51 +55,48 @@ describe("cmd", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong input", function(done) {
-			cmd.install("this is a wrong input").then(
-				function() {
-					done("The script is not suppose to run with a bad config format.");
-				},
-				function(e) {
-					expect(e).to.equal("The command module do not receive any configuration.");
+			cmd.install("this is a wrong input", (err) => {
+				if(err) {
+					expect(err).to.equal("The command module do not receive any configuration.");
 					done();
+				} else {
+					done("The script is not suppose to run with a bad config format.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("no bower.json file", function(done) {
-			var config = new Config();
+			let config = new Config();
 
-			cmd.install(config).then(
-				function() {
-					done("The script is not suppose to run with no bower.json file.");
-				},
-				function(e) {
-					expect(e).to.match(/There is no bower\.json file in.*/);
+			cmd.install(config, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("The script is not suppose to run with no bower.json file.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("minimal config", function(done) {
-			var config = new Config();
+			let config = new Config();
 
 			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
-			cmd.install(config).then(
-				function() {
+			cmd.install(config, (err) => {
+				if(err) {
+					done(`Suppose to found a bower.json file in: ${config.cwd}`);
+				} else {
 					done();
-				},
-				function() {
-					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
 				}
-			);
+			});
 		});
 	});
 
@@ -152,51 +108,48 @@ describe("cmd", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong input", function(done) {
-			cmd.update("this is a wrong input").then(
-				function() {
-					done("The script is not suppose to run with a bad config format.");
-				},
-				function(e) {
-					expect(e).to.equal("The command module do not receive any configuration.");
+			cmd.update("this is a wrong input", (err) => {
+				if(err) {
+					expect(err).to.equal("The command module do not receive any configuration.");
 					done();
+				} else {
+					done("The script is not suppose to run with a bad config format.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("no bower.json file", function(done) {
-			var config = new Config();
+			let config = new Config();
 
-			cmd.update(config).then(
-				function() {
-					done("The script is not suppose to run with no bower.json file.");
-				},
-				function(e) {
-					expect(e).to.match(/There is no bower\.json file in.*/);
+			cmd.update(config, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
 					done();
+				} else {
+					done("The script is not suppose to run with no bower.json file.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("minimal config", function(done) {
-			var config = new Config();
+			let config = new Config();
 
 			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
-			cmd.update(config).then(
-				function() {
-					done();
-				},
-				function() {
+			cmd.update(config, (err) => {
+				if(err) {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
+				} else {
+					done();
 				}
-			);
+			});
 		});
 	});
 
@@ -208,98 +161,94 @@ describe("cmd", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong input", function(done) {
-			cmd.run("this is a wrong input").then(
-				function() {
-					done("The script is not suppose to run with a bad config format.");
-				},
-				function(e) {
-					expect(e).to.equal("The command module do not receive any configuration.");
+			cmd.run("this is a wrong input", (err) => {
+				if(err) {
+					expect(err).to.equal("The command module do not receive any configuration.");
 					done();
+				} else {
+					done("The script is not suppose to run with a bad config format.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("no bower.json file", function(done) {
-			var config = new Config();
+			let config = new Config();
 
-			cmd.run(config).then(
-				function() {
-					done("The script is not suppose to run with no bower.json file.");
-				},
-				function(e) {
-					expect(e).to.match(/There is no bower\.json file in.*/);
+			cmd.run(config, (err) => {
+				if(err) {
+					expect(err).to.match(/There is no bower\.json file in.*/);
 					done();
+				} else {
+					done("The script is not suppose to run with no bower.json file.");
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file
 		 */
 		it("minimal config", function(done) {
-			var config = new Config();
+			let config = new Config();
 
 			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
-			cmd.run(config).then(
-				function() {
-					done();
-				},
-				function() {
+			cmd.run(config, (err) => {
+				if(err) {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
+				} else {
+					done();
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file and the option to get minimised file and rename then
 		 */
 		it("rename", function(done) {
-			var config = new Config();
+			let config = new Config();
 
 			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			config.option.min.get = true;
 			config.option.min.rename = true;
 			this.timeout(longTimeOut);
 
-			cmd.run(config).then(
-				function() {
-					done();
-				},
-				function() {
+			cmd.run(config, (err) => {
+				if (err) {
 					done("Suppose to found a bower.json file in .testFolder/tempU folder.");
+				} else {
+					done();
 				}
-			);
+			});
 		});
 
 		/**
 		 * With a bower.json file and the option delete the bower_component file after
 		 */
 		it("removeAfter", function(done) {
-			var config = new Config();
+			let config = new Config();
 
 			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			config.option.removeAfter = true;
 			this.timeout(longTimeOut);
 
-			cmd.run(config).then(
-				function() {
+			cmd.run(config, (err) => {
+				if(err) {
+					expect(err.code).to.equal("ENOENT");
+					done();
+				} else {
 					done("This is not suppose to pass because it missing bower dependence in the bower.json file.");
-				},
-				function(e) {
-					try {
-						expect(e.code).to.equal("ENOENT");
-
-						done();
-					} catch (e) {
-						done(e);
-					}
 				}
-			);
+			});
+		});
+	});
+
+	after(function(done) {
+		fs.remove(share.testFolder, (err) => {
+			done(err);
 		});
 	});
 });

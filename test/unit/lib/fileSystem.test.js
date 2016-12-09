@@ -16,12 +16,12 @@ describe("fileSystem", function() {
 	 * Test the mkdirp method
 	 */
 	it("mkdirp", function(done) {
-		const toCreate = path.join(tempFolder, "mkdirp/dept1/dept2");
+		const toCreate = path.join(tempFolder, "fileSystem/dept1/dept2");
 
 		fileSystem.mkdirp(toCreate, () => {
-			expect(fse.statSync(path.join(tempFolder, "mkdirp")).isDirectory()).to.equal(true);
-			expect(fse.statSync(path.join(tempFolder, "mkdirp/dept1")).isDirectory()).to.equal(true);
-			expect(fse.statSync(path.join(tempFolder, "mkdirp/dept1/dept2")).isDirectory()).to.equal(true);
+			expect(fse.statSync(path.join(tempFolder, "")).isDirectory()).to.equal(true);
+			expect(fse.statSync(path.join(tempFolder, "fileSystem/dept1")).isDirectory()).to.equal(true);
+			expect(fse.statSync(path.join(tempFolder, "fileSystem/dept1/dept2")).isDirectory()).to.equal(true);
 			done();
 		});
 	});
@@ -38,13 +38,13 @@ describe("fileSystem", function() {
 	});
 
 	/**
-	 * Test the rmdirR method
+	 * Test the rmr method
 	 */
-	describe("rmdirR", function() {
-		it("no existing folder", function(done) {
-			const toDelete = path.join(tempFolder, "mkdirp");
+	describe("rmr", function() {
+		const toDelete = path.join(tempFolder, "filesystem");
 
-			fileSystem.rmdirR(toDelete, (err) => {
+		it("no existing folder", function(done) {
+			fileSystem.rmr(toDelete, (err) => {
 				if (err) {
 					expect(err.code).to.equal("ENOENT");
 
@@ -56,14 +56,30 @@ describe("fileSystem", function() {
 		});
 
 		it("existing folder", function(done) {
-			const toDelete = path.join(tempFolder, "mkdirp");
-
 			fse.mkdirs(toDelete, (err) => {
 				if (err) {
 					done(err);
 				} else {
-					fileSystem.rmdirR(toDelete, (err) => {
+					fileSystem.rmr(toDelete, (err) => {
 						done(err);
+					});
+				}
+			});
+		});
+
+		it("not empty folder", function(done) {
+			fse.outputFile(path.join(toDelete, "1.txt"), "Hello ", (err) => {
+				if (err) {
+					done(err);
+				} else {
+					fse.outputFile(path.join(toDelete, "2.txt"), "Word!", (err) => {
+						if (err) {
+							done(err);
+						} else {
+							fileSystem.rmr(toDelete, (err) => {
+								done(err);
+							});
+						}
 					});
 				}
 			});

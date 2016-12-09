@@ -36,7 +36,7 @@ const cli = (program) => {
 			}
 		};
 
-		if(err) {
+		if (err) {
 			exitTool(err, null);
 		} else {
 			if (program.verbose) {

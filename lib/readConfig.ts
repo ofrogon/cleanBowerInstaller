@@ -2,15 +2,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import {
-	BowerConfiguration,
-	CbiConfig,
-	CbiConfigOption,
-	CbiConfigOptionMin,
-	CbiConfigOptionDefault
-} from "./BowerConfiguration";
-
-// TODO create singleton
+import {BowerConfiguration} from "./BowerConfiguration";
 
 /**
  * Read the bower.json file
@@ -34,86 +26,30 @@ function getBowerJson(cwd: string, callback: Function) {
 
 /**
  * Handle the multiple values key
- *
- * @param obj {{}}
- * @param key {String}
- * @param value {String}
  */
-function arrayKeyParser(obj, key, value) {
-	key = key.replace(/ /g, "");
-
-	const keys = key.split(",");
-
-	for (let i = 0, length = keys.length; i < length; ++i) {
-		obj[keys[i]] = value;
-	}
-}
-
-
-class Config {
-	public folder: Object;
-	public option: CbiConfigOption;
-	public source: Object;
-	public cwd: string;
-
-	constructor() {
-		const bcI = new BowerConfiguration().cInstall;
-
-		console.dir(bcI);
-
-		this.folder = bcI.folder;
-		this.option = bcI.option;
-		this.source = bcI.source;
-		this.cwd = bcI.cwd;
+function mergeOption(option, config: BowerConfiguration) {
+	if (option.hasOwnProperty("min")) {
+		config.cInstall.option.min.get = true;
 	}
 
-	/**
-	 * Set the configuration values by overwriting with the new elements
-	 *
-	 * @param obj {{folder: {}, option: {default: {folder: String, minFolder: String}, min: {get: Boolean, rename: Boolean, ignoreExt: Array}, removeAfter: Boolean, verbose: Boolean}, source: {}, cwd: String, [hasOwnProperty]: Function}}
-	 */
-	set(obj: CbiConfig) {
-		// Verify that all minimal value exist
-		if (!obj.hasOwnProperty("option")) {
-			obj.option = new CbiConfigOption();
-		} else {
-			if (!obj.option.hasOwnProperty("default")) {
-				obj.option.default = new CbiConfigOptionDefault();
-			}
-
-			if (!obj.option.hasOwnProperty("min")) {
-				obj.option.min = new CbiConfigOptionMin();
-			}
-		}
-
-		console.dir(obj);
-
-		if (obj.hasOwnProperty("folder")) {
-			for (let el in obj.folder) {
-				if (obj.folder.hasOwnProperty(el)) {
-					arrayKeyParser(obj.folder, el, obj.folder[el]);
-				}
-			}
-		}
-
-		// Set the object
-		this.folder = obj.folder || this.folder;
-		this.option = {
-			"default": {
-				"folder": obj.option.default.folder || this.option.default.folder,
-				"minFolder": obj.option.default.minFolder || this.option.default.minFolder
-			},
-			"min": {
-				"get": obj.option.min.get || this.option.min.get,
-				"rename": obj.option.min.rename || this.option.min.rename,
-				"ignoreExt": obj.option.min.ignoreExt || this.option.min.ignoreExt
-			},
-			"removeAfter": obj.option.removeAfter || this.option.removeAfter,
-			"verbose": obj.option.verbose || this.option.verbose
-		};
-		this.source = obj.source || this.source;
-		this.cwd = obj.cwd || this.cwd;
+	if (option.hasOwnProperty("renameMin")) {
+		config.cInstall.option.min.get = true;
+		config.cInstall.option.min.rename = true;
 	}
+
+	if (option.hasOwnProperty("verbose")) {
+		config.cInstall.option.verbose = true;
+	}
+
+	if (option.hasOwnProperty("removeAfter")) {
+		config.cInstall.option.removeAfter = true;
+	}
+
+	if (option.hasOwnProperty("cwd")) {
+		config.cInstall.cwd = option.cwd;
+	}
+
+	return config;
 }
 
 /**
@@ -124,15 +60,17 @@ class Config {
  */
 const read = (option, callback: Function) => {
 	option = option || {};
-	const cwd = option.cwd || "";
+	let cwd = option.cwd;
 
-	const folder = (()=> {
-		if (path.isAbsolute(cwd)) {
+	const folder = (() => {
+		if (cwd && path.isAbsolute(cwd)) {
 			return cwd;
 		} else {
 			return path.join(process.cwd(), cwd);
 		}
 	})();
+
+	// TODO accept bower.json file path
 
 	getBowerJson(folder, (err, bowerJson) => {
 		if (err) {
@@ -143,20 +81,9 @@ const read = (option, callback: Function) => {
 			} else if (Object.keys(bowerJson.cInstall).length === 0) {
 				callback(null, "Nothing to do!");
 			} else {
-				const readConfig = new Config();
+				const config = new BowerConfiguration(bowerJson);
 
-				console.dir(bowerJson.cInstall);
-				console.dir(option);
-
-				readConfig.set(bowerJson.cInstall);
-				readConfig.set(option);
-
-				callback(null, {
-					folder: readConfig.folder,
-					option: readConfig.option,
-					source: readConfig.source,
-					cwd: readConfig.cwd
-				});
+				callback(null, mergeOption(option, config));
 			}
 		}
 	});

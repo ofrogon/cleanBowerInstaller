@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Create folder recursively (based on node-fs method)
+ * Create folder recursively (based on node-fse method)
  *
  * @param filePath {String}
  * @param callback {Function}
@@ -20,7 +20,7 @@ const mkdirp = (filePath: string, callback: Function, position: number = 0) => {
 	position++;
 
 	let directory = parts.slice(0, position).join(path.sep) || path.sep;
-	fs.mkdir(directory, (err)=> {
+	fs.mkdir(directory, (err) => {
 		if (err && err.code !== "EEXIST") {
 			return callback(err);
 		} else {
@@ -41,18 +41,25 @@ const copy = function (from: string, to: string, callback: Function) {
 		if (err) {
 			callback(err);
 		} else {
-			fs.readFile(from, (err, data) => {
-				if (err) {
+			let once = true;
+			const onError = (err) => {
+				if (once) {
+					once = false;
 					callback(err);
-				} else {
-					fs.writeFile(to, data, (err) => {
-						if (err) {
-							callback(err);
-						} else {
-							callback(null);
-						}
-					});
 				}
+			};
+			const readStream = fs.createReadStream(from);
+			const writeStream = fs.createWriteStream(to);
+
+			readStream.on('error', onError);
+			writeStream.on('error', onError);
+
+			writeStream.on('open', function () {
+				readStream.pipe(writeStream);
+			});
+
+			writeStream.once('finish', function () {
+				callback();
 			});
 		}
 	});
@@ -64,7 +71,7 @@ const copy = function (from: string, to: string, callback: Function) {
  * @param dir {String}
  * @param callback {Function}
  */
-const rmdirR = function (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) {
+const rmr = function (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) {
 	fs.readdir(dir, (err, files) => {
 		if (err) {
 			// Pass the error on to callback
@@ -73,9 +80,8 @@ const rmdirR = function (dir: string, callback?: (err?: NodeJS.ErrnoException) =
 			const wait = files.length;
 			let count = 0;
 			let folderDone = (err?: Error) => {
-				count++;
 				// If we cleaned out all the files, continue
-				if (count >= wait || err) {
+				if (++count >= wait || err) {
 					fs.rmdir(dir, callback);
 				}
 			};
@@ -88,11 +94,13 @@ const rmdirR = function (dir: string, callback?: (err?: NodeJS.ErrnoException) =
 				dir = dir.replace(/\/+$/, "");
 				files.forEach((file) => {
 					let curPath = path.join(dir, file);
-					fs.lstat(curPath, (err, stats) => {
-						if (stats.isDirectory()) {
-							rmdirR(curPath, folderDone);
+					fs.unlink(curPath, (err) => {
+						if (err && (err.code === "EISDIR")) {
+							rmr(curPath, folderDone);
+						} else if (err) {
+							folderDone(err);
 						} else {
-							fs.unlink(curPath, folderDone);
+							folderDone();
 						}
 					});
 				});
@@ -101,4 +109,4 @@ const rmdirR = function (dir: string, callback?: (err?: NodeJS.ErrnoException) =
 	});
 };
 
-export {mkdirp, copy, rmdirR};
+export {mkdirp, copy, rmr};

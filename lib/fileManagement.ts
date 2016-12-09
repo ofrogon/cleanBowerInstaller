@@ -61,7 +61,7 @@ class FileObj {
 	public cwd: string;
 
 	constructor(config?: CbiConfig) {
-		config = config || new CbiConfig();
+		config = config || new CbiConfig({});
 
 		this.extToIgnore = config.option.min.ignoreExt;
 		this.bowerFileFolder = path.join(config.cwd, "bower_components");
@@ -126,7 +126,7 @@ class FileObj {
 	 */
 	enumeratePackages(pkgs: Array<string[]>, libName: string, libFolder: string, callback: Function) {
 		let uncleanList = {ignore: [], move: []};
-		const promises = [];
+		let promises = [];
 
 		for (let pkg in pkgs) {
 			if (pkgs.hasOwnProperty(pkg)) {
@@ -334,11 +334,11 @@ class FileObj {
 	runAndRemove(callback) {
 		this.run((err, data) => {
 			if (err) {
-				fse.rmdirR(this.bowerFileFolder, () => {
+				fse.rmr(this.bowerFileFolder, () => {
 					callback(err, null);
 				});
 			} else {
-				fse.rmdirR(this.bowerFileFolder, (err) => {
+				fse.rmr(this.bowerFileFolder, (err) => {
 					callback(err, data);
 				});
 			}
