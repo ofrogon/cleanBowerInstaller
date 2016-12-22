@@ -3,8 +3,8 @@
 const chai = require("chai");
 const expect = chai.expect;
 const path = require("path");
-const cmd = require("../../../dist/lib/cmd");
-const fs = require("fs-extra");
+const cmd = require("../../../lib/cmd");
+const fse = require("fs-extra");
 
 const share = require("../../share");
 
@@ -12,22 +12,24 @@ const longTimeOut = 5000;
 
 class Config {
 	constructor() {
-		this.folder = {};
-		this.option = {
-			"default": {
-				"folder": "",
-				"minFolder": ""
-			},
-			"min": {
-				"get": false,
-				"rename": false,
-				"ignoreExt": []
-			},
-			"removeAfter": false,
-			"verbose": false
-		};
-		this.source = {};
-		this.cwd = process.cwd();
+	    this.cInstall = {
+            folder: {},
+            option: {
+                "default": {
+                    "folder": "",
+                    "minFolder": ""
+                },
+                "min": {
+                    "get": false,
+                    "rename": false,
+                    "ignoreExt": []
+                },
+                "removeAfter": false,
+                "verbose": false
+            },
+            source: {},
+            cwd :process.cwd()
+        }
 	}
 }
 
@@ -36,11 +38,11 @@ class Config {
  */
 describe("cmd", function() {
 	before(function(done) {
-		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
+		fse.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
 			if (err) {
 				done(err);
 			} else {
-				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+				fse.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
 					done(err);
 				});
 			}
@@ -51,20 +53,6 @@ describe("cmd", function() {
 	 * Test the method "install" from the module api.js
 	 */
 	describe("install", function() {
-		/**
-		 * Without Config object as configuration
-		 */
-		it("wrong input", function(done) {
-			cmd.install("this is a wrong input", (err) => {
-				if(err) {
-					expect(err).to.equal("The command module do not receive any configuration.");
-					done();
-				} else {
-					done("The script is not suppose to run with a bad config format.");
-				}
-			});
-		});
-
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
@@ -87,7 +75,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.install(config, (err) => {
@@ -105,20 +93,6 @@ describe("cmd", function() {
 	 */
 	describe("update", function() {
 		/**
-		 * Without Config object as configuration
-		 */
-		it("wrong input", function(done) {
-			cmd.update("this is a wrong input", (err) => {
-				if(err) {
-					expect(err).to.equal("The command module do not receive any configuration.");
-					done();
-				} else {
-					done("The script is not suppose to run with a bad config format.");
-				}
-			});
-		});
-
-		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
 		it("no bower.json file", function(done) {
@@ -140,7 +114,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.update(config, (err) => {
@@ -157,20 +131,6 @@ describe("cmd", function() {
 	 * Test the method "run" from the module api.js
 	 */
 	describe("run", function() {
-		/**
-		 * Without Config object as configuration
-		 */
-		it("wrong input", function(done) {
-			cmd.run("this is a wrong input", (err) => {
-				if(err) {
-					expect(err).to.equal("The command module do not receive any configuration.");
-					done();
-				} else {
-					done("The script is not suppose to run with a bad config format.");
-				}
-			});
-		});
-
 		/**
 		 * Test default option (without bower.json file in the current folder)
 		 */
@@ -193,7 +153,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.run(config, (err) => {
@@ -211,9 +171,9 @@ describe("cmd", function() {
 		it("rename", function(done) {
 			let config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
-			config.option.min.get = true;
-			config.option.min.rename = true;
+			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.option.min.get = true;
+			config.cInstall.option.min.rename = true;
 			this.timeout(longTimeOut);
 
 			cmd.run(config, (err) => {
@@ -231,8 +191,8 @@ describe("cmd", function() {
 		it("removeAfter", function(done) {
 			let config = new Config();
 
-			config.cwd = path.join(__dirname, "../../../.testFolder/tempU");
-			config.option.removeAfter = true;
+			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.option.removeAfter = true;
 			this.timeout(longTimeOut);
 
 			cmd.run(config, (err) => {
@@ -247,7 +207,7 @@ describe("cmd", function() {
 	});
 
 	after(function(done) {
-		fs.remove(share.testFolder, (err) => {
+		fse.remove(share.testFolder, (err) => {
 			done(err);
 		});
 	});

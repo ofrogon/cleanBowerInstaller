@@ -3,7 +3,7 @@
 const chai = require("chai");
 const expect = chai.expect;
 const path = require("path");
-const fileSystem = require("./../../../dist/lib/fileSystem");
+const fileSystem = require("./../../../lib/fileSystem");
 const fse = require("fs-extra");
 
 /**
@@ -85,7 +85,6 @@ describe("fileSystem", function() {
 			});
 		});
 	});
-
 
 	afterEach(function(done) {
 		fse.remove(tempFolder, done);

@@ -3,3 +3,4 @@ test
 .travis.yml
 /.editorconfig
 .testFolder
+/src/

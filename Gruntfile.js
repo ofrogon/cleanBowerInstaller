@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function(grunt) {
+module.exports = (grunt) => {
 	// Time the Grunt execution
 	require("time-grunt")(grunt);
 
@@ -69,24 +69,21 @@ module.exports = function(grunt) {
 
 	//Custom Task ---------------------
 	// Run the coverage test
-	grunt.registerTask("coverage", ["prepareForTest", "mocha_istanbul:coverage", "cleanAfterTest"]);
+	grunt.registerTask("coverage", ["mocha_istanbul:coverage"]);
 
 	// Run the unit tests
-	grunt.registerTask("unit", ["prepareForTest", "mochaTest:unit", "cleanAfterTest"]);
+	grunt.registerTask("unit", ["mochaTest:unit"]);
 
 	// Run the useful development tests
 	grunt.registerTask("test", ["mochaTest:e2e", "coverage", "eslint:all"]);
 
 	// CI actions
-	grunt.registerTask("CI", ["prepareForTest", "mocha_istanbul:travis", "cleanAfterTest"]);
+	grunt.registerTask("CI", ["mocha_istanbul:travis"]);
 
 	// Event handler for Coveralls
-	grunt.event.on("coverage", function(lcov, done) {
-		require("coveralls").handleInput(lcov, function(err) {
-			if (err) {
-				return done(err);
-			}
-			done();
+	grunt.event.on("coverage", (lcov, done) => {
+		require("coveralls").handleInput(lcov, (err) => {
+			done(err);
 		});
 	});
 };

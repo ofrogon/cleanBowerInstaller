@@ -5,11 +5,11 @@ const expect = chai.expect;
 
 const path = require("path");
 const exec = require("child_process").exec;
-const fileManagement = require("./../../../dist/lib/fileManagement");
+const fileManagement = require("./../../../lib/fileManagement");
 const fse = require("fs-extra");
 
 const share = require("../../share");
-const BC = require("../../../dist/lib/BowerConfiguration").BowerConfiguration;
+const BC = require("../../../lib/BowerConfiguration").BowerConfiguration;
 
 /**
  * Test /lib/fileManagement.js
@@ -68,7 +68,7 @@ describe("fileManagement", function() {
 	});
 
 	afterEach(function(done) {
-		fse.remove(share.testFolder, function(err) {
+		fse.remove(share.testFolder, (err) => {
 			done(err);
 		});
 	});

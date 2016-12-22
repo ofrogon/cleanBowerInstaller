@@ -2,7 +2,7 @@
   "globalDependencies": {
     "colors": "registry:dt/colors#0.6.0-1+20160914114039",
     "commander": "registry:dt/commander#2.3.0+20160317120654",
-    "node": "registry:dt/node#6.0.0+20161019125345"
+	"node": "registry:env/node#6.0.0+20161105011511"
   },
   "dependencies": {
     "glob": "registry:npm/glob#6.0.0+20160723033700"

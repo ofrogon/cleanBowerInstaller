@@ -1,6 +1,6 @@
 "use strict";
 
-var angularBower = {
+const angularBower = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.20"
@@ -21,7 +21,7 @@ var angularBower = {
 	}
 };
 
-var angularBower2 = {
+const angularBower2 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -42,7 +42,7 @@ var angularBower2 = {
 	}
 };
 
-var angularBower3 = {
+const angularBower3 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -62,7 +62,7 @@ var angularBower3 = {
 	}
 };
 
-var angularBower4 = {
+const angularBower4 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -76,7 +76,7 @@ var angularBower4 = {
 	}
 };
 
-var angularBower5 = {
+const angularBower5 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -95,7 +95,7 @@ var angularBower5 = {
 	}
 };
 
-var angularBower6 = {
+const angularBower6 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -118,7 +118,7 @@ var angularBower6 = {
 	}
 };
 
-var angularBower7 = {
+const angularBower7 = {
 	"name": "",
 	"dependencies": {
 		"angular": "~1.3.0"
@@ -141,7 +141,7 @@ var angularBower7 = {
 	}
 };
 
-var bootstrapBower = {
+const bootstrapBower = {
 	"name": "",
 	"dependencies": {
 		"bootstrap": "~3.2.0"
@@ -172,7 +172,7 @@ var bootstrapBower = {
 	}
 };
 
-var renamingFolderAndFileIgnore = {
+const renamingFolderAndFileIgnore = {
 	"name": "",
 	"dependencies": {
 		"bootstrap": "~3.2.0"
@@ -201,7 +201,7 @@ var renamingFolderAndFileIgnore = {
 	}
 };
 
-var testFolders = {
+const testFolders = {
 	"test0": {
 		bowerJson: angularBower
 	},

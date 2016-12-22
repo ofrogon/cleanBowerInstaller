@@ -3,8 +3,8 @@
 const chai = require("chai");
 const expect = chai.expect;
 const path = require("path");
-const config = require("./../../../dist/lib/readConfig").default;
-const fs = require("fs-extra");
+const config = require("./../../../lib/readConfig").default;
+const fse = require("fs-extra");
 
 const share = require("../../share");
 
@@ -14,11 +14,11 @@ const share = require("../../share");
 describe("readConfig", function() {
 
 	before(function(done) {
-		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
+		fse.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
 			if (err) {
 				done(err);
 			} else {
-				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+				fse.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
 					done(err);
 				});
 			}
@@ -82,7 +82,7 @@ describe("readConfig", function() {
 		it("bower.json file with config", function(done) {
 			const expected = {
 				"cInstall": {
-					"cwd": ".testFolder/tempU/under/",
+					"cwd": path.join(__dirname, "../../..", ".testFolder/tempU/under/"),
 					"folder": {
 						"js": "js/vendor/",
 						"css": "css/",
@@ -136,7 +136,7 @@ describe("readConfig", function() {
 	});
 
 	after(function(done) {
-		fs.remove(share.testFolder, (err) => {
+		fse.remove(share.testFolder, (err) => {
 			done(err);
 		});
 	});

@@ -2,9 +2,9 @@
 
 const chai = require("chai");
 const expect = chai.expect;
-const api = require("../../../dist/lib/api");
+const api = require("../../../lib/api");
 const path = require("path");
-const fs = require("fs-extra");
+const fse = require("fs-extra");
 
 const share = require("../../share");
 
@@ -13,11 +13,11 @@ const share = require("../../share");
  */
 describe("api", function() {
 	before(function(done) {
-		fs.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
+		fse.outputJson(path.join(share.fakeBowerPath, "bower.json"), share.fakeBowerJson, (err) => {
 			if (err) {
 				done(err);
 			} else {
-				fs.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
+				fse.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
 					done(err);
 				});
 			}
@@ -32,9 +32,9 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.install("this is a wrong option", (err) => {
+			api.install("wrong option", (err) => {
 				if(!err) {
-					done("String pass as a accepted option but we want an object.");
+					done("string pass as a accepted option but we want an object.");
 				} else {
 					try {
 						expect(err instanceof Error).to.equal(true);
@@ -55,7 +55,7 @@ describe("api", function() {
 					expect(err.code).to.equal("ENOENT");
 					done();
 				} else {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
+					done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
 				}
 			});
 		});
@@ -78,12 +78,12 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.update("this is a wrong option", (err) => {
+			api.update("wrong option", (err) => {
 				if(err) {
 					expect(err instanceof Error).to.equal(true);
 					done();
 				} else {
-					done("String pass as a accepted option but we want an object.");
+					done("string pass as a accepted option but we want an object.");
 				}
 			});
 		});
@@ -97,7 +97,7 @@ describe("api", function() {
 					expect(err.code).to.equal("ENOENT");
 					done();
 				} else {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
+					done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
 				}
 			});
 		});
@@ -120,12 +120,12 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.run("this is a wrong option", (err) => {
+			api.run("wrong option", (err) => {
 				if(err) {
 					expect(err instanceof Error).to.equal(true);
 					done();
 				} else {
-					done("String pass as a accepted option but we want an object.");
+					done("string pass as a accepted option but we want an object.");
 				}
 			});
 		});
@@ -139,7 +139,7 @@ describe("api", function() {
 					expect(err.code).to.equal("ENOENT");
 					done();
 				} else {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
+					done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
 				}
 			});
 		});
@@ -162,12 +162,12 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.runMin("this is a wrong option", (err) => {
+			api.runMin("wrong option", (err) => {
 				if(err) {
 					expect(err instanceof Error).to.equal(true);
 					done();
 				} else {
-					done("String pass as a accepted option but we want an object.");
+					done("string pass as a accepted option but we want an object.");
 				}
 			});
 		});
@@ -181,7 +181,7 @@ describe("api", function() {
 					expect(err.code).to.equal("ENOENT");
 					done();
 				} else {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
+					done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
 				}
 			});
 		});
@@ -204,12 +204,12 @@ describe("api", function() {
 		 * Without Config object as configuration
 		 */
 		it("wrong options", function(done) {
-			api.runMinR("this is a wrong option", (err) => {
+			api.runMinR("wrong option", (err) => {
 				if(err) {
 					expect(err instanceof Error).to.equal(true);
 					done();
 				} else {
-					done("String pass as a accepted option but we want an object.");
+					done("string pass as a accepted option but we want an object.");
 				}
 			});
 		});
@@ -223,7 +223,7 @@ describe("api", function() {
 					expect(err.code).to.equal("ENOENT");
 					done();
 				} else {
-					done("This test is not suppose to pass, remove any bower.json file contained in the folder " + __dirname);
+					done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
 				}
 			});
 		});
@@ -239,7 +239,7 @@ describe("api", function() {
 	});
 
 	after(function(done) {
-		fs.remove(share.testFolder, (err) => {
+		fse.remove(share.testFolder, (err) => {
 			done(err);
 		});
 	});

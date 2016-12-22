@@ -1,4 +1,6 @@
-var testFolder = ".testFolder";
+"use strict";
+
+const testFolder = ".testFolder";
 
 module.exports = {
 	fakeBowerJson: {
@@ -30,7 +32,7 @@ module.exports = {
 			}
 		}
 	},
-	fakeBowerPath: testFolder + "/tempU/",
-	fakeBowerPath2: testFolder + "/tempU/under/",
+	fakeBowerPath: `${testFolder}/tempU/`,
+	fakeBowerPath2: `${testFolder}/tempU/under/`,
 	testFolder: testFolder
 };
