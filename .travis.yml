@@ -9,15 +9,15 @@ node_js:
   - "7"
 
 install:
-  - npm install -g grunt-cli bower
+  - npm install -g bower
   - node --version
   - npm --version
   - git --version
   - bower --version
   - npm install
 
+after_success:
+  - npm run coveralls
+
 os:
   - linux
-
-script:
-  - grunt CI

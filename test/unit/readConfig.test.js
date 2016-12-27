@@ -3,10 +3,10 @@
 const chai = require("chai");
 const expect = chai.expect;
 const path = require("path");
-const config = require("./../../../lib/readConfig").default;
+const config = require("./../../lib/readConfig").default;
 const fse = require("fs-extra");
 
-const share = require("../../share");
+const share = require("../share");
 
 /**
  * Test /lib/readConfig.js
@@ -47,7 +47,7 @@ describe("readConfig", function() {
 		 * Teat with a absolute path
 		 */
 		it("absolute", function(done) {
-			config({cwd: path.join(__dirname, "../../..", share.fakeBowerPath)}, (err, conf) => {
+			config({cwd: path.join(__dirname, "../..", share.fakeBowerPath)}, (err, conf) => {
 				if (err) {
 					done(err);
 				} else {
@@ -82,7 +82,7 @@ describe("readConfig", function() {
 		it("bower.json file with config", function(done) {
 			const expected = {
 				"cInstall": {
-					"cwd": path.join(__dirname, "../../..", ".testFolder/tempU/under/"),
+					"cwd": path.join(__dirname, "../..", ".testFolder/tempU/under/"),
 					"folder": {
 						"js": "js/vendor/",
 						"css": "css/",

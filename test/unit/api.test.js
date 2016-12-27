@@ -2,11 +2,11 @@
 
 const chai = require("chai");
 const expect = chai.expect;
-const api = require("../../../lib/api");
+const api = require("../../lib/api");
 const path = require("path");
 const fse = require("fs-extra");
 
-const share = require("../../share");
+const share = require("../share");
 
 /**
  * Test /lib/api.js

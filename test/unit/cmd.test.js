@@ -3,10 +3,10 @@
 const chai = require("chai");
 const expect = chai.expect;
 const path = require("path");
-const cmd = require("../../../lib/cmd");
+const cmd = require("../../lib/cmd");
 const fse = require("fs-extra");
 
-const share = require("../../share");
+const share = require("../share");
 
 const longTimeOut = 5000;
 
@@ -75,7 +75,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.install(config, (err) => {
@@ -114,7 +114,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.update(config, (err) => {
@@ -153,7 +153,7 @@ describe("cmd", function() {
 		it("minimal config", function(done) {
 			let config = new Config();
 
-			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
 			this.timeout(longTimeOut);
 
 			cmd.run(config, (err) => {
@@ -171,7 +171,7 @@ describe("cmd", function() {
 		it("rename", function(done) {
 			let config = new Config();
 
-			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
 			config.cInstall.option.min.get = true;
 			config.cInstall.option.min.rename = true;
 			this.timeout(longTimeOut);
@@ -191,7 +191,7 @@ describe("cmd", function() {
 		it("removeAfter", function(done) {
 			let config = new Config();
 
-			config.cInstall.cwd = path.join(__dirname, "../../../.testFolder/tempU");
+			config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
 			config.cInstall.option.removeAfter = true;
 			this.timeout(longTimeOut);
 

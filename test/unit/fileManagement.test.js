@@ -5,17 +5,17 @@ const expect = chai.expect;
 
 const path = require("path");
 const exec = require("child_process").exec;
-const fileManagement = require("./../../../lib/fileManagement");
+const fileManagement = require("./../../lib/fileManagement");
 const fse = require("fs-extra");
 
-const share = require("../../share");
-const BC = require("../../../lib/BowerConfiguration").BowerConfiguration;
+const share = require("../share");
+const BC = require("../../lib/BowerConfiguration").BowerConfiguration;
 
 /**
  * Test /lib/fileManagement.js
  */
 describe("fileManagement", function() {
-	const cwd = path.join(__dirname, "../../..", share.fakeBowerPath2);
+	const cwd = path.join(__dirname, "../..", share.fakeBowerPath2);
 
 	beforeEach(function(done) {
 		fse.outputJson(path.join(share.fakeBowerPath2, "bower.json"), share.fakeBowerJson2, (err) => {
