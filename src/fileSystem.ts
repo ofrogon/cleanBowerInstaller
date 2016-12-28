@@ -10,7 +10,9 @@ import * as path from "path";
  * @param callback {Function}
  * @param [position] {Number}
  */
-const mkdirp = (filePath: string, callback: Function, position: number = 0) => {
+const mkdirp = (filePath: string, callback: Function, position?: number) => {
+    position = position || 0;
+
     let parts = path.normalize(filePath).split(path.sep);
 
     if (position >= parts.length) {

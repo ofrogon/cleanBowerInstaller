@@ -80,7 +80,7 @@ describe("cmd", function() {
 
 			cmd.install(config, (err) => {
 				if(err) {
-					done(`Suppose to found a bower.json file in: ${config.cwd}`);
+					done(`Suppose to found a bower.json file in: ${config.cInstall.cwd}`);
 				} else {
 					done();
 				}
