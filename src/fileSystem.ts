@@ -13,7 +13,7 @@ import * as path from "path";
 const mkdirp = (filePath: string, callback: Function, position?: number) => {
     position = position || 0;
 
-    let parts = path.normalize(filePath).split(path.sep);
+    const parts = path.normalize(filePath).split(path.sep);
 
     if (position >= parts.length) {
         return callback();
@@ -21,7 +21,7 @@ const mkdirp = (filePath: string, callback: Function, position?: number) => {
 
     position++;
 
-    let directory = parts.slice(0, position).join(path.sep) || path.sep;
+    const directory = parts.slice(0, position).join(path.sep) || path.sep;
     fs.mkdir(directory, (err) => {
         if (err && err.code !== "EEXIST") {
             return callback(err);
@@ -81,7 +81,7 @@ const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) => {
         } else {
             const wait = files.length;
             let count = 0;
-            let folderDone = (e?: Error) => {
+            const folderDone = (e?: Error) => {
                 // If we cleaned out all the files, continue
                 if (++count >= wait || e) {
                     fs.rmdir(dir, callback);
@@ -95,7 +95,7 @@ const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) => {
                 // Remove one or more trailing slash to keep from doubling up
                 dir = dir.replace(/\/+$/, "");
                 files.forEach((file) => {
-                    let curPath = path.join(dir, file);
+                    const curPath = path.join(dir, file);
                     fs.unlink(curPath, (e) => {
                         if (e && (e.code === "EISDIR")) {
                             rmr(curPath, folderDone);

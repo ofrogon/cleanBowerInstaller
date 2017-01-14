@@ -46,6 +46,7 @@
     ]
   },
   "rules": {
+    "only-arrow-functions": "allow-declarations",
     "class-name": true,
     "comment-format": [
       true,

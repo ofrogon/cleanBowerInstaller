@@ -1,6 +1,6 @@
 "use strict";
 
-import {CbiConfig} from "./BowerConfiguration";
+import {CbiConfig} from "./bowerConfig/BowerConfiguration";
 import * as cmd from "./cmd";
 import cnf from "./readConfig";
 

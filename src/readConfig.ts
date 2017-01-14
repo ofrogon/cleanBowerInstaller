@@ -2,7 +2,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import {BowerConfiguration} from "./BowerConfiguration";
+import {BowerConfiguration} from "./bowerConfig/BowerConfiguration";
 
 /**
  * Read the bower.json file
@@ -57,7 +57,7 @@ const mergeOption = (option, config: BowerConfiguration) => {
  */
 const read = (option, callback: Function) => {
     option = option || {};
-    let cwd = option.cwd;
+    const cwd = option.cwd;
 
     const folder = (() => {
         if (cwd && path.isAbsolute(cwd)) {

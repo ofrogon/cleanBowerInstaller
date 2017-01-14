@@ -3,7 +3,7 @@
 import {exec} from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import {BowerConfiguration, CbiConfig} from "./BowerConfiguration";
+import {BowerConfiguration, CbiConfig} from "./bowerConfig/BowerConfiguration";
 import {moveFiles, moveFilesAndRemove} from "./fileManagement";
 
 const errorMessage = "The command module do not receive any configuration.";

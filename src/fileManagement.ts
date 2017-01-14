@@ -3,7 +3,7 @@
 import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
-import {CbiConfig} from "./BowerConfiguration";
+import {CbiConfig} from "./bowerConfig/BowerConfiguration";
 import * as fse from "./fileSystem";
 
 const regex = {
@@ -16,12 +16,12 @@ const regex = {
 /**
  * Return an array of corresponding files from a array of glob patterns
  */
-const arrayOfGlob = (globs: string[], bowerFileFolder: string, libName: string, callback: Function) => {
-    glob(path.join(bowerFileFolder, libName, globs.pop()), (err, data) => {
+const arrayOfGlob = (globs: {}, bowerFileFolder: string, libName: string, callback: Function) => {
+    glob(path.join(bowerFileFolder, libName, globs[libName].pop()), (err, data) => {
         if (err) {
             callback(err, null);
         } else {
-            if (globs.length > 0) {
+            if (globs[libName].length > 0) {
                 arrayOfGlob(globs, bowerFileFolder, libName, (e, cData) => {
                     if (e) {
                         callback(e, null);
@@ -75,7 +75,11 @@ class FileObj {
     public renameMin: boolean;
     public defMinFolder: string;
     public defFolder: string;
-    public source: string[][];
+    public source: {
+        [name: string]: {
+            [name: string]: {}
+        }
+    };
     public extensionFolder: Object;
     public isVerbose: boolean;
     public listBackup: string[];
@@ -103,22 +107,22 @@ class FileObj {
      * @returns {Promise<Q>}
      */
     public getList(callback: Function) {
-        let uncleanList = {
+        const uncleanList = {
             ignore: [],
             move: [],
         };
-        let promises = [];
+        const promises = [];
 
         const src = this.source;
 
-        for (let libs in src) {
-            if (src.hasOwnProperty(libs)) {
-                const libPart = libs.split("#");
+        for (const pkg in src) {
+            if (src.hasOwnProperty(pkg)) {
+                const libPart = pkg.split("#");
                 const libName = libPart[0];
                 const libFolder = libPart[1] || "";
 
                 promises.push(new Promise((resolve: Function, reject: Function) => {
-                    this.enumeratePackages(src, libName, libFolder, (err, data) => {
+                    this.enumeratePackages(src[pkg], libName, libFolder, (err, data) => {
                         if (err) {
                             reject(err);
                         } else {
@@ -128,7 +132,6 @@ class FileObj {
                         }
                     });
                 }));
-
             }
         }
 
@@ -145,68 +148,62 @@ class FileObj {
     /**
      * Pass all the packages in the library and call enumerateFile for each one
      */
-    public enumeratePackages(pkgs: string[][], libName: string, libFolder: string, callback: Function) {
-        let uncleanList = {ignore: [], move: []};
-        let promises = [];
+    public enumeratePackages(pkgs: {}, libName: string, libFolder: string, callback: Function) {
+        const uncleanList = {ignore: [], move: []};
+        const promises = [];
+        let file: string;
 
-        for (let pkg in pkgs) {
+        for (const pkg in pkgs) {
             if (pkgs.hasOwnProperty(pkg)) {
-                try {
-                    for (let x = 0, y = pkgs[pkg].length; x < y; x++) {
-                        const p = pkg.split("#");
-                        const fileNameAndExt = pkgs[pkg][x] || "*";
-                        const fileFolder = p[1] || "";
-                        const extName = path.extname(p[0]);
-                        const fileName = path.basename(p[0], extName);
-                        const extension = extName.substr(1);
+                file = pkgs[pkg];
 
-                        if (this.extToIgnore.indexOf(extension) === -1) {
-                            if (regex.containDoubleAsterisk.test(pkg)) {
-                                // TODO is this useful???
-                                console.error("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER." +
-                                    " You have to specify each folder and their destination if you really need it.");
-                                console.error("Please correct the source: " + libName);
-                                callback(null, []);
-                            }
-                        }
+                const p = pkg.split("#");
+                const fileFolder = p[1] || "";
+                const extName = path.extname(p[0]);
+                const fileName = path.basename(p[0], extName);
+                const extension = extName.substr(1);
 
-                        promises.push(new Promise((resolve, reject) => {
-                            arrayOfGlob([fileNameAndExt], this.bowerFileFolder, libName, (err, ans) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    const result = this.enumerateFile(
-                                        ans.data,
-                                        fileName,
-                                        libFolder,
-                                        fileFolder,
-                                        ans === "!" ? "ignore" : "move"
-                                    );
-
-                                    uncleanList.ignore = uncleanList.ignore.concat(result.ignore);
-                                    uncleanList.move = uncleanList.move.concat(result.move);
-
-                                    resolve();
-                                }
-                            });
-                        }));
+                if (this.extToIgnore.indexOf(extension) === -1) {
+                    if (regex.containDoubleAsterisk.test(pkg)) {
+                        // TODO is this useful???
+                        console.error("The \"Globstar\" ** matching wan\"t support by CLEAN-BOWER-INSTALLER." +
+                            " You have to specify each folder and their destination if you really need it.");
+                        console.error("Please correct the source: " + libName);
+                        callback(null, []);
                     }
-                } catch (e) {
-                    // TODO is this useful???
-                    console.error(e);
-                    callback(e, null);
                 }
+
+                promises.push(new Promise((resolve, reject) => {
+                    glob(path.join(this.bowerFileFolder, libName, file), (err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            const result = this.enumerateFile(
+                                data,
+                                fileName,
+                                libFolder,
+                                fileFolder,
+                                pkg === "!" ? "ignore" : "move"
+                            );
+
+                            uncleanList.ignore = uncleanList.ignore.concat(result.ignore);
+                            uncleanList.move = uncleanList.move.concat(result.move);
+
+                            resolve();
+                        }
+                    });
+                }));
+
+                Promise.all(promises).then(
+                    () => {
+                        callback(null, uncleanList);
+                    },
+                    (err) => {
+                        callback(err, null);
+                    },
+                );
             }
         }
-
-        Promise.all(promises).then(
-            () => {
-                callback(null, uncleanList);
-            },
-            (err) => {
-                callback(err, null);
-            },
-        );
     }
 
     // TODO set better return type here
@@ -215,15 +212,15 @@ class FileObj {
      */
     public enumerateFile(files: string[], fileName: string, libFolder: string, fileFolder: string, action: string) {
         let f;
-        let unCleanList = {
+        const unCleanList = {
             ignore: [],
             move: [],
         };
         let thisFile;
 
-        for (let i = 0, length = files.length; i < length; i++) {
-            f = path.normalize(files[i]);
-            if (regex.containAsterisk.test(files[i]) || fileName !== "*") {
+        for (const i of files) {
+            f = path.normalize(i);
+            if (regex.containAsterisk.test(i) || fileName !== "*") {
                 thisFile = fileName;
             } else {
                 thisFile = path.basename(f, path.extname(f));
@@ -243,7 +240,7 @@ class FileObj {
             }
 
             // Test if the link is global or relative
-            if (regex.startWithSlash.test(fileFolder)) {
+            if (path.isAbsolute(fileFolder)) {
                 // The specified file folder is global
                 unCleanList[action].push({
                     from: f,
@@ -254,7 +251,7 @@ class FileObj {
                         thisFile + path.extname(f)
                     )
                 });
-            } else if (regex.startWithSlash.test(libFolder)) {
+            } else if (path.isAbsolute(libFolder)) {
                 // The specified lib folder is global
                 unCleanList[action].push({
                     from: f,
@@ -300,16 +297,16 @@ class FileObj {
             if (err) {
                 callback(err, null);
             } else {
-                let promises = [];
+                const promises = [];
 
                 // Backup the list of files to return them is the option verbose is set
                 if (this.isVerbose) {
                     this.listBackup = list;
                 }
 
-                for (let i = 0, length = list.length; i < length; i++) {
+                for (const i of list) {
                     promises.push(new Promise((resolve, reject) => {
-                        fse.copy(list[i].from, list[i].to, (e) => {
+                        fse.copy(i.from, i.to, (e) => {
                             if (e) {
                                 reject(e);
                             } else {
