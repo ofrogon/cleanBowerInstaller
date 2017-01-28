@@ -1,5 +1,7 @@
 "use strict";
 
+/// <reference path="definitions/chai-js.d.ts" />
+
 import {expect, use} from "chai";
 import * as fse from "fs-extra";
 import * as path from "path";
@@ -9,12 +11,12 @@ import * as bower from "bower";
 import testFolders from "./e2eData.test";
 use(require('chai-fs'));
 
-const cbi = require("../../lib/index");
+const cbi = require("../../src/index");
 
 const cliPath = path.join(__dirname, "../../lib/index");
 const cwd = path.join(__dirname, "..", "..", testFolders.folder);
 
-const e2eTestEnvironmentCreation = (testNumber, done) => {
+const e2eTestEnvironmentFactory = (testNumber, done) => {
     testFolders[testNumber].bowerJson.name = testNumber;
     fse.remove(cwd, (err) => {
         if (err) {
@@ -29,7 +31,7 @@ const e2eTestEnvironmentCreation = (testNumber, done) => {
 
 describe("Test file without file type folder and verbose function at false", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test0", done);
+        e2eTestEnvironmentFactory("test0", done);
     });
 
     it("API", function(done) {
@@ -73,7 +75,7 @@ describe("Test file without file type folder and verbose function at false", fun
 
 describe("Test the verbose function at true", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test1", done);
+        e2eTestEnvironmentFactory("test1", done);
     });
 
     it("API", function(done) {
@@ -102,14 +104,15 @@ describe("Test the verbose function at true", function() {
     it("CLI", function(done) {
         this.timeout(10000);
 
-        exec(`node ${cliPath} -i --bower="${cwd}"`, (err, result) => {
+        exec(`node ${cliPath} -i --bower="${cwd}"`, (err, stdout, stderr) => {
             if (err) {
                 done(err);
             } else {
+                console.log(stderr);
                 expect(path.join(cwd, "bower.json")).to.be.a.file();
                 expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
                 expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
-                expect(result).match(/.*clean-bower-installer execution successfully done!\n$/);
+                expect(stdout).match(/.*clean-bower-installer execution successfully done!\n$/);
 
                 done();
             }
@@ -119,7 +122,7 @@ describe("Test the verbose function at true", function() {
 
 describe("Test the update method", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test1", done);
+        e2eTestEnvironmentFactory("test1", done);
     });
 
     it("API", function(done) {
@@ -220,7 +223,7 @@ describe("Test the update method", function() {
 
 describe("Test the run method", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test1", done);
+        e2eTestEnvironmentFactory("test1", done);
     });
 
     it("API", function(done) {
@@ -283,7 +286,7 @@ describe("Test the run method", function() {
 
 describe("Test the runMin method", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test1", done);
+        e2eTestEnvironmentFactory("test1", done);
     });
 
     it("API", function(done) {
@@ -353,7 +356,7 @@ describe("Test the runMin method", function() {
 
 describe("Test the runMinR method", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test1", done);
+        e2eTestEnvironmentFactory("test1", done);
     });
 
     it("API", function(done) {
@@ -423,7 +426,7 @@ describe("Test the runMinR method", function() {
 
 describe("Test the removeAfter argument", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test2", done);
+        e2eTestEnvironmentFactory("test2", done);
     });
 
     it("API", function(done) {
@@ -469,7 +472,7 @@ describe("Test the removeAfter argument", function() {
 
 describe("Test the verbose override", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test0", done);
+        e2eTestEnvironmentFactory("test0", done);
     });
 
     it("CLI", function(done) {
@@ -496,7 +499,7 @@ describe("Test the verbose override", function() {
 
 describe("Test the file ignore", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test3", done);
+        e2eTestEnvironmentFactory("test3", done);
     });
 
     it("API", function(done) {
@@ -526,7 +529,7 @@ describe("Test the file ignore", function() {
 
 describe("Test without option", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test4", done);
+        e2eTestEnvironmentFactory("test4", done);
     });
 
     it("API", function(done) {
@@ -552,7 +555,7 @@ describe("Test without option", function() {
 
 describe("Test the runMin method with default.minFolder", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test6", done);
+        e2eTestEnvironmentFactory("test6", done);
     });
 
     it("API", function(done) {
@@ -622,7 +625,7 @@ describe("Test the runMin method with default.minFolder", function() {
 
 describe("Test the option.min.get config", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test6", done);
+        e2eTestEnvironmentFactory("test6", done);
     });
 
     it("API", function(done) {
@@ -653,7 +656,7 @@ describe("Test the option.min.get config", function() {
 
 describe("Test the option.min.get and config.min.rename config", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test7", done);
+        e2eTestEnvironmentFactory("test7", done);
     });
 
     it("API", function(done) {
@@ -684,7 +687,7 @@ describe("Test the option.min.get and config.min.rename config", function() {
 
 describe("Test file rename, specify folder and ignore file", function() {
     beforeEach(function(done) {
-        e2eTestEnvironmentCreation("test8", done);
+        e2eTestEnvironmentFactory("test8", done);
     });
 
     it("API", function(done) {

@@ -17,3 +17,5 @@ node_modules
 *.iml
 /typings/
 /lib/
+/.nyc_output/
+/coverage/

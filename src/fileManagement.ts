@@ -14,29 +14,6 @@ const regex = {
 };
 
 /**
- * Return an array of corresponding files from a array of glob patterns
- */
-const arrayOfGlob = (globs: {}, bowerFileFolder: string, libName: string, callback: Function) => {
-    glob(path.join(bowerFileFolder, libName, globs[libName].pop()), (err, data) => {
-        if (err) {
-            callback(err, null);
-        } else {
-            if (globs[libName].length > 0) {
-                arrayOfGlob(globs, bowerFileFolder, libName, (e, cData) => {
-                    if (e) {
-                        callback(e, null);
-                    } else {
-                        callback(null, data.concat(cData));
-                    }
-                });
-            } else {
-                callback(null, data);
-            }
-        }
-    });
-};
-
-/**
  * Object for file processing
  */
 class FileObj {
@@ -334,8 +311,6 @@ class FileObj {
 
     /**
      * Execute the copy of the listed files and delete the bower_components folder after
-     *
-     * @returns {Promise<Q>}
      */
     public runAndRemove(callback: Function) {
         this.run((err, data) => {

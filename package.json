@@ -32,8 +32,9 @@
     "chai-fs": "^1.0.0",
     "coveralls": "2.11.x",
     "fs-extra": "latest",
-    "istanbul": "0.4.x",
+    "istanbul": "^1.1.0-alpha.1",
     "mocha": "3.2.x",
+    "nyc": "^10.0.0",
     "ts-node": "^2.0.0",
     "tslint": "4.x.x",
     "typescript": "2.x.x",
@@ -41,11 +42,11 @@
   },
   "scripts": {
     "build": "typings install && tsc",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -R ./test/unit/*.test.ts --compilers ts:ts-node/register,tsx:ts-node/register",
-    "coveralls": "istanbul cover node_modules/mocha/bin/_mocha --compilers ts:ts-node/register,tsx:ts-node/register -R ./test/*.test.ts && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers ts:ts-node/register,tsx:ts-node/register -R spec test/unit/*.test.ts",
+    "coveralls": "npm run test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "lint": "tslint --project tsconfig.json",
-    "unit": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -R spec test/unit/*.test.ts",
-    "test": "npm run build && npm run unit && npm run coverage"
+    "test:unit": "mocha --compilers ts:ts-node/register test/unit/*.test.ts",
+    "test": "nyc -e '.ts' --r html -r lcov -r text npm run test:unit"
   },
   "engines": {
     "node": ">=4"
