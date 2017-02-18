@@ -19,9 +19,6 @@ const regex = {
 class FileObj {
     /**
      * From the list that enter, remove the "to ignore" files
-     *
-     * @param unCleanList {{ignore: Array, move: Array}}
-     * @returns {Array}
      */
     public static clean(unCleanList): string[] {
         let list = [];

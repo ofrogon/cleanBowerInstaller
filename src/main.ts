@@ -9,9 +9,6 @@ const successMsg = "clean-bower-installer execution successfully done!";
 const cli = (program) => {
     /**
      * Format the verbose CLI return
-     *
-     * @param list {Array}
-     * @returns {string}
      */
     const verboseCLIReturn = (list): string => {
         let output = "";

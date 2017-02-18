@@ -1,8 +1,8 @@
 {
   "globalDependencies": {
     "colors": "registry:dt/colors#0.6.0-1+20160914114039",
-    "mocha": "registry:dt/mocha#2.2.5+20170118061455",
-    "node": "registry:env/node#6.0.0+20170119204930"
+    "mocha": "registry:dt/mocha#2.2.5+20170204022515",
+    "node": "registry:env/node#6.0.0+20170213133316"
   },
   "dependencies": {
     "chai": "registry:npm/chai#3.5.0+20160723033700",

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 - 2017-02-xx
+
+- New API return.
+- No more support for Node.js before v4.
+
 ## 0.3.4 - 2016-07-02
 
 - Switch the use of the module `cli` for `commander` after the security alert on `cli`.

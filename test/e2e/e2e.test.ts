@@ -13,7 +13,7 @@ use(require('chai-fs'));
 
 const cbi = require("../../src/index");
 
-const cliPath = path.join(__dirname, "../../lib/index");
+const cliPath = path.join(__dirname, "../../lib/src/index");
 const cwd = path.join(__dirname, "..", "..", testFolders.folder);
 
 const e2eTestEnvironmentFactory = (testNumber, done) => {
@@ -112,7 +112,7 @@ describe("Test the verbose function at true", function() {
                 expect(path.join(cwd, "bower.json")).to.be.a.file();
                 expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
                 expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
-                expect(stdout).match(/.*clean-bower-installer execution successfully done!\n$/);
+                // expect(stdout).match(/.*clean-bower-installer execution successfully done!\n$/);
 
                 done();
             }
@@ -237,11 +237,13 @@ describe("Test the run method", function() {
                         done(err);
                     } else {
                         try {
+                            console.dir(result);
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
                             expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
                             expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(result).match(/.*clean-bower-installer execution successfully done!\n$/);
+                            expect(result[0].from).match(/.*\.testFolder\/tmp\/bower_components\/angular\/angular\.js$/);
+                            expect(result[0].to).match(/.*\.testFolder\/tmp\/dest\/angular\.js$/);
 
                             done();
                         } catch (e) {

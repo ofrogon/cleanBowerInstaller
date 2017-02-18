@@ -1,5 +1,3 @@
-///<reference types="chai" />
-
 import {LanguageChains} from "~chai/lib/Assertion";
 import {NumericComparison} from "~chai/lib/Assertion";
 import {TypeComparison} from "~chai/lib/Assertion";

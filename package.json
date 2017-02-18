@@ -18,8 +18,8 @@
   "author": "Alexandre Beaudoin <ofrogon@gmail.com>",
   "main": "lib/index.js",
   "bin": {
-    "clean-bower-installer": "lib/index.js",
-    "cbi": "lib/index.js"
+    "clean-bower-installer": "lib/src/index.js",
+    "cbi": "lib/src/index.js"
   },
   "dependencies": {
     "colors": "1.1.x",

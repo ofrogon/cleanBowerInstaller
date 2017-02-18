@@ -13,7 +13,7 @@ if (require.main === module) {
     const fs = require("fs");
     const path = require("path");
 
-    fs.readFile(path.join(__dirname, "../package.json"), {encoding: "utf8"}, (err: Error, data: string) => {
+    fs.readFile(path.join(__dirname, "../../package.json"), {encoding: "utf8"}, (err: Error, data: string) => {
         if (err) {
             errorFct(err);
         } else {
