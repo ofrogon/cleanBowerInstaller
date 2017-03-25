@@ -3,6 +3,7 @@
 import {expect} from "chai";
 import * as  fse from "fs-extra";
 import * as path from "path";
+import CbiConfig from "../../src/bowerConfig/CbiConfig";
 import read from "../../src/readConfig";
 import * as share from "../share";
 
@@ -31,7 +32,7 @@ describe("readConfig", function() {
          * Test with a relative path
          */
         it("relative", function(done) {
-            read({cwd: share.fakeBowerPath}, (err, conf) => {
+            read(new CbiConfig({cwd: share.fakeBowerPath}), (err, conf) => {
                 if (err) {
                     done(err);
                 } else {
@@ -45,7 +46,7 @@ describe("readConfig", function() {
          * Teat with a absolute path
          */
         it("absolute", function(done) {
-            read({cwd: path.join(__dirname, "../..", share.fakeBowerPath)}, (err, conf) => {
+            read(new CbiConfig({cwd: path.join(__dirname, "..", "..", share.fakeBowerPath)}), (err, conf) => {
                 if (err) {
                     done(err);
                 } else {
@@ -64,7 +65,7 @@ describe("readConfig", function() {
          * A file without data in it
          */
         it("bower.json file without config", function(done) {
-            read({cwd: share.fakeBowerPath}, (err, conf) => {
+            read(new CbiConfig({cwd: share.fakeBowerPath}), (err, conf) => {
                 if (err) {
                     done(err);
                 } else {
@@ -122,7 +123,7 @@ describe("readConfig", function() {
                 version: ""
             };
 
-            read({cwd: share.fakeBowerPath2}, (err, conf) => {
+            read(new CbiConfig({cwd: share.fakeBowerPath2}), (err, conf) => {
                 if (err) {
                     done(err);
                 } else {

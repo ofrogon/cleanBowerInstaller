@@ -5,6 +5,7 @@ import * as  fse from "fs-extra";
 import * as path from "path";
 import {BowerConfiguration} from "../../src/bowerConfig/BowerConfiguration";
 import {install, run, update} from "../../src/cmd";
+import ErrorN from "../../src/types/ErrorN";
 import * as share from "../share";
 
 const longTimeOut = 5000;
@@ -56,9 +57,9 @@ describe("cmd", function() {
         it("no bower.json file", function(done) {
             const config = new BowerConfiguration(cnf);
 
-            install(config, (err) => {
+            install(config, (err: ErrorN) => {
                 if (err) {
-                    expect(err.code).to.equal("ENOENT");
+                    expect(err.code).to.equal("EBOWJSO");
                     done();
                 } else {
                     done("The script is not suppose to run with no bower.json file.");
@@ -95,9 +96,9 @@ describe("cmd", function() {
         it("no bower.json file", function(done) {
             const config = new BowerConfiguration(cnf);
 
-            update(config, (err) => {
+            update(config, (err: ErrorN) => {
                 if (err) {
-                    expect(err.code).to.equal("ENOENT");
+                    expect(err.code).to.equal("EBOWJSO");
                     done();
                 } else {
                     done("The script is not suppose to run with no bower.json file.");
@@ -192,7 +193,7 @@ describe("cmd", function() {
             config.cInstall.option.removeAfter = true;
             this.timeout(longTimeOut);
 
-            run(config, (err) => {
+            run(config, (err: ErrorN) => {
                 if (err) {
                     expect(err.code).to.equal("ENOENT");
                     done();

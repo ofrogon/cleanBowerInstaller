@@ -1,6 +1,7 @@
 "use strict";
 
 import * as colors from "colors";
+import CbiConfig from "./bowerConfig/CbiConfig";
 import {install, run, update} from "./cmd";
 import cnf from "./readConfig";
 
@@ -18,7 +19,7 @@ const cli = (program) => {
         return output;
     };
 
-    cnf({cwd: program.bower}, (err, config) => {
+    cnf(new CbiConfig({cwd: program.bower}), (err, config) => {
         const exitTool = (e, message) => {
             if (e) {
                 process.stderr.write(`${e.error}\n`);
@@ -67,4 +68,4 @@ const cli = (program) => {
     });
 };
 
-export {cli};
+export default cli;

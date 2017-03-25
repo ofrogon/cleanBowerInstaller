@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "author": "Alexandre Beaudoin <ofrogon@gmail.com>",
-  "main": "lib/index.js",
+  "main": "lib/src/api.js",
   "bin": {
     "clean-bower-installer": "lib/src/index.js",
     "cbi": "lib/src/index.js"
@@ -30,12 +30,12 @@
     "bower": "latest",
     "chai": "3.x.x",
     "chai-fs": "^1.0.0",
-    "coveralls": "2.11.x",
+    "coveralls": "^2.11.16",
     "fs-extra": "latest",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "3.2.x",
     "nyc": "^10.0.0",
-    "ts-node": "^2.0.0",
+    "ts-node": "3.x.x",
     "tslint": "4.x.x",
     "typescript": "2.x.x",
     "typings": "2.x.x"
@@ -45,6 +45,8 @@
     "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers ts:ts-node/register,tsx:ts-node/register -R spec test/unit/*.test.ts",
     "coveralls": "npm run test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "lint": "tslint --project tsconfig.json",
+    "lint:Tests": "tslint --project tsconfig.json test/**/*.test.ts",
+    "lint:Fix": "tslint --project tsconfig.json --fix",
     "test:unit": "mocha --compilers ts:ts-node/register test/unit/*.test.ts",
     "test": "nyc -e '.ts' --r html -r lcov -r text npm run test:unit"
   },

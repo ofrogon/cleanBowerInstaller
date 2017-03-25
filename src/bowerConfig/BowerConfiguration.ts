@@ -9,8 +9,8 @@ class BowerConfiguration {
     public version: string;
     public main: string;
     public ignore: string[];
-    public dependencies: Object[];
-    public devDependencies: Object[];
+    public dependencies: Array<object>;
+    public devDependencies: Array<object>;
     public cInstall: CbiConfig;
 
     constructor(data) {

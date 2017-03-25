@@ -1,207 +1,208 @@
 "use strict";
 
 const angularBower = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.20"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest"
+    cInstall: {
+        folder: {},
+        option: {
+            default: {
+                folder: "dest"
             },
-            "verbose": false
+            verbose: false
         },
-        "folder": {},
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.20"
+    },
+    name: ""
 };
 
 const angularBower2 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest"
+    cInstall: {
+        folder: {},
+        option: {
+            default: {
+                folder: "dest"
             },
-            "verbose": true
+            verbose: true
         },
-        "folder": {},
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const angularBower3 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest"
+    cInstall: {
+        option: {
+            default: {
+                folder: "dest"
             },
-            "removeAfter": true
+            removeAfter: true
         },
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const angularBower4 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "source": {
-            "angular": {
+    cInstall: {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const angularBower5 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest_Min"
+    cInstall: {
+        option: {
+            default: {
+                folder: "dest_Min"
             }
         },
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const angularBower6 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest_Min"
+    cInstall: {
+        option: {
+            default: {
+                folder: "dest_Min"
             },
-            "min": {
-                "get": true,
-                "rename": false
+            min: {
+                get: true,
+                rename: false
             }
         },
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const angularBower7 = {
-    "name": "",
-    "dependencies": {
-        "angular": "~1.3.0"
-    },
-    "cInstall": {
-        "option": {
-            "default": {
-                "folder": "dest_Min"
+    cInstall: {
+        option: {
+            default: {
+                folder: "dest_Min"
             },
-            "min": {
-                "get": true,
-                "rename": true
+            min: {
+                get: true,
+                rename: true
             }
         },
-        "source": {
-            "angular": {
+        source: {
+            angular: {
                 "angular.js": "angular.js"
             }
         }
-    }
+    },
+    dependencies: {
+        angular: "~1.3.0"
+    },
+    name: ""
 };
 
 const bootstrapBower = {
-    "name": "",
-    "dependencies": {
-        "bootstrap": "~3.2.0"
-    },
-    "cInstall": {
-        "folder": {
-            "js": "js/vendor/",
+    cInstall: {
+        folder: {
             "css": "css/",
+            "js": "js/vendor/",
             "otf, eot, svg, ttf, woff": "fonts/"
         },
-        "option": {
-            "default": {
-                "folder": "dest"
+        option: {
+            default: {
+                folder: "dest"
             },
-            "removeAfter": true
+            removeAfter: true
         },
-        "source": {
-            "bootstrap": {
+        source: {
+            bootstrap: {
                 "!": [
                     "dist/fonts/*.svg"
                 ],
-                "glyphicons-halflings-regular.*": "dist/fonts/*",
-                "bootstrap.js": "dist/js/bootstrap.js",
                 "bootstrap.css": "dist/css/bootstrap.css",
-                "bootstrap.min.css": "dist/css/bootstrap.min.css"
+                "bootstrap.js": "dist/js/bootstrap.js",
+                "bootstrap.min.css": "dist/css/bootstrap.min.css",
+                "glyphicons-halflings-regular.*": "dist/fonts/*"
             }
         }
-    }
+    },
+    dependencies: {
+        bootstrap: "~3.2.0"
+    },
+    name: ""
 };
 
 const renamingFolderAndFileIgnore = {
-    "name": "",
-    "dependencies": {
-        "bootstrap": "~3.2.0"
-    },
-    "cInstall": {
-        "folder": {
-            "js": "js/vendor/",
+    cInstall: {
+        folder: {
             "css": "css/",
+            "js": "js/vendor/",
             "otf, eot, svg, ttf, woff": "fonts/"
         },
-        "option": {
-            "default": {
-                "folder": "public"
+        option: {
+            default: {
+                folder: "public"
             }
         },
-        "source": {
-            "bootstrap": {
+        source: {
+            bootstrap: {
                 "!": ["dist/fonts/*.svg"],
-                "glyphicons-halflings-regular.*": "dist/fonts/*",
                 "banana.js": "dist/js/bootstrap.js",
-                "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
                 "bootstrap.css": "dist/css/bootstrap.css",
-                "bootstrap.min.css#/thisPathIsGlobal": "dist/css/bootstrap.min.css"
+                "bootstrap.min.css#/thisPathIsGlobal": "dist/css/bootstrap.min.css",
+                "bootstrap.min.js#min": "dist/js/bootstrap.min.js",
+                "glyphicons-halflings-regular.*": "dist/fonts/*"
             }
         }
-    }
+    },
+    dependencies: {
+        bootstrap: "~3.2.0"
+    },
+    name: ""
 };
 
 const testFolders = {
+    "folder": ".testFolder/tmp",
     "test0": {
         bowerJson: angularBower
     },
@@ -228,8 +229,7 @@ const testFolders = {
     },
     "test8": {
         bowerJson: renamingFolderAndFileIgnore
-    },
-    folder: ".testFolder/tmp"
+    }
 };
 
 export default testFolders;

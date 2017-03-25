@@ -3,16 +3,16 @@
 import * as fs from "fs";
 import * as path from "path";
 import {BowerConfiguration} from "./bowerConfig/BowerConfiguration";
+import CbiConfig from "./bowerConfig/CbiConfig";
+import createError from "./createError";
 
 /**
  * Read the bower.json file
  */
-const getBowerJson = (cwd: string, callback: Function) => {
-    const bp = path.join(cwd, "bower.json");
-
-    fs.readFile(bp, "utf8", (err, data) => {
+const getBowerJson = (cwd: string, callback: CallbackDefault) => {
+    fs.readFile(path.join(cwd, "bower.json"), "utf8", (err, data) => {
         if (err && err.code === "EEXIST") {
-            callback(`No bower.json file found in ${cwd}`, null);
+            callback(createError(`No bower.json file found in ${cwd}`, "ENOBOWER"), null);
         } else if (err) {
             callback(err, null);
         } else {
@@ -24,21 +24,21 @@ const getBowerJson = (cwd: string, callback: Function) => {
 /**
  * Handle the multiple values key
  */
-const mergeOption = (option, config: BowerConfiguration) => {
-    if (option.hasOwnProperty("min")) {
-        config.cInstall.option.min.get = true;
-    }
+const mergeOption = (option: CbiConfig, config: BowerConfiguration) => {
+    const overrideConf = option.option;
 
-    if (option.hasOwnProperty("renameMin")) {
+    if (overrideConf.hasOwnProperty("min") && overrideConf.min.hasOwnProperty("rename") && overrideConf.min.rename) {
         config.cInstall.option.min.get = true;
         config.cInstall.option.min.rename = true;
+    } else if (overrideConf.hasOwnProperty("min") && overrideConf.min.hasOwnProperty("get") && overrideConf.min.get) {
+        config.cInstall.option.min.get = true;
     }
 
-    if (option.hasOwnProperty("verbose")) {
+    if (overrideConf.hasOwnProperty("verbose") && overrideConf.verbose) {
         config.cInstall.option.verbose = true;
     }
 
-    if (option.hasOwnProperty("removeAfter")) {
+    if (overrideConf.hasOwnProperty("removeAfter") && overrideConf.removeAfter) {
         config.cInstall.option.removeAfter = true;
     }
 
@@ -51,12 +51,9 @@ const mergeOption = (option, config: BowerConfiguration) => {
 
 /**
  * Read the configuration
- *
- * @param [option] {{}}
- * @param callback {Function}
  */
-const read = (option, callback: Function) => {
-    option = option || {};
+const read = (option: CbiConfig, callback: CallbackDefault) => {
+    option = option || new CbiConfig({});
     const cwd = option.cwd;
 
     const folder = (() => {
@@ -74,7 +71,7 @@ const read = (option, callback: Function) => {
             callback(err, null);
         } else {
             if (!bowerJson.hasOwnProperty("cInstall")) {
-                callback("Can't found the 'cInstall' object in the bower.json file.", null);
+                callback(createError("Can't found the 'cInstall' object in the bower.json file.", "ENOCINS"), null);
             } else if (Object.keys(bowerJson.cInstall).length === 0) {
                 callback(null, "Nothing to do!");
             } else {

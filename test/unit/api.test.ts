@@ -5,6 +5,7 @@ import * as  fse from "fs-extra";
 import * as path from "path";
 import {install, run, runMin, runMinR, update} from "../../src/api";
 import CbiConfig from "../../src/bowerConfig/CbiConfig";
+import ErrorN from "../../src/types/ErrorN";
 import * as share from "../share";
 
 /**
@@ -49,12 +50,12 @@ describe("api", function() {
          * Test default option (without bower.json file in the current folder)
          */
         it("empty options", function(done) {
-            install(null, (err) => {
+            install(null, (err: ErrorN) => {
                 if (err) {
-                    expect(err.code).to.equal("ENOENT");
+                    expect(err.code).to.equal("ENOOPTION");
                     done();
                 } else {
-                    done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
+                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
                 }
             });
         });
@@ -91,12 +92,12 @@ describe("api", function() {
          * Test default option (without bower.json file in the current folder)
          */
         it("empty options", function(done) {
-            update(null, (err) => {
+            update(null, (err: ErrorN) => {
                 if (err) {
-                    expect(err.code).to.equal("ENOENT");
+                    expect(err.code).to.equal("ENOOPTION");
                     done();
                 } else {
-                    done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
+                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
                 }
             });
         });
@@ -133,12 +134,12 @@ describe("api", function() {
          * Test default option (without bower.json file in the current folder)
          */
         it("empty options", function(done) {
-            run(null, (err) => {
+            run(null, (err: ErrorN) => {
                 if (err) {
-                    expect(err.code).to.equal("ENOENT");
+                    expect(err.code).to.equal("ENOOPTION");
                     done();
                 } else {
-                    done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
+                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
                 }
             });
         });
@@ -175,12 +176,12 @@ describe("api", function() {
          * Test default option (without bower.json file in the current folder)
          */
         it("empty options", function(done) {
-            runMin(null, (err) => {
+            runMin(null, (err: ErrorN) => {
                 if (err) {
                     expect(err.code).to.equal("ENOENT");
                     done();
                 } else {
-                    done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
+                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
                 }
             });
         });
@@ -217,12 +218,12 @@ describe("api", function() {
          * Test default option (without bower.json file in the current folder)
          */
         it("empty options", function(done) {
-            runMinR(null, (err) => {
+            runMinR(null, (err: ErrorN) => {
                 if (err) {
                     expect(err.code).to.equal("ENOENT");
                     done();
                 } else {
-                    done(`This test is not suppose to pass, remove any bower.json file contained in the folder ${__dirname}`);
+                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
                 }
             });
         });

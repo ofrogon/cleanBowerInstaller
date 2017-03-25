@@ -54,7 +54,7 @@ class FileObj {
             [name: string]: {}
         }
     };
-    public extensionFolder: Object;
+    public extensionFolder: object;
     public isVerbose: boolean;
     public listBackup: string[];
     public cwd: string;
@@ -80,10 +80,10 @@ class FileObj {
      *
      * @returns {Promise<Q>}
      */
-    public getList(callback: Function) {
+    public getList(callback: CallbackDefault) {
         const uncleanList = {
             ignore: [],
-            move: [],
+            move: []
         };
         const promises = [];
 
@@ -95,7 +95,7 @@ class FileObj {
                 const libName = libPart[0];
                 const libFolder = libPart[1] || "";
 
-                promises.push(new Promise((resolve: Function, reject: Function) => {
+                promises.push(new Promise((resolve: () => void, reject: (err: Error) => void) => {
                     this.enumeratePackages(src[pkg], libName, libFolder, (err, data) => {
                         if (err) {
                             reject(err);
@@ -122,7 +122,7 @@ class FileObj {
     /**
      * Pass all the packages in the library and call enumerateFile for each one
      */
-    public enumeratePackages(pkgs: {}, libName: string, libFolder: string, callback: Function) {
+    public enumeratePackages(pkgs: {}, libName: string, libFolder: string, callback: CallbackDefault) {
         const uncleanList = {ignore: [], move: []};
         const promises = [];
         let file: string;
@@ -266,7 +266,7 @@ class FileObj {
      *
      * @returns {Promise<Q>}
      */
-    public run(callback: Function) {
+    public run(callback: CallbackDefault) {
         this.getList((err, list) => {
             if (err) {
                 callback(err, null);
@@ -300,7 +300,7 @@ class FileObj {
                     },
                     (e) => {
                         callback(e, null);
-                    },
+                    }
                 );
             }
         });
@@ -309,7 +309,7 @@ class FileObj {
     /**
      * Execute the copy of the listed files and delete the bower_components folder after
      */
-    public runAndRemove(callback: Function) {
+    public runAndRemove(callback: CallbackDefault) {
         this.run((err, data) => {
             if (err) {
                 fse.rmr(this.bowerFileFolder, () => {
@@ -327,7 +327,7 @@ class FileObj {
 /**
  * Main method to move the files from the bower_components folder to their destination listed in the cInstall.source
  */
-const moveFiles = (config: CbiConfig, callback: Function) => {
+const moveFiles = (config: CbiConfig, callback: CallbackDefault) => {
     const list = new FileObj(config);
 
     list.run((err, data) => {
@@ -339,7 +339,7 @@ const moveFiles = (config: CbiConfig, callback: Function) => {
  * Main method to move the files from the bower_components folder to their destination listed in the cInstall.source
  * and after, delete the bower_components folder.
  */
-const moveFilesAndRemove = (config: CbiConfig, callback: Function) => {
+const moveFilesAndRemove = (config: CbiConfig, callback: CallbackDefault) => {
     const list = new FileObj(config);
 
     list.runAndRemove((err, data) => {

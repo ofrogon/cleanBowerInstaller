@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+"use strict";
+
+// Require for Bower resolver
+module.exports = require("../lib/src/index").default;

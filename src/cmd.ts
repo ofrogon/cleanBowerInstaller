@@ -4,14 +4,16 @@ import {exec} from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import {BowerConfiguration, CbiConfig} from "./bowerConfig/BowerConfiguration";
+import createError from "./createError";
 import {moveFiles, moveFilesAndRemove} from "./fileManagement";
+import ErrorN from "./types/ErrorN";
 
-const errorMessage = "The command module do not receive any configuration.";
+const errorMessage = createError("The command module do not receive any configuration.", "ENOCONF");
 
 /**
  * Execute bower basic command in a second process before executing the tool
  */
-const callBower = (config: CbiConfig, command: string, callback: Function) => {
+const callBower = (config: CbiConfig, command: string, callback: CallbackDefault) => {
     fs.stat(path.join(config.cwd, "bower.json"), (err) => {
         if (err) {
             callback(err, null);
@@ -34,9 +36,9 @@ const callBower = (config: CbiConfig, command: string, callback: Function) => {
 /**
  * Post treatment of the error message for the bower call
  */
-const bowerError = (err: string, cnf: CbiConfig): string => {
-    if (err === "ENOENT") {
-        return `There is no bower.json file in ${cnf.cwd}`;
+const bowerError = (err: ErrorN, cnf: CbiConfig): Error => {
+    if (err.code === "ENOENT") {
+        return createError(`There is no bower.json file in ${cnf.cwd}`, "EBOWJSO");
     } else {
         return err;
     }
@@ -45,7 +47,7 @@ const bowerError = (err: string, cnf: CbiConfig): string => {
 /**
  * Call the file management module
  */
-const callFileManagement = (config: CbiConfig, callback: Function) => {
+const callFileManagement = (config: CbiConfig, callback: CallbackDefault) => {
     const done = (err, data) => {
         callback(err, data);
     };
@@ -60,9 +62,9 @@ const callFileManagement = (config: CbiConfig, callback: Function) => {
 /**
  * Execute the install
  */
-const install = (config: BowerConfiguration, callback: Function) => {
+const install = (config: BowerConfiguration, callback: CallbackDefault) => {
     if (config && config.cInstall.hasOwnProperty("cwd")) {
-        callBower(config.cInstall, "install", (err) => {
+        callBower(config.cInstall, "install", (err: ErrorN) => {
             if (err) {
                 callback(bowerError(err, config.cInstall), null);
             } else {
@@ -77,9 +79,9 @@ const install = (config: BowerConfiguration, callback: Function) => {
 /**
  * Execute the update
  */
-const update = (config: BowerConfiguration, callback: Function) => {
+const update = (config: BowerConfiguration, callback: CallbackDefault) => {
     if (config && config.cInstall.hasOwnProperty("cwd")) {
-        callBower(config.cInstall, "update", (err) => {
+        callBower(config.cInstall, "update", (err: ErrorN) => {
             if (err) {
                 callback(bowerError(err, config.cInstall), null);
             } else {
@@ -94,11 +96,11 @@ const update = (config: BowerConfiguration, callback: Function) => {
 /**
  * Simply run the clean-bower-installer without bower call
  */
-const run = (config: BowerConfiguration, callback: Function) => {
+const run = (config: BowerConfiguration, callback: CallbackDefault) => {
     if (config && config.cInstall.hasOwnProperty("cwd")) {
-        fs.stat(path.join(config.cInstall.cwd, "bower.json"), (err) => {
+        fs.stat(path.join(config.cInstall.cwd, "bower.json"), (err: ErrorN) => {
             if (err) {
-                callback(bowerError(err.code, config.cInstall), null);
+                callback(bowerError(err, config.cInstall), null);
             } else {
                 callFileManagement(config.cInstall, callback);
             }

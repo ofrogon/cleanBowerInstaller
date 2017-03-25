@@ -19,7 +19,7 @@ const parseFolderParameters = (data) => {
 };
 
 export default class CbiConfig {
-    public folder: Object;
+    public folder: object;
     public option: CbiConfigOption;
     public source: {
         [name: string]: {

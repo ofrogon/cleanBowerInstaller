@@ -2,28 +2,31 @@
 
 /// <reference path="definitions/chai-js.d.ts" />
 
+/* tslint:disable:no-var-requires */
+
+import * as bower from "bower";
 import {expect, use} from "chai";
-import * as fse from "fs-extra";
-import * as path from "path";
 import {exec} from "child_process";
 import * as crypto from "crypto";
-import * as bower from "bower";
+import * as fse from "fs-extra";
+import * as path from "path";
+import * as cbi from "../../src/api";
+import CbiConfig from "../../src/bowerConfig/CbiConfig";
 import testFolders from "./e2eData.test";
-use(require('chai-fs'));
+use(require("chai-fs"));
 
-const cbi = require("../../src/index");
-
-const cliPath = path.join(__dirname, "../../lib/src/index");
+const cliPath = path.join(__dirname, "..", "..", "lib", "src", "index.js");
 const cwd = path.join(__dirname, "..", "..", testFolders.folder);
+const cbiConf = new CbiConfig({cwd});
 
 const e2eTestEnvironmentFactory = (testNumber, done) => {
     testFolders[testNumber].bowerJson.name = testNumber;
-    fse.remove(cwd, (err) => {
-        if (err) {
-            done(err);
+    fse.remove(cwd, (removeError) => {
+        if (removeError) {
+            done(removeError);
         } else {
-            fse.outputJson(path.join(cwd, "bower.json"), testFolders[testNumber].bowerJson, (err) => {
-                done(err);
+            fse.outputJson(path.join(cwd, "bower.json"), testFolders[testNumber].bowerJson, (outputJsonError) => {
+                done(outputJsonError);
             });
         }
     });
@@ -37,14 +40,14 @@ describe("Test file without file type folder and verbose function at false", fun
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err, result) => {
+        cbi.install(cbiConf, (err, result) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                     expect(result).to.be.null;
 
                     done();
@@ -58,13 +61,13 @@ describe("Test file without file type folder and verbose function at false", fun
     it("CLI", function(done) {
         this.timeout(10000);
 
-        exec(`node ${cliPath} -i --bower="${cwd}"`, (err, result) => {
-            if (err) {
-                done(err);
+        exec(`node ${cliPath} -i --bower="${cwd}"`, (execError, result) => {
+            if (execError) {
+                done(execError);
             } else {
                 expect(path.join(cwd, "bower.json")).to.be.a.file();
-                expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                 expect(result).to.equal("clean-bower-installer execution successfully done!\n");
 
                 done();
@@ -81,14 +84,14 @@ describe("Test the verbose function at true", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err, result) => {
+        cbi.install(cbiConf, (err, result) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                     expect(result).to.have.lengthOf(1);
                     expect(result[0].from).match(/.*angular\.js$/);
                     expect(result[0].from).match(/.*angular\.js$/);
@@ -104,14 +107,13 @@ describe("Test the verbose function at true", function() {
     it("CLI", function(done) {
         this.timeout(10000);
 
-        exec(`node ${cliPath} -i --bower="${cwd}"`, (err, stdout, stderr) => {
+        exec(`node ${cliPath} -i --bower="${cwd}"`, (err) => {
             if (err) {
                 done(err);
             } else {
-                console.log(stderr);
                 expect(path.join(cwd, "bower.json")).to.be.a.file();
-                expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                 // expect(stdout).match(/.*clean-bower-installer execution successfully done!\n$/);
 
                 done();
@@ -129,34 +131,34 @@ describe("Test the update method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd})
             .on("end", () => {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
                 } catch (e) {
                     done(e);
                 }
 
                 testFolders.test1.bowerJson.name = "test1";
-                fse.outputJson(path.join(cwd, "bower.json"), testFolders.test1.bowerJson, (err) => {
-                    if (err) {
-                        done(err);
+                fse.outputJson(path.join(cwd, "bower.json"), testFolders.test1.bowerJson, (outputjsonError) => {
+                    if (outputjsonError) {
+                        done(outputjsonError);
                     } else {
-                        cbi.update({cwd: cwd}, (err, result) => {
-                            if (err) {
-                                done(err);
+                        cbi.update(cbiConf, (updateError, result) => {
+                            if (updateError) {
+                                done(updateError);
                             } else {
                                 bower.commands
-                                    .update([], {save: true}, {cwd: cwd})
+                                    .update([], {save: true}, {cwd})
                                     .on("end", (update) => {
                                         try {
                                             expect(path.join(cwd, "bower.json")).to.be.a.file();
                                             expect(Object.keys(update).length).equal(0);
-                                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                                            expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
-                                            expect(result).to.be.a('Array');
+                                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                                            expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
+                                            expect(result).to.be.a("Array");
                                             expect(result.length).equal(1);
 
                                             done();
@@ -164,8 +166,8 @@ describe("Test the update method", function() {
                                             done(e);
                                         }
                                     })
-                                    .on("error", (err) => {
-                                        done(err);
+                                    .on("error", (commandError) => {
+                                        done(commandError);
                                     });
                             }
                         });
@@ -181,36 +183,36 @@ describe("Test the update method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {save: true}, {cwd})
             .on("end", () => {
                 try {
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
                 } catch (e) {
                     done(e);
                 }
 
                 testFolders.test0.bowerJson.name = "test0";
-                exec(`node ${cliPath} -u --bower="${cwd}"`, (err) => {
-                    if (err) {
-                        done(err);
+                exec(`node ${cliPath} -u --bower="${cwd}"`, (execError) => {
+                    if (execError) {
+                        done(execError);
                     } else {
                         bower.commands
-                            .update([], {save: true}, {cwd: cwd})
+                            .update([], {save: true}, cbiConf)
                             .on("end", (update) => {
                                 try {
                                     expect(path.join(cwd, "bower.json")).to.be.a.file();
                                     expect(Object.keys(update).length).equal(0);
-                                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
 
                                     done();
                                 } catch (e) {
                                     done(e);
                                 }
                             })
-                            .on("error", (err) => {
-                                done(err);
+                            .on("error", (commandError) => {
+                                done(commandError);
                             });
                     }
                 });
@@ -230,19 +232,19 @@ describe("Test the run method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
-                cbi.run({cwd: cwd}, (err, result) => {
+                cbi.run(cbiConf, (err, result) => {
                     if (err) {
                         done(err);
                     } else {
                         try {
                             console.dir(result);
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(result[0].from).match(/.*\.testFolder\/tmp\/bower_components\/angular\/angular\.js$/);
+                            expect(result[0].from).match(/.*\.testFolder.tmp.bower_components.angular.angular\.js$/);
                             expect(result[0].to).match(/.*\.testFolder\/tmp\/dest\/angular\.js$/);
 
                             done();
@@ -261,7 +263,7 @@ describe("Test the run method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
                 exec(`node ${cliPath} --bower="${cwd}"`, (err) => {
                     if (err) {
@@ -269,8 +271,8 @@ describe("Test the run method", function() {
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
 
                             done();
@@ -295,21 +297,31 @@ describe("Test the runMin method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
-                cbi.runMin({cwd: cwd}, (err) => {
+                cbi.runMin(cbiConf, (err) => {
                     if (err) {
                         done(err);
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.min.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.min.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest/angular.min.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest", "angular.min.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1")
+                                    .update(minFileGated)
+                                    .digest("hex")
+                            ).equal(
+                                crypto.createHash("sha1")
+                                    .update(minFileInBower)
+                                    .digest("hex")
+                            );
 
                             done();
                         } catch (e) {
@@ -327,7 +339,7 @@ describe("Test the runMin method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
                 exec(`node ${cliPath} -m --bower="${cwd}"`, (err) => {
                     if (err) {
@@ -335,13 +347,19 @@ describe("Test the runMin method", function() {
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.min.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.min.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest/angular.min.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest", "angular.min.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1").update(minFileGated).digest("hex")
+                            ).equal(
+                                crypto.createHash("sha1").update(minFileInBower).digest("hex")
+                            );
 
                             done();
                         } catch (e) {
@@ -365,21 +383,25 @@ describe("Test the runMinR method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
-                cbi.runMinR({cwd: cwd}, (err) => {
+                cbi.runMinR(cbiConf, (err) => {
                     if (err) {
                         done(err);
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest/angular.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest", "angular.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1").update(minFileGated).digest("hex")
+                            ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                             done();
                         } catch (e) {
@@ -397,7 +419,7 @@ describe("Test the runMinR method", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
                 exec(`node ${cliPath} -M --bower="${cwd}"`, (err) => {
                     if (err) {
@@ -405,13 +427,17 @@ describe("Test the runMinR method", function() {
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest/angular.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest", "angular.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1").update(minFileGated).digest("hex")
+                            ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                             done();
                         } catch (e) {
@@ -434,14 +460,14 @@ describe("Test the removeAfter argument", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
 
                     done();
                 } catch (e) {
@@ -460,8 +486,8 @@ describe("Test the removeAfter argument", function() {
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
 
                     done();
                 } catch (e) {
@@ -486,8 +512,8 @@ describe("Test the verbose override", function() {
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest", "angular.js")).to.be.a.file();
                     expect(result).match(/.*clean-bower-installer execution successfully done!\n$/);
 
                     done();
@@ -507,18 +533,18 @@ describe("Test the file ignore", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
                     // The "option.removeAfter" should have remove the bower_components folder
-                    expect(path.join(cwd, "bower_components/bootstrap")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "bootstrap")).to.be.a.directory();
                     // Test file to be ignore
-                    expect(path.join(cwd, "dest", "fonts/glyphicons-halflings-regular.svg")).to.be.a.file();
+                    expect(path.join(cwd, "dest", "fonts", "glyphicons-halflings-regular.svg")).to.be.a.file();
                     // Test file that is suppose to be there
-                    expect(path.join(cwd, "dest", "fonts/glyphicons-halflings-regular.eot")).to.be.a.file();
+                    expect(path.join(cwd, "dest", "fonts", "glyphicons-halflings-regular.eot")).to.be.a.file();
 
                     done();
                 } catch (e) {
@@ -537,13 +563,13 @@ describe("Test without option", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
                     expect(path.join(cwd, "angular.js")).to.be.a.file();
 
                     done();
@@ -564,21 +590,25 @@ describe("Test the runMin method with default.minFolder", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
-                cbi.runMin({cwd: cwd}, (err) => {
+                cbi.runMin(cbiConf, (err) => {
                     if (err) {
                         done(err);
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest_Min/angular.min.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest_Min", "angular.min.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest_Min/angular.min.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest_Min", "angular.min.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1").update(minFileGated).digest("hex")
+                            ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                             done();
                         } catch (e) {
@@ -596,7 +626,7 @@ describe("Test the runMin method with default.minFolder", function() {
         this.timeout(10000);
 
         bower.commands
-            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd: cwd})
+            .install(["angular#>=1.2.3 <1.3.8"], {}, {cwd})
             .on("end", () => {
                 exec(`node ${cliPath} -M --bower="${cwd}"`, (err) => {
                     if (err) {
@@ -604,13 +634,17 @@ describe("Test the runMin method with default.minFolder", function() {
                     } else {
                         try {
                             expect(path.join(cwd, "bower.json")).to.be.a.file();
-                            expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                            expect(path.join(cwd, "dest_Min/angular.js")).to.be.a.file();
+                            expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                            expect(path.join(cwd, "dest_Min", "angular.js")).to.be.a.file();
 
-                            let minFileGated = fse.readFileSync(path.join(cwd, "dest_Min/angular.js"));
-                            let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                            const minFileGated = fse.readFileSync(path.join(cwd, "dest_Min", "angular.js"));
+                            const minFileInBower = fse.readFileSync(
+                                path.join(cwd, "bower_components", "angular", "angular.min.js")
+                            );
 
-                            expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                            expect(
+                                crypto.createHash("sha1").update(minFileGated).digest("hex")
+                            ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                             done();
                         } catch (e) {
@@ -633,19 +667,23 @@ describe("Test the option.min.get config", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest_Min/angular.min.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest_Min", "angular.min.js")).to.be.a.file();
 
-                    let minFileGated = fse.readFileSync(path.join(cwd, "dest_Min/angular.min.js"));
-                    let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                    const minFileGated = fse.readFileSync(path.join(cwd, "dest_Min", "angular.min.js"));
+                    const minFileInBower = fse.readFileSync(
+                        path.join(cwd, "bower_components", "angular", "angular.min.js")
+                    );
 
-                    expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                    expect(
+                        crypto.createHash("sha1").update(minFileGated).digest("hex")
+                    ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                     done();
                 } catch (e) {
@@ -664,19 +702,23 @@ describe("Test the option.min.get and config.min.rename config", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/angular")).to.be.a.directory();
-                    expect(path.join(cwd, "dest_Min/angular.js")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "angular")).to.be.a.directory();
+                    expect(path.join(cwd, "dest_Min", "angular.js")).to.be.a.file();
 
-                    let minFileGated = fse.readFileSync(path.join(cwd, "dest_Min/angular.js"));
-                    let minFileInBower = fse.readFileSync(path.join(cwd, "bower_components/angular/angular.min.js"));
+                    const minFileGated = fse.readFileSync(path.join(cwd, "dest_Min", "angular.js"));
+                    const minFileInBower = fse.readFileSync(
+                        path.join(cwd, "bower_components", "angular", "angular.min.js")
+                    );
 
-                    expect(crypto.createHash("sha1").update(minFileGated).digest("hex")).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
+                    expect(
+                        crypto.createHash("sha1").update(minFileGated).digest("hex")
+                    ).equal(crypto.createHash("sha1").update(minFileInBower).digest("hex"));
 
                     done();
                 } catch (e) {
@@ -695,21 +737,21 @@ describe("Test file rename, specify folder and ignore file", function() {
     it("API", function(done) {
         this.timeout(10000);
 
-        cbi.install({cwd: cwd}, (err) => {
+        cbi.install(cbiConf, (err) => {
             if (err) {
                 done(err);
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/bootstrap")).to.be.a.directory();
-                    expect(path.join(cwd, "bower_components/jquery")).to.be.a.directory();
-                    expect(path.join(cwd, "public/css/bootstrap.css")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.eot")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.ttf")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.woff")).to.be.a.file();
-                    expect(path.join(cwd, "public/js/vendor/banana.js")).to.be.a.file();
-                    expect(path.join(cwd, "public/js/vendor/min/bootstrap.min.js")).to.be.a.file();
-                    expect(path.join(cwd, "public/thisPathIsGlobal/bootstrap.min.css")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "bootstrap")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "jquery")).to.be.a.directory();
+                    expect(path.join(cwd, "public", "css", "bootstrap.css")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.eot")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.ttf")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.woff")).to.be.a.file();
+                    expect(path.join(cwd, "public", "js", "vendor", "banana.js")).to.be.a.file();
+                    expect(path.join(cwd, "public", "js", "vendor", "min", "bootstrap.min.js")).to.be.a.file();
+                    expect(path.join(cwd, "public", "thisPathIsGlobal", "bootstrap.min.css")).to.be.a.file();
 
                     done();
                 } catch (e) {
@@ -728,15 +770,15 @@ describe("Test file rename, specify folder and ignore file", function() {
             } else {
                 try {
                     expect(path.join(cwd, "bower.json")).to.be.a.file();
-                    expect(path.join(cwd, "bower_components/bootstrap")).to.be.a.directory();
-                    expect(path.join(cwd, "bower_components/jquery")).to.be.a.directory();
-                    expect(path.join(cwd, "public/css/bootstrap.css")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.eot")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.ttf")).to.be.a.file();
-                    expect(path.join(cwd, "public/fonts/glyphicons-halflings-regular.woff")).to.be.a.file();
-                    expect(path.join(cwd, "public/js/vendor/banana.js")).to.be.a.file();
-                    expect(path.join(cwd, "public/js/vendor/min/bootstrap.min.js")).to.be.a.file();
-                    expect(path.join(cwd, "public/thisPathIsGlobal/bootstrap.min.css")).to.be.a.file();
+                    expect(path.join(cwd, "bower_components", "bootstrap")).to.be.a.directory();
+                    expect(path.join(cwd, "bower_components", "jquery")).to.be.a.directory();
+                    expect(path.join(cwd, "public", "css", "bootstrap.css")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.eot")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.ttf")).to.be.a.file();
+                    expect(path.join(cwd, "public", "fonts", "glyphicons-halflings-regular.woff")).to.be.a.file();
+                    expect(path.join(cwd, "public", "js", "vendor", "banana.js")).to.be.a.file();
+                    expect(path.join(cwd, "public", "js", "vendor", "min", "bootstrap.min.js")).to.be.a.file();
+                    expect(path.join(cwd, "public", "thisPathIsGlobal", "bootstrap.min.css")).to.be.a.file();
 
                     done();
                 } catch (e) {

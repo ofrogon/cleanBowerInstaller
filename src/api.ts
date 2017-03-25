@@ -2,14 +2,16 @@
 
 import {CbiConfig} from "./bowerConfig/BowerConfiguration";
 import * as cmd from "./cmd";
+import createError from "./createError";
 import cnf from "./readConfig";
+import {CommandCBI} from "./types/CommandCBI";
 
 /**
  * Call cmd.js command using promise
  */
-const callCmd = (cmd: Function, option: CbiConfig, callback: Function) => {
-    if (typeof(option) === "object") {
-        option = new CbiConfig(option);
+const callCmd = (cmd: CommandCBI, option: CbiConfig, callback: CallbackDefault) => {
+    if (option instanceof CbiConfig) {
+        // option = new CbiConfig(option);
 
         if (!option.hasOwnProperty("cwd")) {
             option.cwd = process.cwd();
@@ -29,61 +31,61 @@ const callCmd = (cmd: Function, option: CbiConfig, callback: Function) => {
             }
         });
     } else {
-        callback(new Error("Wrong option type"), null);
+        callback(createError("Wrong option type", "ENOOPTION"), null);
     }
 };
 
 /**
  * Execute the install
  */
-const install = (option: CbiConfig, callback: Function) => {
+const install = (option: CbiConfig, callback: CallbackDefault) => {
     callCmd(cmd.install, option, callback);
 };
 
 /**
  * Execute the update
  */
-const update = (option: CbiConfig, callback: Function) => {
+const update = (option: CbiConfig, callback: CallbackDefault) => {
     callCmd(cmd.update, option, callback);
 };
 
 /**
  * Simply run the clean-bower-installer without bower call
  */
-const run = (option: CbiConfig, callback: Function) => {
+const run = (option: CbiConfig, callback: CallbackDefault) => {
     callCmd(cmd.run, option, callback);
 };
 
 /**
  * Run the clean-bower-installer with the min option, without bower call
  */
-const runMin = (option: CbiConfig, callback: Function) => {
-    try {
-        option = new CbiConfig(option);
+const runMin = (option: CbiConfig, callback: CallbackDefault) => {
+    // try {
+        const _option = new CbiConfig(option);
 
-        option.option.min.get = true;
-        option.option.min.rename = false;
+        _option.option.min.get = true;
+        _option.option.min.rename = false;
 
-        callCmd(cmd.run, option, callback);
-    } catch (e) {
-        callback(e, null);
-    }
+        callCmd(cmd.run, _option, callback);
+    // } catch (e) {
+    //     callback(e, null);
+    // }
 };
 
 /**
  * Run the clean-bower-installer with the min  and the renameMin option, without bower call
  */
-const runMinR = (option: CbiConfig, callback: Function) => {
-    try {
+const runMinR = (option: CbiConfig, callback: CallbackDefault) => {
+    // try {
         option = new CbiConfig(option);
 
         option.option.min.get = true;
         option.option.min.rename = true;
 
         callCmd(cmd.run, option, callback);
-    } catch (e) {
-        callback(e, null);
-    }
+    // } catch (e) {
+    //     callback(e, null);
+    // }
 };
 
 export {install, update, run, runMin, runMinR};

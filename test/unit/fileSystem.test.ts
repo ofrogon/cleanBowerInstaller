@@ -31,7 +31,9 @@ describe("fileSystem", function() {
     it("copy", function(done) {
         copy(__filename, path.join(tempFolder, "copy.js"), () => {
             expect(fse.statSync(path.join(tempFolder, "copy.js")).isFile()).to.equal(true);
-            expect(fse.readFileSync(path.join(tempFolder, "copy.js"), "utf8")).to.equal(fse.readFileSync(__filename, "utf8"));
+            expect(
+                fse.readFileSync(path.join(tempFolder, "copy.js"), "utf8")
+            ).to.equal(fse.readFileSync(__filename, "utf8"));
             done();
         });
     });

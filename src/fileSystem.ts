@@ -2,33 +2,32 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import ErrorN from "./types/ErrorN";
 
 /**
  * Create folder recursively (based on node-fse method)
- *
- * @param filePath {string}
- * @param callback {Function}
- * @param [position] {Number}
  */
-const mkdirp = (filePath: string, callback: Function, position?: number) => {
-    position = position || 0;
+const mkdirp = (filePath: string, callback): void => {
+    const _mkdirp = (dirFilePath: string, position: number): void => {
+        const parts = path.normalize(dirFilePath).split(path.sep);
 
-    const parts = path.normalize(filePath).split(path.sep);
-
-    if (position >= parts.length) {
-        return callback();
-    }
-
-    position++;
-
-    const directory = parts.slice(0, position).join(path.sep) || path.sep;
-    fs.mkdir(directory, (err) => {
-        if (err && err.code !== "EEXIST") {
-            return callback(err);
-        } else {
-            mkdirp(filePath, callback, position);
+        if (position >= parts.length) {
+            return callback();
         }
-    });
+
+        ++position;
+
+        const directory = parts.slice(0, position).join(path.sep) || path.sep;
+        fs.mkdir(directory, (err: ErrorN) => {
+            if (err && err.code !== "EEXIST") {
+                return callback(err);
+            } else {
+                _mkdirp(dirFilePath, position);
+            }
+        });
+    };
+
+    _mkdirp(filePath, 0);
 };
 
 /**
@@ -38,7 +37,7 @@ const mkdirp = (filePath: string, callback: Function, position?: number) => {
  * @param to {string}
  * @param callback {Function}
  */
-const copy = (from: string, to: string, callback: Function) => {
+const copy = (from: string, to: string, callback: CallbackError) => {
     mkdirp(path.dirname(to), (err) => {
         if (err) {
             callback(err);
@@ -61,7 +60,10 @@ const copy = (from: string, to: string, callback: Function) => {
             });
 
             writeStream.once("finish", () => {
-                callback();
+                if (once) {
+                    once = false;
+                    callback();
+                }
             });
         }
     });
