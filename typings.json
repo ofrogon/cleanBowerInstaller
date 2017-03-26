@@ -1,13 +1,13 @@
 {
   "globalDependencies": {
     "colors": "registry:dt/colors#0.6.0-1+20160914114039",
-    "mocha": "registry:dt/mocha#2.2.5+20170204022515",
+    "mocha": "registry:dt/mocha#2.2.5+20170311011848",
     "node": "registry:env/node#6.0.0+20170213133316"
   },
   "dependencies": {
     "chai": "registry:npm/chai#3.5.0+20160723033700",
     "commander": "registry:dt/commander#2.3.0+20161118092844",
-    "fs-extra": "registry:dt/fs-extra#0.0.0+20170109012028",
+    "fs-extra": "registry:dt/fs-extra#2.0.0+20170306033830",
     "glob": "registry:npm/glob#6.0.0+20160723033700"
   }
 }

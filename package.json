@@ -29,12 +29,11 @@
   "devDependencies": {
     "bower": "latest",
     "chai": "3.x.x",
-    "chai-fs": "^1.0.0",
-    "coveralls": "^2.11.16",
+    "coveralls": "2.x.x",
     "fs-extra": "latest",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "3.2.x",
-    "nyc": "^10.0.0",
+    "nyc": "10.x.x",
     "ts-node": "3.x.x",
     "tslint": "4.x.x",
     "typescript": "2.x.x",
@@ -48,6 +47,7 @@
     "lint:Tests": "tslint --project tsconfig.json test/**/*.test.ts",
     "lint:Fix": "tslint --project tsconfig.json --fix",
     "test:unit": "mocha --compilers ts:ts-node/register test/unit/*.test.ts",
+    "test:e2e": "mocha --compilers ts:ts-node/register --bail test/e2e/*.test.ts",
     "test": "nyc -e '.ts' --r html -r lcov -r text npm run test:unit"
   },
   "engines": {
