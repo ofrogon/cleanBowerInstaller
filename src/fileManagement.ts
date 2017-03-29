@@ -127,6 +127,29 @@ class FileObj {
         const promises = [];
         let file: string;
 
+        const addPromise = (fileName: string, fileFolder: string, pkg: string, el: string) => {
+            promises.push(new Promise((resolve, reject) => {
+                glob(path.join(this.bowerFileFolder, libName, el), (err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const result = this.enumerateFile(
+                            data,
+                            fileName,
+                            libFolder,
+                            fileFolder,
+                            pkg === "!" ? "ignore" : "move"
+                        );
+
+                        uncleanList.ignore = uncleanList.ignore.concat(result.ignore);
+                        uncleanList.move = uncleanList.move.concat(result.move);
+
+                        resolve();
+                    }
+                });
+            }));
+        };
+
         for (const pkg in pkgs) {
             if (pkgs.hasOwnProperty(pkg)) {
                 file = pkgs[pkg];
@@ -147,37 +170,25 @@ class FileObj {
                     }
                 }
 
-                promises.push(new Promise((resolve, reject) => {
-                    glob(path.join(this.bowerFileFolder, libName, file), (err, data) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            const result = this.enumerateFile(
-                                data,
-                                fileName,
-                                libFolder,
-                                fileFolder,
-                                pkg === "!" ? "ignore" : "move"
-                            );
-
-                            uncleanList.ignore = uncleanList.ignore.concat(result.ignore);
-                            uncleanList.move = uncleanList.move.concat(result.move);
-
-                            resolve();
-                        }
-                    });
-                }));
-
-                Promise.all(promises).then(
-                    () => {
-                        callback(null, uncleanList);
-                    },
-                    (err) => {
-                        callback(err, null);
-                    },
-                );
+                if (Array.isArray(file)) {
+                    // If we receive an array (from "!" package)
+                    for (const el of file) {
+                        addPromise(fileName, fileFolder, pkg, el);
+                    }
+                } else {
+                    addPromise(fileName, fileFolder, pkg, file);
+                }
             }
         }
+
+        Promise.all(promises).then(
+            () => {
+                callback(null, uncleanList);
+            },
+            (err) => {
+                callback(err, null);
+            },
+        );
     }
 
     // TODO set better return type here

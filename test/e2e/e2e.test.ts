@@ -29,12 +29,12 @@ const e2eTestEnvironmentFactory = (testNumber, done) => {
     });
 };
 
-describe("Test file without file type folder and verbose function at false", function () {
-    beforeEach(function (done) {
+describe("Test file without file type folder and verbose function at false", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test0", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err, result) => {
@@ -55,7 +55,7 @@ describe("Test file without file type folder and verbose function at false", fun
         });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         exec(`node ${cliPath} -i --bower="${cwd}"`, (execError, result) => {
@@ -73,12 +73,12 @@ describe("Test file without file type folder and verbose function at false", fun
     });
 });
 
-describe("Test the verbose function at true", function () {
-    beforeEach(function (done) {
+describe("Test the verbose function at true", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test1", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err, result) => {
@@ -101,7 +101,7 @@ describe("Test the verbose function at true", function () {
         });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         exec(`node ${cliPath} -i --bower="${cwd}"`, (err) => {
@@ -119,12 +119,12 @@ describe("Test the verbose function at true", function () {
     });
 });
 
-describe("Test the update method", function () {
-    beforeEach(function (done) {
+describe("Test the update method", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test1", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -176,7 +176,7 @@ describe("Test the update method", function () {
             });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -220,12 +220,12 @@ describe("Test the update method", function () {
     });
 });
 
-describe("Test the run method", function () {
-    beforeEach(function (done) {
+describe("Test the run method", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test1", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -256,7 +256,7 @@ describe("Test the run method", function () {
             });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -285,12 +285,12 @@ describe("Test the run method", function () {
     });
 });
 
-describe("Test the runMin method", function () {
-    beforeEach(function (done) {
+describe("Test the runMin method", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test1", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -324,7 +324,7 @@ describe("Test the runMin method", function () {
             });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -359,12 +359,12 @@ describe("Test the runMin method", function () {
     });
 });
 
-describe("Test the runMinR method", function () {
-    beforeEach(function (done) {
+describe("Test the runMinR method", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test1", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -398,7 +398,7 @@ describe("Test the runMinR method", function () {
             });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -433,12 +433,12 @@ describe("Test the runMinR method", function () {
     });
 });
 
-describe("Test the removeAfter argument", function () {
-    beforeEach(function (done) {
+describe("Test the removeAfter argument", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test2", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -447,7 +447,7 @@ describe("Test the removeAfter argument", function () {
             } else {
                 try {
                     expect(isFile(join(cwd, "bower.json"))).to.be.true;
-                    expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.true;
+                    expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.false;
                     expect(isFile(join(cwd, "dest", "angular.js"))).to.be.true;
 
                     done();
@@ -458,7 +458,7 @@ describe("Test the removeAfter argument", function () {
         });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         exec(`node ${cliPath} -ir --bower="${cwd}"`, (err) => {
@@ -467,7 +467,7 @@ describe("Test the removeAfter argument", function () {
             } else {
                 try {
                     expect(isFile(join(cwd, "bower.json"))).to.be.true;
-                    expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.true;
+                    expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.false;
                     expect(isFile(join(cwd, "dest", "angular.js"))).to.be.true;
 
                     done();
@@ -479,15 +479,15 @@ describe("Test the removeAfter argument", function () {
     });
 });
 
-describe("Test the verbose override", function () {
-    beforeEach(function (done) {
+describe("Test the verbose override", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test0", done);
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
-        exec(`node ${cliPath} -iV --bower="${cwd}"`, (err, result) => {
+        exec(`node ${cliPath} -iV --bower="${cwd}"`, (err, stdout) => {
             if (err) {
                 done(err);
             } else {
@@ -495,7 +495,7 @@ describe("Test the verbose override", function () {
                     expect(isFile(join(cwd, "bower.json"))).to.be.true;
                     expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.true;
                     expect(isFile(join(cwd, "dest", "angular.js"))).to.be.true;
-                    expect(result).match(/.*clean-bower-installer execution successfully done!\n$/);
+                    expect(stdout).match(/.*clean-bower-installer execution successfully done!\n$/);
 
                     done();
                 } catch (e) {
@@ -506,12 +506,12 @@ describe("Test the verbose override", function () {
     });
 });
 
-describe("Test the file ignore", function () {
-    beforeEach(function (done) {
+describe("Test the file ignore", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test3", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -521,9 +521,9 @@ describe("Test the file ignore", function () {
                 try {
                     expect(isFile(join(cwd, "bower.json"))).to.be.true;
                     // The "option.removeAfter" should have remove the bower_components folder
-                    expect(isDirectory(join(cwd, "bower_components", "bootstrap"))).to.be.true;
+                    expect(isDirectory(join(cwd, "bower_components", "bootstrap"))).to.be.false;
                     // Test file to be ignore
-                    expect(isFile(join(cwd, "dest", "fonts", "glyphicons-halflings-regular.svg"))).to.be.true;
+                    expect(isFile(join(cwd, "dest", "fonts", "glyphicons-halflings-regular.svg"))).to.be.false;
                     // Test file that is suppose to be there
                     expect(isFile(join(cwd, "dest", "fonts", "glyphicons-halflings-regular.eot"))).to.be.true;
 
@@ -536,12 +536,12 @@ describe("Test the file ignore", function () {
     });
 });
 
-describe("Test without option", function () {
-    beforeEach(function (done) {
+describe("Test without option", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test4", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -562,12 +562,12 @@ describe("Test without option", function () {
     });
 });
 
-describe("Test the runMin method with default.minFolder", function () {
-    beforeEach(function (done) {
+describe("Test the runMin method with default.minFolder", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test6", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -601,7 +601,7 @@ describe("Test the runMin method with default.minFolder", function () {
             });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         bower.commands
@@ -636,12 +636,12 @@ describe("Test the runMin method with default.minFolder", function () {
     });
 });
 
-describe("Test the option.min.get config", function () {
-    beforeEach(function (done) {
+describe("Test the option.min.get config", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test6", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -669,12 +669,12 @@ describe("Test the option.min.get config", function () {
     });
 });
 
-describe("Test the option.min.get and config.min.rename config", function () {
-    beforeEach(function (done) {
+describe("Test the option.min.get and config.min.rename config", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test7", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -702,12 +702,12 @@ describe("Test the option.min.get and config.min.rename config", function () {
     });
 });
 
-describe("Test file rename, specify folder and ignore file", function () {
-    beforeEach(function (done) {
+describe("Test file rename, specify folder and ignore file", function() {
+    beforeEach(function(done) {
         e2eTestEnvironmentFactory("test8", done);
     });
 
-    it("API", function (done) {
+    it("API", function(done) {
         this.timeout(10000);
 
         cbi.install(cbiConf, (err) => {
@@ -734,7 +734,7 @@ describe("Test file rename, specify folder and ignore file", function () {
         });
     });
 
-    it("CLI", function (done) {
+    it("CLI", function(done) {
         this.timeout(10000);
 
         exec(`node ${cliPath} -i --bower="${cwd}"`, (err) => {
@@ -762,7 +762,7 @@ describe("Test file rename, specify folder and ignore file", function () {
     });
 });
 
-after(function (done) {
+after(function(done) {
     fse.remove(cwd, (err) => {
         if (err) {
             done(err);

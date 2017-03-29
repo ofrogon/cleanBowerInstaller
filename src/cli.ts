@@ -1,9 +1,8 @@
 "use strict";
 
 import * as colors from "colors";
+import {install, run, update} from "./api";
 import CbiConfig from "./bowerConfig/CbiConfig";
-import {install, run, update} from "./cmd";
-import cnf from "./readConfig";
 
 const successMsg = "clean-bower-installer execution successfully done!";
 
@@ -11,61 +10,55 @@ const cli = (program) => {
     /**
      * Format the verbose CLI return
      */
-    const verboseCLIReturn = (list): string => {
-        let output = "";
-        for (const i of list) {
-            output += `Copied '${list[i].from}' to '${list[i].to}'\n`;
+    const verboseCLIReturn = (list): void => {
+        for (const el of list) {
+            process.stdout.write(`Copied '${el.from}' to '${el.to}'\n`);
         }
-        return output;
     };
 
-    cnf(new CbiConfig({cwd: program.bower}), (err, config) => {
-        const exitTool = (e, message) => {
-            if (e) {
-                process.stderr.write(`${e.error}\n`);
-                process.exit(1);
-            } else {
-                if (config.cInstall.option.verbose) {
-                    process.stdout.write(verboseCLIReturn(message));
-                }
-                process.stdout.write(colors.green(`${successMsg}\n`));
-                process.exit(0);
-            }
-        };
-
-        if (err) {
-            exitTool(err, null);
+    const exitTool = (e, message) => {
+        if (e) {
+            process.stderr.write(`${e.error}\n`);
+            process.exit(1);
         } else {
-            if (program.verbose) {
-                config.cInstall.option.verbose = true;
+            if (option.option.verbose) {
+                verboseCLIReturn(message);
             }
-
-            if (program.removeAfter) {
-                config.cInstall.option.removeAfter = true;
-            }
-
-            // Add load of minimised file version and renaming of them if needed
-            if (program.renameMin) {
-                config.cInstall.option.min.get = true;
-                config.cInstall.option.min.rename = true;
-            } else if (program.min) {
-                config.cInstall.option.min.get = true;
-                config.cInstall.option.min.rename = false;
-            } else {
-                config.cInstall.option.min.get = false;
-                config.cInstall.option.min.rename = false;
-            }
-
-            // Actions
-            if (program.install) {
-                install(config, exitTool);
-            } else if (program.update) {
-                update(config, exitTool);
-            } else {
-                run(config, exitTool);
-            }
+            process.stdout.write(colors.green(`${successMsg}\n`));
+            process.exit(0);
         }
-    });
+    };
+
+    const option = new CbiConfig({});
+
+    // Set configuration
+    if (program.bower) {
+        option.cwd = program.bower;
+    }
+
+    if (program.verbose) {
+        option.option.verbose = true;
+    }
+
+    if (program.removeAfter) {
+        option.option.removeAfter = true;
+    }
+
+    if (program.renameMin) {
+        option.option.min.get = true;
+        option.option.min.rename = true;
+    } else if (program.min) {
+        option.option.min.get = true;
+    }
+
+    // Run the whole
+    if (program.install) {
+        install(option, exitTool);
+    } else if (program.update) {
+        update(option, exitTool);
+    } else {
+        run(option, exitTool);
+    }
 };
 
 export default cli;

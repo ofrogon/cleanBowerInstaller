@@ -11,8 +11,6 @@ import {CommandCBI} from "./types/CommandCBI";
  */
 const callCmd = (cmd: CommandCBI, option: CbiConfig, callback: CallbackDefault) => {
     if (option instanceof CbiConfig) {
-        // option = new CbiConfig(option);
-
         if (!option.hasOwnProperty("cwd")) {
             option.cwd = process.cwd();
         }
@@ -60,32 +58,24 @@ const run = (option: CbiConfig, callback: CallbackDefault) => {
  * Run the clean-bower-installer with the min option, without bower call
  */
 const runMin = (option: CbiConfig, callback: CallbackDefault) => {
-    // try {
-        const _option = new CbiConfig(option);
+    const _option = new CbiConfig(option);
 
-        _option.option.min.get = true;
-        _option.option.min.rename = false;
+    _option.option.min.get = true;
+    _option.option.min.rename = false;
 
-        callCmd(cmd.run, _option, callback);
-    // } catch (e) {
-    //     callback(e, null);
-    // }
+    callCmd(cmd.run, _option, callback);
 };
 
 /**
  * Run the clean-bower-installer with the min  and the renameMin option, without bower call
  */
 const runMinR = (option: CbiConfig, callback: CallbackDefault) => {
-    // try {
-        option = new CbiConfig(option);
+    option = new CbiConfig(option);
 
-        option.option.min.get = true;
-        option.option.min.rename = true;
+    option.option.min.get = true;
+    option.option.min.rename = true;
 
-        callCmd(cmd.run, option, callback);
-    // } catch (e) {
-    //     callback(e, null);
-    // }
+    callCmd(cmd.run, option, callback);
 };
 
 export {install, update, run, runMin, runMinR};

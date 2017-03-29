@@ -4,15 +4,27 @@ import {createHash} from "crypto";
 import * as fs from "fs";
 
 const isDirectory = (folderPath: string): boolean => {
-    return fs.statSync(folderPath).isDirectory();
+    try {
+        return fs.statSync(folderPath).isDirectory();
+    } catch (e) {
+        return false;
+    }
 };
 
 const isExisting = (filePath: string): boolean => {
-    return fs.existsSync(filePath);
+    try {
+        return fs.existsSync(filePath);
+    } catch (e) {
+        return false;
+    }
 };
 
 const isFile = (filePath: string): boolean => {
-    return fs.statSync(filePath).isFile();
+    try {
+        return fs.statSync(filePath).isFile();
+    } catch (e) {
+        return false;
+    }
 };
 
 const toSha1 = (content: Buffer): string => {
