@@ -77,8 +77,6 @@ class FileObj {
 
     /**
      * Pass all the library in the config and call enumeratePackages for each one
-     *
-     * @returns {Promise<Q>}
      */
     public getList(callback: CallbackDefault) {
         const uncleanList = {
@@ -274,8 +272,6 @@ class FileObj {
 
     /**
      * Execute the copy of the listed files
-     *
-     * @returns {Promise<Q>}
      */
     public run(callback: CallbackDefault) {
         this.getList((err, list) => {

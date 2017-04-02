@@ -41,15 +41,16 @@
     "typings": "2.x.x"
   },
   "scripts": {
-    "build": "typings install && tsc",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers ts:ts-node/register,tsx:ts-node/register -R spec test/unit/*.test.ts",
-    "coveralls": "npm run test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "buildDeploy": "typings install && rimraf lib/* && tsc --sourceMap false",
+    "coverage": "nyc npm run test:unit",
+    "coveralls": "nyc report --reporter=text-lcov npm run test:unit | coveralls",
     "lint": "tslint --project tsconfig.json",
     "lint:Tests": "tslint --project tsconfig.json test/**/*.test.ts",
     "lint:Fix": "tslint --project tsconfig.json --fix",
-    "test:unit": "mocha --compilers ts:ts-node/register test/unit/*.test.ts",
-    "test:e2e": "mocha --compilers ts:ts-node/register --bail test/e2e/*.test.ts",
-    "test": "nyc -e '.ts' --r html -r lcov -r text npm run test:unit"
+    "prepublish": "npm run buildDeploy",
+    "test": "npm run buildDeploy && npm run lint && npm run test:e2e && npm run coverage",
+    "test:unit": "mocha --compilers ts:ts-node/register --bail test/unit/*.test.ts",
+    "test:e2e": "mocha --compilers ts:ts-node/register --bail test/e2e/*.test.ts"
   },
   "engines": {
     "node": ">=4"

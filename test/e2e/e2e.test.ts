@@ -236,7 +236,6 @@ describe("Test the run method", function() {
                         done(err);
                     } else {
                         try {
-                            console.dir(result);
                             expect(isFile(join(cwd, "bower.json"))).to.be.true;
                             expect(isDirectory(join(cwd, "bower_components", "angular"))).to.be.true;
                             expect(isFile(join(cwd, "dest", "angular.js"))).to.be.true;

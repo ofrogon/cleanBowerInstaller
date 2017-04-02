@@ -33,10 +33,6 @@ const mkdirp = (filePath: string, callback): void => {
 
 /**
  * Custom file copy method
- *
- * @param from {string}
- * @param to {string}
- * @param callback {Function}
  */
 const copy = (from: string, to: string, callback: CallbackError) => {
     mkdirp(path.dirname(to), (err) => {
@@ -76,7 +72,6 @@ const copy = (from: string, to: string, callback: CallbackError) => {
 const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) => {
     fs.stat(dir, (err) => {
         if (err) {
-            // Pass the error on to callback
             callback(err);
         } else {
             rimraf(dir, callback);
