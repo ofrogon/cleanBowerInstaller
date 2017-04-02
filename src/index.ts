@@ -37,8 +37,6 @@ fs.readFile(path.join(__dirname, "..", "..", "package.json"), "utf8", (err?: Err
 
             program
                 .version(pkg.version, "-v, --version")
-                .option("-i, --install", "Run bower install command", null, null)
-                .option("-u, --update", "Run bower update command", null, null)
                 .option("-b, --bower [path]", "Input the bower.json file path.", parsePath, null)
                 .option("-m, --min", "Try to get .min file version first.", null, null)
                 .option("-M, --renameMin", "Try to get .min file version first and rename them.", null, null)

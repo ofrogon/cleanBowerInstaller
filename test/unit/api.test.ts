@@ -3,7 +3,7 @@
 import {expect} from "chai";
 import * as  fse from "fs-extra";
 import * as path from "path";
-import {install, run, runMin, runMinR, update} from "../../src/api";
+import {run, runMin, runMinR} from "../../src/api";
 import CbiConfig from "../../src/bowerConfig/CbiConfig";
 import ErrorN from "../../src/types/ErrorN";
 import * as share from "../share";
@@ -21,94 +21,6 @@ describe("api", function() {
                     done(e);
                 });
             }
-        });
-    });
-
-    /**
-     * Test the method "install" from the module api.js
-     */
-    describe("install", function() {
-        /**
-         * Without Config object as configuration
-         */
-        // it("wrong options", function(done) {
-        //     install("wrong option", (err) => {
-        //         if (!err) {
-        //             done("string pass as a accepted option but we want an object.");
-        //         } else {
-        //             try {
-        //                 expect(err instanceof Error).to.equal(true);
-        //                 done();
-        //             } catch (e) {
-        //                 done(e);
-        //             }
-        //         }
-        //     });
-        // });
-
-        /**
-         * Test default option (without bower.json file in the current folder)
-         */
-        it("empty options", function(done) {
-            install(null, (err: ErrorN) => {
-                if (err) {
-                    expect(err.code).to.equal("ENOOPTION");
-                    done();
-                } else {
-                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
-                }
-            });
-        });
-
-        /**
-         * With a bower.json file
-         */
-        it("good options", function(done) {
-            install(new CbiConfig({cwd: ".testFolder/tempU/"}), (err) => {
-                done(err);
-            });
-        });
-    });
-
-    /**
-     * Test the method "update" from the module api.js
-     */
-    describe("update", function() {
-        /**
-         * Without Config object as configuration
-         */
-        // it("wrong options", function(done) {
-        //     update("wrong option", (err) => {
-        //         if (err) {
-        //             expect(err instanceof Error).to.equal(true);
-        //             done();
-        //         } else {
-        //             done("string pass as a accepted option but we want an object.");
-        //         }
-        //     });
-        // });
-
-        /**
-         * Test default option (without bower.json file in the current folder)
-         */
-        it("empty options", function(done) {
-            update(null, (err: ErrorN) => {
-                if (err) {
-                    expect(err.code).to.equal("ENOOPTION");
-                    done();
-                } else {
-                    done(`This test is not suppose to pass, remove any bower.json contained in folder ${__dirname}`);
-                }
-            });
-        });
-
-        /**
-         * With a bower.json file
-         */
-        it("good options", function(done) {
-            update(new CbiConfig({cwd: ".testFolder/tempU/"}), (err) => {
-                done(err);
-            });
         });
     });
 

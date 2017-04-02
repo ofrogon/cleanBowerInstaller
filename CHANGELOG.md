@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.4.0 - 2017-02-xx
+## 1.0.0 - 2017-04-xx
 
 - New API return.
 - No more support for Node.js before v4.
+- The command `install` and `update` has been deprecated and remove. Now if you want to use this tool with Bower commands, you can call it using, for example `bower install && clean-bower-installer`.
 
 ## 0.3.4 - 2016-07-02
 

@@ -1,13 +1,13 @@
 "use strict";
 
 import {CbiConfig} from "./bowerConfig/BowerConfiguration";
-import * as cmd from "./cmd";
+import cmd from "./cmd";
 import createError from "./createError";
 import cnf from "./readConfig";
 import {CommandCBI} from "./types/CommandCBI";
 
 /**
- * Call cmd.js command using promise
+ * Call cmd.ts command
  */
 const callCmd = (cmd: CommandCBI, option: CbiConfig, callback: CallbackDefault) => {
     if (option instanceof CbiConfig) {
@@ -34,24 +34,10 @@ const callCmd = (cmd: CommandCBI, option: CbiConfig, callback: CallbackDefault) 
 };
 
 /**
- * Execute the install
- */
-const install = (option: CbiConfig, callback: CallbackDefault) => {
-    callCmd(cmd.install, option, callback);
-};
-
-/**
- * Execute the update
- */
-const update = (option: CbiConfig, callback: CallbackDefault) => {
-    callCmd(cmd.update, option, callback);
-};
-
-/**
  * Simply run the clean-bower-installer without bower call
  */
 const run = (option: CbiConfig, callback: CallbackDefault) => {
-    callCmd(cmd.run, option, callback);
+    callCmd(cmd, option, callback);
 };
 
 /**
@@ -63,7 +49,7 @@ const runMin = (option: CbiConfig, callback: CallbackDefault) => {
     _option.option.min.get = true;
     _option.option.min.rename = false;
 
-    callCmd(cmd.run, _option, callback);
+    callCmd(cmd, _option, callback);
 };
 
 /**
@@ -75,7 +61,7 @@ const runMinR = (option: CbiConfig, callback: CallbackDefault) => {
     option.option.min.get = true;
     option.option.min.rename = true;
 
-    callCmd(cmd.run, option, callback);
+    callCmd(cmd, option, callback);
 };
 
-export {install, update, run, runMin, runMinR};
+export {run, runMin, runMinR};

@@ -4,7 +4,7 @@ import {expect} from "chai";
 import * as  fse from "fs-extra";
 import * as path from "path";
 import {BowerConfiguration} from "../../src/bowerConfig/BowerConfiguration";
-import {install, run, update} from "../../src/cmd";
+import run from "../../src/cmd";
 import ErrorN from "../../src/types/ErrorN";
 import * as share from "../share";
 
@@ -44,84 +44,6 @@ describe("cmd", function() {
                     done(e);
                 });
             }
-        });
-    });
-
-    /**
-     * Test the method "install" from the module api.js
-     */
-    describe("install", function() {
-        /**
-         * Test default option (without bower.json file in the current folder)
-         */
-        it("no bower.json file", function(done) {
-            const config = new BowerConfiguration(cnf);
-
-            install(config, (err: ErrorN) => {
-                if (err) {
-                    expect(err.code).to.equal("EBOWJSO");
-                    done();
-                } else {
-                    done("The script is not suppose to run with no bower.json file.");
-                }
-            });
-        });
-
-        /**
-         * With a bower.json file
-         */
-        it("minimal config", function(done) {
-            const config = new BowerConfiguration(cnf);
-
-            config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
-            this.timeout(longTimeOut);
-
-            install(config, (err) => {
-                if (err) {
-                    done(`Suppose to found a bower.json file in: ${config.cInstall.cwd}`);
-                } else {
-                    done();
-                }
-            });
-        });
-    });
-
-    /**
-     * Test the method "update" from the module api.js
-     */
-    describe("update", function() {
-        /**
-         * Test default option (without bower.json file in the current folder)
-         */
-        it("no bower.json file", function(done) {
-            const config = new BowerConfiguration(cnf);
-
-            update(config, (err: ErrorN) => {
-                if (err) {
-                    expect(err.code).to.equal("EBOWJSO");
-                    done();
-                } else {
-                    done("The script is not suppose to run with no bower.json file.");
-                }
-            });
-        });
-
-        /**
-         * With a bower.json file
-         */
-        it("minimal config", function(done) {
-            const config = new BowerConfiguration(cnf);
-
-            config.cInstall.cwd = path.join(__dirname, "../../.testFolder/tempU");
-            this.timeout(longTimeOut);
-
-            update(config, (err) => {
-                if (err) {
-                    done("Suppose to found a bower.json file in .testFolder/tempU folder.");
-                } else {
-                    done();
-                }
-            });
         });
     });
 

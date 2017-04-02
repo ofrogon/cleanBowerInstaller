@@ -1,7 +1,7 @@
 "use strict";
 
 import * as colors from "colors";
-import {install, run, update} from "./api";
+import {run} from "./api";
 import CbiConfig from "./bowerConfig/CbiConfig";
 
 const successMsg = "clean-bower-installer execution successfully done!";
@@ -18,7 +18,14 @@ const cli = (program) => {
 
     const exitTool = (e, message) => {
         if (e) {
-            process.stderr.write(`${e.error}\n`);
+            if(e.hasOwnProperty("error")) {
+                process.stderr.write(`${e.error}\n`);
+            } if (typeof e === "string") {
+                process.stderr.write(`${e}\n`);
+            }else {
+                process.stderr.write(`${JSON.stringify(e, null, 2)}\n`);
+            }
+
             process.exit(1);
         } else {
             if (option.option.verbose) {
@@ -51,14 +58,8 @@ const cli = (program) => {
         option.option.min.get = true;
     }
 
-    // Run the whole
-    if (program.install) {
-        install(option, exitTool);
-    } else if (program.update) {
-        update(option, exitTool);
-    } else {
-        run(option, exitTool);
-    }
+    // Execute the tool
+    run(option, exitTool);
 };
 
 export default cli;
