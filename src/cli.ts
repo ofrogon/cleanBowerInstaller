@@ -7,6 +7,8 @@ import CbiConfig from "./bowerConfig/CbiConfig";
 const successMsg = "clean-bower-installer execution successfully done!";
 
 const cli = (program) => {
+    const option = new CbiConfig({});
+
     /**
      * Format the verbose CLI return
      */
@@ -18,9 +20,10 @@ const cli = (program) => {
 
     const exitTool = (e, message) => {
         if (e) {
-            if(e.hasOwnProperty("error")) {
+            if (e.hasOwnProperty("error")) {
                 process.stderr.write(`${e.error}\n`);
-            } if (typeof e === "string") {
+            }
+            if (typeof e === "string") {
                 process.stderr.write(`${e}\n`);
             }else {
                 process.stderr.write(`${JSON.stringify(e, null, 2)}\n`);
@@ -35,8 +38,6 @@ const cli = (program) => {
             process.exit(0);
         }
     };
-
-    const option = new CbiConfig({});
 
     // Set configuration
     if (program.bower) {

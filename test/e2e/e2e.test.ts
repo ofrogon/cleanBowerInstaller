@@ -190,7 +190,7 @@ it("CLI", function(done) {
     this.timeout(10000);
 
     e2eTestEnvironmentFactory("test1", (err) => {
-        if(err) {
+        if (err) {
             done(err);
         } else {
             bower.commands
@@ -213,8 +213,8 @@ it("CLI", function(done) {
                         }
                     });
                 })
-                .on("error", (err) => {
-                    done(err);
+                .on("error", (bowerErr) => {
+                    done(bowerErr);
                 });
         }
     });
@@ -766,22 +766,18 @@ describe("Test file rename, specify folder and ignore file", function() {
                     if (err) {
                         done(err);
                     } else {
-                        try {
-                            expect(isFile(join(cwd, "bower.json"))).to.be.true;
-                            expect(isDirectory(join(cwd, "bower_components", "bootstrap"))).to.be.true;
-                            expect(isDirectory(join(cwd, "bower_components", "jquery"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "css", "bootstrap.css"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.eot"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.ttf"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.woff"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "js", "vendor", "banana.js"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "js", "vendor", "min", "bootstrap.min.js"))).to.be.true;
-                            expect(isFile(join(cwd, "public", "thisPathIsGlobal", "bootstrap.min.css"))).to.be.true;
+                        expect(isFile(join(cwd, "bower.json"))).to.be.true;
+                        expect(isDirectory(join(cwd, "bower_components", "bootstrap"))).to.be.true;
+                        expect(isDirectory(join(cwd, "bower_components", "jquery"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "css", "bootstrap.css"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.eot"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.ttf"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "fonts", "glyphicons-halflings-regular.woff"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "js", "vendor", "banana.js"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "js", "vendor", "min", "bootstrap.min.js"))).to.be.true;
+                        expect(isFile(join(cwd, "public", "thisPathIsGlobal", "bootstrap.min.css"))).to.be.true;
 
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                        done();
                     }
                 });
             })
