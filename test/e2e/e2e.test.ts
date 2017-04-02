@@ -242,7 +242,7 @@ describe("Test the run method", function() {
                             expect(isFile(join(cwd, "dest", "angular.js"))).to.be.true;
                             expect(isFile(join(cwd, "bower.json"))).to.be.true;
                             expect(result[0].from).match(/.*\.testFolder.tmp.bower_components.angular.angular\.js$/);
-                            expect(result[0].to).match(/.*\.testFolder\/tmp\/dest\/angular\.js$/);
+                            expect(result[0].to).match(/.*\.testFolder.tmp.dest.angular\.js$/);
 
                             done();
                         } catch (e) {

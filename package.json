@@ -24,7 +24,8 @@
   "dependencies": {
     "colors": "1.1.x",
     "commander": "2.x.x",
-    "glob": "7.x.x"
+    "glob": "7.x.x",
+    "rimraf": "^2.6.1"
   },
   "devDependencies": {
     "bower": "latest",

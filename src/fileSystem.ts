@@ -2,6 +2,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as rimraf from "rimraf";
 import ErrorN from "./types/ErrorN";
 
 /**
@@ -71,44 +72,14 @@ const copy = (from: string, to: string, callback: CallbackError) => {
 
 /**
  * Delete folder and his content
- *
- * @param dir {string}
- * @param callback {Function}
  */
 const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) => {
-    fs.readdir(dir, (err, files) => {
+    fs.stat(dir, (err) => {
         if (err) {
             // Pass the error on to callback
             callback(err);
         } else {
-            const wait = files.length;
-            let count = 0;
-            const folderDone = (e?: Error) => {
-                // If we cleaned out all the files, continue
-                if (++count >= wait || e) {
-                    fs.rmdir(dir, callback);
-                }
-            };
-
-            // Empty directory to fail early
-            if (!wait) {
-                folderDone();
-            } else {
-                // Remove one or more trailing slash to keep from doubling up
-                dir = dir.replace(/\/+$/, "");
-                files.forEach((file) => {
-                    const curPath = path.join(dir, file);
-                    fs.unlink(curPath, (e) => {
-                        if (e && (e.code === "EISDIR")) {
-                            rmr(curPath, folderDone);
-                        } else if (e) {
-                            folderDone(e);
-                        } else {
-                            folderDone();
-                        }
-                    });
-                });
-            }
+            rimraf(dir, callback);
         }
     });
 };

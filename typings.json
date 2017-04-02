@@ -8,6 +8,7 @@
     "chai": "registry:npm/chai#3.5.0+20160723033700",
     "commander": "registry:dt/commander#2.3.0+20161118092844",
     "fs-extra": "registry:dt/fs-extra#2.0.0+20170306033830",
-    "glob": "registry:npm/glob#6.0.0+20160723033700"
+    "glob": "registry:npm/glob#6.0.0+20160723033700",
+    "rimraf": "registry:npm/rimraf#2.5.0+20160723033700"
   }
 }
