@@ -34,7 +34,7 @@ const mkdirp = (filePath: string, callback): void => {
 /**
  * Custom file copy method
  */
-const copy = (from: string, to: string, callback: CallbackError) => {
+const copy = (from: string, to: string, callback: CallbackError): void => {
     mkdirp(path.dirname(to), (err) => {
         if (err) {
             callback(err);
@@ -69,7 +69,7 @@ const copy = (from: string, to: string, callback: CallbackError) => {
 /**
  * Delete folder and his content
  */
-const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void) => {
+const rmr = (dir: string, callback?: (err?: NodeJS.ErrnoException) => void): void => {
     fs.stat(dir, (err) => {
         if (err) {
             callback(err);

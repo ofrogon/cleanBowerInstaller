@@ -57,7 +57,7 @@ class FileObj {
     public extensionFolder: object;
     public isVerbose: boolean;
     public listBackup: string[];
-    public cwd: string;
+    public readonly cwd: string;
 
     constructor(config?: CbiConfig) {
         config = config || new CbiConfig({});
@@ -78,23 +78,22 @@ class FileObj {
     /**
      * Pass all the library in the config and call enumeratePackages for each one
      */
-    public getList(callback: CallbackDefault) {
-        const uncleanList = {
+    public listModules(callback: CallbackDefault): void {
+        const uncleanList: FileObjList = {
             ignore: [],
             move: []
         };
         const promises = [];
+        const modules = this.source;
 
-        const src = this.source;
-
-        for (const pkg in src) {
-            if (src.hasOwnProperty(pkg)) {
-                const libPart = pkg.split("#");
+        for (const module in modules) {
+            if (modules.hasOwnProperty(module)) {
+                const libPart = module.split("#");
                 const libName = libPart[0];
                 const libFolder = libPart[1] || "";
 
                 promises.push(new Promise((resolve: () => void, reject: (err: Error) => void) => {
-                    this.enumeratePackages(src[pkg], libName, libFolder, (err, data) => {
+                    this.enumeratePackages(modules[module], libName, libFolder, (err, data) => {
                         if (err) {
                             reject(err);
                         } else {
@@ -118,9 +117,9 @@ class FileObj {
     }
 
     /**
-     * Pass all the packages in the library and call enumerateFile for each one
+     * Pass all the packages in the library and call listFiles for each one
      */
-    public enumeratePackages(pkgs: {}, libName: string, libFolder: string, callback: CallbackDefault) {
+    public enumeratePackages(packages: {}, libName: string, libFolder: string, callback: CallbackDefault): void {
         const uncleanList = {ignore: [], move: []};
         const promises = [];
         let file: string;
@@ -131,7 +130,7 @@ class FileObj {
                     if (err) {
                         reject(err);
                     } else {
-                        const result = this.enumerateFile(
+                        const result = this.listFiles(
                             data,
                             fileName,
                             libFolder,
@@ -148,9 +147,9 @@ class FileObj {
             }));
         };
 
-        for (const pkg in pkgs) {
-            if (pkgs.hasOwnProperty(pkg)) {
-                file = pkgs[pkg];
+        for (const pkg in packages) {
+            if (packages.hasOwnProperty(pkg)) {
+                file = packages[pkg];
 
                 const p = pkg.split("#");
                 const fileFolder = p[1] || "";
@@ -189,11 +188,11 @@ class FileObj {
         );
     }
 
-    // TODO set better return type here
     /**
      * Pass all the files in the package and return the array of them
      */
-    public enumerateFile(files: string[], fileName: string, libFolder: string, fileFolder: string, action: string) {
+    public listFiles(files: string[], fileName: string, libFolder: string, fileFolder: string,
+                     action: string): FileObjList {
         let f;
         const unCleanList = {
             ignore: [],
@@ -234,18 +233,6 @@ class FileObj {
                         thisFile + path.extname(f)
                     )
                 });
-            } else if (path.isAbsolute(libFolder)) {
-                // The specified lib folder is global
-                unCleanList[action].push({
-                    from: f,
-                    to: path.join(
-                        this.cwd,
-                        this.defFolder,
-                        libFolder.substr(1),
-                        fileFolder,
-                        thisFile + path.extname(f)
-                    )
-                });
             } else {
                 let df;
                 // Test if redirect the file to the minDefault folder or the default folder
@@ -273,8 +260,8 @@ class FileObj {
     /**
      * Execute the copy of the listed files
      */
-    public run(callback: CallbackDefault) {
-        this.getList((err, list) => {
+    public run(callback: CallbackDefault): void {
+        this.listModules((err, list) => {
             if (err) {
                 callback(err, null);
             } else {
@@ -316,7 +303,7 @@ class FileObj {
     /**
      * Execute the copy of the listed files and delete the bower_components folder after
      */
-    public runAndRemove(callback: CallbackDefault) {
+    public runAndRemove(callback: CallbackDefault): void {
         this.run((err, data) => {
             if (err) {
                 fse.rmr(this.bowerFileFolder, () => {
@@ -334,7 +321,7 @@ class FileObj {
 /**
  * Main method to move the files from the bower_components folder to their destination listed in the cInstall.source
  */
-const moveFiles = (config: CbiConfig, callback: CallbackDefault) => {
+const moveFiles = (config: CbiConfig, callback: CallbackDefault): void => {
     const list = new FileObj(config);
 
     list.run((err, data) => {
@@ -346,7 +333,7 @@ const moveFiles = (config: CbiConfig, callback: CallbackDefault) => {
  * Main method to move the files from the bower_components folder to their destination listed in the cInstall.source
  * and after, delete the bower_components folder.
  */
-const moveFilesAndRemove = (config: CbiConfig, callback: CallbackDefault) => {
+const moveFilesAndRemove = (config: CbiConfig, callback: CallbackDefault): void => {
     const list = new FileObj(config);
 
     list.runAndRemove((err, data) => {

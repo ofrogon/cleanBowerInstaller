@@ -10,4 +10,4 @@ export default class CbiConfigOptionDefault {
         this.folder = data.folder || "";
         this.minFolder = data.minFolder || "";
     }
-}
+};

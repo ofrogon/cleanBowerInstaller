@@ -23,8 +23,8 @@ const bowerError = (err: ErrorN, cnf: CbiConfig): Error => {
 /**
  * Call the file management module
  */
-const callFileManagement = (config: CbiConfig, callback: CallbackDefault) => {
-    const done = (err, data) => {
+const callFileManagement = (config: CbiConfig, callback: CallbackDefault): void => {
+    const done = (err: Error | null, data: any) => {
         callback(err, data);
     };
 
@@ -38,7 +38,7 @@ const callFileManagement = (config: CbiConfig, callback: CallbackDefault) => {
 /**
  * Simply run the clean-bower-installer without bower call
  */
-const run = (config: BowerConfiguration, callback: CallbackDefault) => {
+const run = (config: BowerConfiguration, callback: CallbackDefault): void => {
     if (config && config.cInstall.hasOwnProperty("cwd")) {
         fs.stat(path.join(config.cInstall.cwd, "bower.json"), (err: ErrorN) => {
             if (err) {

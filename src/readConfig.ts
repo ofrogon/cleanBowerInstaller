@@ -9,10 +9,10 @@ import createError from "./createError";
 /**
  * Read the bower.json file
  */
-const getBowerJson = (cwd: string, callback: CallbackDefault) => {
+const getBowerJson = (cwd: string, callback: CallbackDefault): void => {
     fs.readFile(path.join(cwd, "bower.json"), "utf8", (err, data) => {
         if (err && err.code === "EEXIST") {
-            callback(createError(`No bower.json file found in ${cwd}`, "ENOBOWER"), null);
+            callback(createError(`No bower.json file found in ${cwd}`, "EEXIST"), null);
         } else if (err) {
             callback(err, null);
         } else {
@@ -24,7 +24,7 @@ const getBowerJson = (cwd: string, callback: CallbackDefault) => {
 /**
  * Handle the multiple values key
  */
-const mergeOption = (option: CbiConfig, config: BowerConfiguration) => {
+const mergeOption = (option: CbiConfig, config: BowerConfiguration): BowerConfiguration => {
     const overrideConf = option.option;
 
     if (overrideConf.hasOwnProperty("min") && overrideConf.min.hasOwnProperty("rename") && overrideConf.min.rename) {
@@ -52,7 +52,7 @@ const mergeOption = (option: CbiConfig, config: BowerConfiguration) => {
 /**
  * Read the configuration
  */
-const read = (option: CbiConfig, callback: CallbackDefault) => {
+const read = (option: CbiConfig, callback: CallbackDefault): void => {
     option = option || new CbiConfig({});
     const cwd = option.cwd;
 

@@ -12,4 +12,4 @@ export default class CbiConfigOptionMin {
         this.rename = data.rename || false;
         this.ignoreExt = data.ignoreExt || [];
     }
-}
+};

@@ -1,7 +1,5 @@
 "use strict";
 
-/// <reference path="definitions/chai-js.d.ts" />
-
 import * as bower from "bower";
 import {expect} from "chai";
 import {exec} from "child_process";

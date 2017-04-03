@@ -2,7 +2,7 @@
 
 import {CbiConfigOption} from "./CbiConfigOption";
 
-const parseFolderParameters = (data) => {
+const parseFolderParameters = (data): object => {
     const out = {};
 
     for (const obj in data) {
@@ -43,4 +43,4 @@ export default class CbiConfig {
 
         this.cwd = data.cwd || process.cwd();
     }
-}
+};

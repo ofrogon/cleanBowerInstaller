@@ -3,10 +3,11 @@
 import * as colors from "colors";
 import {run} from "./api";
 import CbiConfig from "./bowerConfig/CbiConfig";
+import ErrorN from "./types/ErrorN";
 
 const successMsg = "clean-bower-installer execution successfully done!";
 
-const cli = (program) => {
+const cli = (program): void => {
     const option = new CbiConfig({});
 
     /**
@@ -18,17 +19,9 @@ const cli = (program) => {
         }
     };
 
-    const exitTool = (e, message) => {
+    const exitTool = (e: Error | null, message: string): void => {
         if (e) {
-            if (e.hasOwnProperty("error")) {
-                process.stderr.write(`${e.error}\n`);
-            }
-            if (typeof e === "string") {
-                process.stderr.write(`${e}\n`);
-            }else {
-                process.stderr.write(`${JSON.stringify(e, null, 2)}\n`);
-            }
-
+            process.stderr.write(`${JSON.stringify(e, null, 2)}\n`);
             process.exit(1);
         } else {
             if (option.option.verbose) {
